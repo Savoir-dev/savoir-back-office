@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   Dialog,
   Flex,
   Select,
@@ -22,6 +21,7 @@ import {
 import { space } from "../../../styles/const";
 import { postInterestPoint } from "../../../services/interestPoints/interestPoints.services";
 import { InterestPoint } from "../../../services/types/interestPoints/interestPoints.type";
+import { Button } from "../../../components/atoms/button";
 
 interface Props {
   close: () => void;
@@ -31,7 +31,6 @@ const formKey = "interestPointFormState";
 
 export const CreateInterestPointModal = ({ close }: Props) => {
   const [newTag, setNewTag] = useState("");
-  const [selectValue, setSelectValue] = useState<string>("walkingTour");
 
   const truncateName = (name: string, length = 10) => {
     const maxLength = length;
@@ -42,10 +41,9 @@ export const CreateInterestPointModal = ({ close }: Props) => {
 
   const { control, handleSubmit, reset, watch } = useForm({
     defaultValues: {
-      type: "walkingTour",
+      type: "",
       image: null,
-      audio: "https://audio_url.com",
-      audioDescription: "aaaa",
+      audio: null,
       title: "",
       subtitle: "",
       shortDesc: "",
@@ -53,6 +51,7 @@ export const CreateInterestPointModal = ({ close }: Props) => {
       duration: "",
       information: "",
       guide: "",
+      color: "",
       tags: [],
     },
   });
@@ -112,6 +111,7 @@ export const CreateInterestPointModal = ({ close }: Props) => {
 
   useEffect(() => {
     const subscription = watch((value) => {
+      console.log(value.type);
       localStorage.setItem(formKey, JSON.stringify(value));
     });
     return () => subscription.unsubscribe();
@@ -174,7 +174,7 @@ export const CreateInterestPointModal = ({ close }: Props) => {
                       align="center"
                     >
                       <Text size="2" weight="bold">
-                        {truncateName(value)}
+                        {truncateName(value.name)}
                       </Text>
                       <Button color="orange" onClick={() => onChange(null)}>
                         Remove
@@ -187,7 +187,7 @@ export const CreateInterestPointModal = ({ close }: Props) => {
                         type="file"
                         style={{ display: "none" }}
                         accept="audio/*"
-                        onChange={(e) => onChange(e.target.files)}
+                        onChange={(e) => onChange(e.target.files[0])}
                       />
                     </>
                   )}
@@ -201,23 +201,21 @@ export const CreateInterestPointModal = ({ close }: Props) => {
             <Text size="2" weight="bold">
               Type
             </Text>
-            <Select.Root defaultValue={selectValue}>
-              <Select.Trigger />
-              <Select.Content>
-                <Select.Item
-                  value="walkingTour"
-                  onChange={() => setSelectValue("walkingTour")}
-                >
-                  Walking tour
-                </Select.Item>
-                <Select.Item
-                  value="whatIsThis"
-                  onChange={() => setSelectValue("whatIsThis")}
-                >
-                  What is this ?
-                </Select.Item>
-              </Select.Content>
-            </Select.Root>
+            <Controller
+              rules={validation["title"]}
+              control={control}
+              name="type"
+              render={({ field: { value, onChange } }) => (
+                <Select.Root value={value} onValueChange={onChange}>
+                  {" "}
+                  <Select.Trigger />
+                  <Select.Content>
+                    <Select.Item value="whatIsThis">What is this ?</Select.Item>
+                    <Select.Item value="walkingTour">Walking tour</Select.Item>
+                  </Select.Content>
+                </Select.Root>
+              )}
+            />
           </Flex>
 
           <Flex gap="2">
