@@ -1,13 +1,21 @@
+import { FC } from "react";
 import styled from "styled-components";
-import { colors, space } from "../../styles/const";
 import { useNavigate } from "react-router-dom";
+import {
+  Users as UsersIcon,
+  MapPinned,
+  Smartphone,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { Flex, Text } from "@radix-ui/themes";
+
+import { colors, space } from "../../styles/const";
 import {
   generalSettingsAppRoutes,
   mapSettingsAppRoutes,
   usersAppRoutes,
 } from "../internalRouter";
-import { Users as UsersIcon, MapPinned, Smartphone } from "lucide-react";
-import { Flex, Text } from "@radix-ui/themes";
 import { isLocation } from "../../utils/isLocation";
 
 const Tabs = [
@@ -28,46 +36,67 @@ const Tabs = [
   },
 ];
 
-export const Navbar = () => {
+interface NavbarProps {
+  isCollapsed: boolean;
+  toggleSidebar: () => void;
+}
+
+export const Navbar: FC<NavbarProps> = ({ isCollapsed, toggleSidebar }) => {
   const navigate = useNavigate();
 
   return (
-    <NavbarStyled>
+    <NavbarStyled isCollapsed={isCollapsed}>
+      <div onClick={toggleSidebar}>
+        {isCollapsed ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
+      </div>
+
       {Tabs.map((tab) => (
         <NavbarItem
           align="center"
           gap="2"
           key={tab.name}
           isActive={isLocation(tab.path)}
+          isCollapsed={isCollapsed}
           onClick={() => navigate(tab.path)}
         >
-          <tab.icon
-            color={isLocation(tab.path) ? colors.pumpkin : colors.deepBlack}
-          />
-          <Text size="2" color={isLocation(tab.path) ? "amber" : "gray"}>
-            {tab.name}
-          </Text>
+          <div style={{ flexShrink: 0 }}>
+            <tab.icon
+              color={isLocation(tab.path) ? colors.pumpkin : colors.deepBlack}
+            />
+          </div>
+
+          {!isCollapsed && (
+            <Text
+              size="2"
+              color={isLocation(tab.path) ? "amber" : "gray"}
+              style={{ whiteSpace: "nowrap" }}
+            >
+              {tab.name}
+            </Text>
+          )}
         </NavbarItem>
       ))}
     </NavbarStyled>
   );
 };
 
-const NavbarStyled = styled.nav`
+const NavbarStyled = styled.nav<{ isCollapsed: boolean }>`
   display: flex;
   gap: ${space[2]};
   padding: ${space[5]};
   background-color: ${colors.pumpkin};
   flex-direction: column;
   position: fixed;
-  width: 200px;
+  width: ${(props) => (props.isCollapsed ? "80px" : "200px")};
+  transition: 0.3s ease;
   height: 100%;
 `;
 
-const NavbarItem = styled(Flex)<{ isActive: boolean }>`
+const NavbarItem = styled(Flex)<{ isActive: boolean; isCollapsed: boolean }>`
   cursor: pointer;
   background-color: ${(props) =>
     props.isActive ? colors.lightSmoke : "transparent"};
   padding: ${space[1]};
   border-radius: ${space[1]};
+  width: ${(props) => (props.isCollapsed ? "32px" : "auto")};
 `;

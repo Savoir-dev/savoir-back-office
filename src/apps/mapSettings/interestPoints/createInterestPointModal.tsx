@@ -66,7 +66,7 @@ export const CreateInterestPointModal = ({ close }: Props) => {
       return postInterestPoint(data);
     },
     onSuccess: () => {
-      localStorage.removeItem(formKey);
+      sessionStorage.removeItem(formKey);
       queryClient.invalidateQueries({
         queryKey: ["interestPoints"],
       });
@@ -103,7 +103,7 @@ export const CreateInterestPointModal = ({ close }: Props) => {
   };
 
   useEffect(() => {
-    const savedFormState = localStorage.getItem(formKey);
+    const savedFormState = sessionStorage.getItem(formKey);
     if (savedFormState) {
       reset({ ...JSON.parse(savedFormState), image: null });
     }
@@ -111,8 +111,7 @@ export const CreateInterestPointModal = ({ close }: Props) => {
 
   useEffect(() => {
     const subscription = watch((value) => {
-      console.log(value.type);
-      localStorage.setItem(formKey, JSON.stringify(value));
+      sessionStorage.setItem(formKey, JSON.stringify(value));
     });
     return () => subscription.unsubscribe();
   }, [watch]);
