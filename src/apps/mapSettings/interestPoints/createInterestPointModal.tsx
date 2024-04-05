@@ -215,6 +215,18 @@ export const CreateInterestPointModal = ({ close }: Props) => {
               )}
             />
           </Flex>
+          <Flex direction="column">
+            <Text size="2" weight="bold">
+              Color
+            </Text>
+            <Controller
+              control={control}
+              name="color"
+              render={({ field: { onChange, value } }) => (
+                <input type="color" value={value} onChange={onChange} />
+              )}
+            />
+          </Flex>
           <Flex width="100%" direction="column">
             <Text size="2" weight="bold">
               Audio description
