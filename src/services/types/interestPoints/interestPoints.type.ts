@@ -1,20 +1,32 @@
 export interface InterestPoint {
-  image: File;
+  type: string;
+  image: null | File;
+  audio: null | File;
   title: string;
   subtitle: string;
   shortDesc: string;
   longDesc: string;
-  tags: { tag: string }[];
-  geolocation: {
-    latitude: number;
-    longitude: number;
-  };
-  color: string;
-  audio: string;
-  audioDescription: string;
   duration: string;
-  guide: string;
-  isWalkingTour: boolean;
   information: string;
+  guide: string;
+  color: string;
+  audioDesc: string;
+  tags: string[];
+}
+
+export interface InterestPointFromApi {
+  id: number;
   type: string;
+  image: string;
+  audio: string;
+  title: string;
+  subtitle: string;
+  shortDesc: string;
+  longDesc: string;
+  duration: string;
+  information: string;
+  guide: string;
+  color: string;
+  audioDesc: string;
+  tags: string[];
 }

@@ -1,13 +1,13 @@
-import { AspectRatio, Badge, Card, Flex, Text } from "@radix-ui/themes";
-import { InterestPoint } from "../../../../services/types/interestPoints/interestPoints.type";
-import { space } from "../../../../styles/const";
-import AudioPlayer from "react-h5-audio-player";
-import styled from "styled-components";
+import { AspectRatio, Badge, Card, Flex, Text } from '@radix-ui/themes'
+import { InterestPointFromApi } from '../../../../services/types/interestPoints/interestPoints.type'
+import { space } from '../../../../styles/const'
+import AudioPlayer from 'react-h5-audio-player'
+import styled from 'styled-components'
 
 export const InterestPointCard = ({
   interestPoint,
 }: {
-  interestPoint: InterestPoint;
+  interestPoint: InterestPointFromApi
 }) => {
   return (
     <Card key={interestPoint.title}>
@@ -16,9 +16,9 @@ export const InterestPointCard = ({
           src={interestPoint.image}
           alt="interest point image"
           style={{
-            objectFit: "cover",
-            width: "100%",
-            height: "100%",
+            objectFit: 'cover',
+            width: '100%',
+            height: '100%',
             borderRadius: space[1],
           }}
         />
@@ -30,7 +30,7 @@ export const InterestPointCard = ({
         <Text size="2" weight="bold">
           {interestPoint.subtitle}
         </Text>
-        <Text size="2" style={{ textDecoration: "underline" }}>
+        <Text size="2" style={{ textDecoration: 'underline' }}>
           {interestPoint.type}
         </Text>
         <Text size="2">{interestPoint.shortDesc}</Text>
@@ -41,16 +41,13 @@ export const InterestPointCard = ({
             </Badge>
           ))}
         </Flex>
-        <CustomAudioStyled
-          src={interestPoint.audio}
-          onPlay={(e) => console.log("onPlay")}
-        />
+        <CustomAudioStyled src={interestPoint.audio} />
         <Text size="2">By {interestPoint.guide}</Text>
       </Flex>
     </Card>
-  );
-};
+  )
+}
 
 const CustomAudioStyled = styled(AudioPlayer)`
   box-shadow: none;
-`;
+`

@@ -1,10 +1,10 @@
 import { AspectRatio, Badge, Flex, Text } from '@radix-ui/themes'
 import { colors, space } from '../../../styles/const'
-import { InterestPoint } from '../../../services/types/interestPoints/interestPoints.type'
+import { InterestPointFromApi } from '../../../services/types/interestPoints/interestPoints.type'
 import styled from 'styled-components'
 
 interface Props {
-  interestPoint: InterestPoint
+  interestPoint: InterestPointFromApi
   selected: boolean
   order: number
   onSelect: () => void
@@ -45,9 +45,9 @@ export const InterestPointSelectableCard = ({
             {interestPoint.subtitle}
           </Text>
           <Text size="2" style={{ textDecoration: 'underline' }}>
-            {interestPoint.isWalkingTour ? 'Walking tour' : 'What is this ?'}
+            {interestPoint.type ? 'Walking tour' : 'What is this ?'}
           </Text>
-          <Text size="2">{interestPoint.shortDescription}</Text>
+          <Text size="2">{interestPoint.shortDesc}</Text>
           <Flex gap="1">
             {interestPoint.tags.map((tag, index) => (
               <Badge color="orange" key={index}>

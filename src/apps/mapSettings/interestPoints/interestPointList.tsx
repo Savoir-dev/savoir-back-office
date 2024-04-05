@@ -3,7 +3,10 @@ import { InterestPointCard } from './components/interestPointCard'
 import { useQuery } from 'react-query'
 import { getInterestPoints } from '../../../services/interestPoints/interestPoints.services'
 import { AxiosResponse } from 'axios'
-import { InterestPoint } from '../../../services/types/interestPoints/interestPoints.type'
+import {
+  InterestPoint,
+  InterestPointFromApi,
+} from '../../../services/types/interestPoints/interestPoints.type'
 
 export const interestPointsFakeData = [
   {
@@ -233,7 +236,7 @@ export const InterestPointList = () => {
   const { data: interestPointsData } = useQuery({
     queryKey: 'interestPoints',
     queryFn: () => getInterestPoints(),
-    select: (data): AxiosResponse<InterestPoint[]> => data.data,
+    select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
   })
   const interestPoints = interestPointsData?.data || []
 

@@ -1,12 +1,17 @@
 import AxiosService from "../api";
-import { InterestPoint } from "../types/interestPoints/interestPoints.type";
+import { InterestPointFromApi } from "../types/interestPoints/interestPoints.type";
 
 // GET
 export const getInterestPoints = async () =>
   await AxiosService.getInstance().get(`/interestPoint`);
 
+export const getInterestPointsByWalkingTour = async () =>
+  await AxiosService.getInstance().get(`/interestPoint/walkingTour`);
+
 // POST
-export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
+export const postInterestPoint = async (
+  newInterestPoint: InterestPointFromApi
+) => {
   const formData = new FormData();
 
   formData.append("image", newInterestPoint.image);
@@ -19,9 +24,10 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
   formData.append("guide", newInterestPoint.guide);
   formData.append("information", newInterestPoint.information);
   formData.append("type", newInterestPoint.type);
+  formData.append("audioDesc", newInterestPoint.audioDesc);
   formData.append(
     "tags",
-    JSON.stringify(newInterestPoint.tags.map((tag) => tag.tag))
+    JSON.stringify(newInterestPoint.tags.map((tag: string) => tag.tag))
   );
 
   return await AxiosService.getInstance().post("/interestPoint", formData, {
