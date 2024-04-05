@@ -25,6 +25,9 @@ export const postInterestPoint = async (
   formData.append("information", newInterestPoint.information);
   formData.append("type", newInterestPoint.type);
   formData.append("audioDesc", newInterestPoint.audioDesc);
+  formData.append("color", newInterestPoint.color);
+  formData.append("lattitude", newInterestPoint.lattitude);
+  formData.append("longitude", newInterestPoint.longitude);
   formData.append(
     "tags",
     JSON.stringify(newInterestPoint.tags.map((tag: string) => tag.tag))
