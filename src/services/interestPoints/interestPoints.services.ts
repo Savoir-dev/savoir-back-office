@@ -77,5 +77,5 @@ export const putInterestPoint = async (interestPoint: InterestPointFromApi) => {
 };
 
 // DELETE
-export const deleteInterestPoint = async (id: number) =>
+export const deleteInterestPointByInterestPointId = async (id: number) =>
   await AxiosService.getInstance().delete(`/interestPoint/${id}`);

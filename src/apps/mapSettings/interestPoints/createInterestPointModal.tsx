@@ -26,11 +26,12 @@ import { MapSelector } from '../../generalSettings/mapSelector'
 
 interface Props {
   close: () => void
+  interestPoint?: InterestPoint
 }
 
 const formKey = 'interestPointFormState'
 
-export const CreateInterestPointModal = ({ close }: Props) => {
+export const CreateInterestPointModal = ({ close, interestPoint }: Props) => {
   const [newTag, setNewTag] = useState('')
   const [location, setLocation] = useState<{ lat: number; lng: number }>({
     lat: 41.38879,
@@ -43,23 +44,25 @@ export const CreateInterestPointModal = ({ close }: Props) => {
   }
 
   const { control, handleSubmit, reset, watch } = useForm<InterestPoint>({
-    defaultValues: {
-      type: '',
-      image: null,
-      audio: null,
-      title: '',
-      subtitle: '',
-      shortDesc: '',
-      longDesc: '',
-      duration: '',
-      information: '',
-      guide: '',
-      color: 'orange',
-      latitude: 0,
-      longitude: 0,
-      audioDesc: '',
-      tags: [],
-    },
+    defaultValues: interestPoint
+      ? interestPoint
+      : {
+          type: '',
+          image: null,
+          audio: null,
+          title: '',
+          subtitle: '',
+          shortDesc: '',
+          longDesc: '',
+          duration: '',
+          information: '',
+          guide: '',
+          color: 'orange',
+          latitude: 0,
+          longitude: 0,
+          audioDesc: '',
+          tags: [],
+        },
   })
   const { fields, append, remove } = useFieldArray({
     control,
