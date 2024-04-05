@@ -12,7 +12,7 @@ export interface InterestPoint {
   color: string;
   audioDesc: string;
   tags: string[];
-  lattitude: number;
+  latitude: number;
   longitude: number;
 }
 
@@ -31,6 +31,6 @@ export interface InterestPointFromApi {
   color: string;
   audioDesc: string;
   tags: string[];
-  lattitude: number;
+  latitude: number;
   longitude: number;
 }

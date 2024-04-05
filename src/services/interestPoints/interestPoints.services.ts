@@ -1,5 +1,8 @@
 import AxiosService from "../api";
-import { InterestPointFromApi } from "../types/interestPoints/interestPoints.type";
+import {
+  InterestPoint,
+  InterestPointFromApi,
+} from "../types/interestPoints/interestPoints.type";
 
 // GET
 export const getInterestPoints = async () =>
@@ -9,9 +12,8 @@ export const getInterestPointsByWalkingTour = async () =>
   await AxiosService.getInstance().get(`/interestPoint/walkingTour`);
 
 // POST
-export const postInterestPoint = async (
-  newInterestPoint: InterestPointFromApi
-) => {
+export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
+  console.log("newInterestPoint", newInterestPoint);
   const formData = new FormData();
 
   formData.append("image", newInterestPoint.image);
@@ -26,7 +28,7 @@ export const postInterestPoint = async (
   formData.append("type", newInterestPoint.type);
   formData.append("audioDesc", newInterestPoint.audioDesc);
   formData.append("color", newInterestPoint.color);
-  formData.append("lattitude", newInterestPoint.lattitude);
+  formData.append("lattitude", newInterestPoint.latitude);
   formData.append("longitude", newInterestPoint.longitude);
   formData.append(
     "tags",

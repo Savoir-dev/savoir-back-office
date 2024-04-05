@@ -1,4 +1,4 @@
-import { AspectRatio, Badge, Card, Flex, Text } from '@radix-ui/themes'
+import { AspectRatio, Badge, Box, Card, Flex, Text } from '@radix-ui/themes'
 import { InterestPointFromApi } from '../../../../services/types/interestPoints/interestPoints.type'
 import { space } from '../../../../styles/const'
 import AudioPlayer from 'react-h5-audio-player'
@@ -24,8 +24,21 @@ export const InterestPointCard = ({
         />
       </AspectRatio>
       <Flex style={{ marginTop: space[2] }} direction="column" gap="1">
-        <Text size="4" weight="bold">
-          {interestPoint.title}
+        <Flex align="center" gap="2">
+          <Text size="4" weight="bold">
+            {interestPoint.title}
+          </Text>
+          <Box
+            style={{
+              backgroundColor: interestPoint.color,
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+            }}
+          />
+        </Flex>
+        <Text>
+          {interestPoint.latitude}, {interestPoint.longitude}
         </Text>
         <Text size="2" weight="bold">
           {interestPoint.subtitle}
