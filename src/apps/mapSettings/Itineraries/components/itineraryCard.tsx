@@ -66,7 +66,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
                 </CustomCard>
               </StyledConnector>
             ))}
-            <StyledConnector isAddNew={true}>
+            <StyledConnector>
               <Flex direction="column" align="center" gap="2">
                 <Button
                   size="1"
