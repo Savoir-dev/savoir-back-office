@@ -10,7 +10,7 @@ export const getItineraries = async () =>
 export const postItinerary = async (newItinerary: Itinerary) => {
   const itineraryToInterestPoints = newItinerary.interestPoints.map(
     (interestPoint: InterestPointFromApi, index: number) => ({
-      uid: interestPoint.id,
+      uid: interestPoint.uid,
       order: index,
     })
   );

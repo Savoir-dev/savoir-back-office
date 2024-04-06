@@ -1,14 +1,15 @@
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
-import { Card, Flex, Text, TextField } from '@radix-ui/themes'
-import { colors, space } from '../../styles/const'
-import styled from 'styled-components'
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { Flex, Text, TextField } from "@radix-ui/themes";
+import styled from "styled-components";
+import "leaflet/dist/leaflet.css";
+
+import { colors, space } from "../../styles/const";
 
 interface Props {
-  size: number
-  location: { lat: number; lng: number }
-  setLocation: (location: { lat: number; lng: number }) => void
-  isInputs?: boolean
+  size: number;
+  location: { lat: number; lng: number };
+  setLocation: (location: { lat: number; lng: number }) => void;
+  isInputs?: boolean;
 }
 
 export const MapSelector = ({
@@ -20,12 +21,12 @@ export const MapSelector = ({
   const LocationMarker = () => {
     useMapEvents({
       click(e) {
-        setLocation(e.latlng)
+        setLocation(e.latlng);
       },
-    })
+    });
 
-    return location === null ? null : <Marker position={location}></Marker>
-  }
+    return location === null ? null : <Marker position={location}></Marker>;
+  };
 
   return (
     <Wrapper size={size}>
@@ -58,8 +59,8 @@ export const MapSelector = ({
         </Flex>
       )}
     </Wrapper>
-  )
-}
+  );
+};
 
 const MapStyled = styled(MapContainer)`
   height: 400px;
@@ -67,8 +68,8 @@ const MapStyled = styled(MapContainer)`
   border-radius: ${space[2]};
   overflow: hidden;
   border: 1px solid ${colors.deepBlack};
-`
+`;
 
 const Wrapper = styled.div<{ size: number }>`
   min-width: ${`${(props: { size: number }) => props.size}px`};
-`
+`;

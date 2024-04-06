@@ -1,8 +1,5 @@
 import AxiosService from "../api";
-import {
-  InterestPoint,
-  InterestPointFromApi,
-} from "../types/interestPoints/interestPoints.type";
+import { InterestPoint } from "../types/interestPoints/interestPoints.type";
 
 // GET
 export const getInterestPoints = async () =>
@@ -16,23 +13,29 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
   console.log("newInterestPoint", newInterestPoint);
   const formData = new FormData();
 
-  formData.append("image", newInterestPoint.image);
+  if (newInterestPoint.image && newInterestPoint.audio) {
+    formData.append("image", newInterestPoint.image);
+    formData.append("audio", newInterestPoint.audio);
+  }
+
+  formData.append("latitude", newInterestPoint.latitude);
+  formData.append("longitude", newInterestPoint.longitude);
   formData.append("title", newInterestPoint.title);
   formData.append("subtitle", newInterestPoint.subtitle);
   formData.append("shortDesc", newInterestPoint.shortDesc);
   formData.append("longDesc", newInterestPoint.longDesc);
-  formData.append("audio", newInterestPoint.audio);
   formData.append("duration", newInterestPoint.duration);
   formData.append("guide", newInterestPoint.guide);
   formData.append("information", newInterestPoint.information);
   formData.append("type", newInterestPoint.type);
   formData.append("audioDesc", newInterestPoint.audioDesc);
   formData.append("color", newInterestPoint.color);
-  formData.append("latitude", newInterestPoint.latitude);
-  formData.append("longitude", newInterestPoint.longitude);
+
   formData.append(
     "tags",
-    JSON.stringify(newInterestPoint.tags.map((tag: string) => tag.tag))
+    JSON.stringify(
+      newInterestPoint.tags.map((tagObject: { tag: string }) => tagObject.tag)
+    )
   );
 
   return await AxiosService.getInstance().post("/interestPoint", formData, {
@@ -43,15 +46,18 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
 };
 
 // PUT
-export const putInterestPoint = async (interestPoint: InterestPointFromApi) => {
+export const putInterestPoint = async (interestPoint: InterestPoint) => {
   const formData = new FormData();
 
-  formData.append("image", interestPoint.image);
+  if (interestPoint.image && interestPoint.audio) {
+    formData.append("image", interestPoint.image);
+    formData.append("audio", interestPoint.audio);
+  }
+
   formData.append("title", interestPoint.title);
   formData.append("subtitle", interestPoint.subtitle);
   formData.append("shortDesc", interestPoint.shortDesc);
   formData.append("longDesc", interestPoint.longDesc);
-  formData.append("audio", interestPoint.audio);
   formData.append("duration", interestPoint.duration);
   formData.append("guide", interestPoint.guide);
   formData.append("information", interestPoint.information);
@@ -62,11 +68,13 @@ export const putInterestPoint = async (interestPoint: InterestPointFromApi) => {
   formData.append("longitude", interestPoint.longitude);
   formData.append(
     "tags",
-    JSON.stringify(interestPoint.tags.map((tag: string) => tag.tag))
+    JSON.stringify(
+      interestPoint.tags.map((tagObject: { tag: string }) => tagObject.tag)
+    )
   );
 
   return await AxiosService.getInstance().put(
-    `/interestPoint/${interestPoint.id}`,
+    `/interestPoint/${interestPoint.uid}`,
     formData,
     {
       headers: {
@@ -77,5 +85,5 @@ export const putInterestPoint = async (interestPoint: InterestPointFromApi) => {
 };
 
 // DELETE
-export const deleteInterestPointByInterestPointId = async (id: number) =>
-  await AxiosService.getInstance().delete(`/interestPoint/${id}`);
+export const deleteInterestPointByInterestPointId = async (uid: string) =>
+  await AxiosService.getInstance().delete(`/interestPoint/${uid}`);

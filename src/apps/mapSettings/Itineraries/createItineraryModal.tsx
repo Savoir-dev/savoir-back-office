@@ -1,21 +1,17 @@
-import { useState } from 'react'
-import { Dialog, Flex, Grid, Text, TextField } from '@radix-ui/themes'
+import { useState } from "react";
+import { Dialog, Flex, Grid, Text, TextField } from "@radix-ui/themes";
+import { useQuery } from "react-query";
+import { AxiosResponse } from "axios";
 
-import { interestPointsFakeData } from '../interestPoints/interestPointList'
-import { InterestPointSelectableCard } from '../components/interestPointSelectableCard'
-import { space } from '../../../styles/const'
-import { InterestPointFromApi } from '../../../services/types/interestPoints/interestPoints.type'
-import { Button } from '../../../components/atoms/button'
-import { useQuery } from 'react-query'
-import { AxiosResponse } from 'axios'
-import {
-  getInterestPoints,
-  getInterestPointsByWalkingTour,
-} from '../../../services/interestPoints/interestPoints.services'
+import { InterestPointSelectableCard } from "../components/interestPointSelectableCard";
+import { space } from "../../../styles/const";
+import { InterestPointFromApi } from "../../../services/types/interestPoints/interestPoints.type";
+import { Button } from "../../../components/atoms/button";
+import { getInterestPoints } from "../../../services/interestPoints/interestPoints.services";
 interface Props {
-  close: () => void
-  isTitleField?: boolean
-  preSelectedInterestPoints?: InterestPointFromApi[]
+  close: () => void;
+  isTitleField?: boolean;
+  preSelectedInterestPoints?: InterestPointFromApi[];
 }
 
 export const CreateItineraryModal = ({
@@ -25,32 +21,32 @@ export const CreateItineraryModal = ({
 }: Props) => {
   const [selectedInterestPoints, setSelectedInterestPoints] = useState<
     InterestPointFromApi[]
-  >(preSelectedInterestPoints)
+  >(preSelectedInterestPoints);
 
   const toggleInterestPointSelection = (
-    interestPoint: InterestPointFromApi,
+    interestPoint: InterestPointFromApi
   ) => {
     if (isInterestPointSelected(interestPoint)) {
       setSelectedInterestPoints(
-        selectedInterestPoints.filter((point) => point !== interestPoint),
-      )
+        selectedInterestPoints.filter((point) => point !== interestPoint)
+      );
     } else {
-      setSelectedInterestPoints([...selectedInterestPoints, interestPoint])
+      setSelectedInterestPoints([...selectedInterestPoints, interestPoint]);
     }
-  }
+  };
 
   const isInterestPointSelected = (
-    interestPoint: InterestPointFromApi,
+    interestPoint: InterestPointFromApi
   ): boolean => {
-    return selectedInterestPoints.includes(interestPoint)
-  }
+    return selectedInterestPoints.includes(interestPoint);
+  };
 
   const { data: interestPointsData } = useQuery({
-    queryKey: 'interestPoints',
+    queryKey: "interestPoints",
     queryFn: () => getInterestPoints(),
     select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
-  })
-  const interestPoints = interestPointsData?.data || []
+  });
+  const interestPoints = interestPointsData?.data || [];
 
   return (
     <Dialog.Content onPointerDownOutside={close}>
@@ -69,13 +65,13 @@ export const CreateItineraryModal = ({
         </Text>
         <Flex
           direction="column"
-          style={{ overflowY: 'auto', maxHeight: '500px' }}
+          style={{ overflowY: "auto", maxHeight: "500px" }}
         >
           <Grid
             columns="2"
             gap="2"
             width="auto"
-            style={{ padding: space[2], position: 'relative' }}
+            style={{ padding: space[2], position: "relative" }}
           >
             {interestPoints.map((interestPoint, index) => (
               <InterestPointSelectableCard
@@ -96,5 +92,5 @@ export const CreateItineraryModal = ({
         </Button>
       </Flex>
     </Dialog.Content>
-  )
-}
+  );
+};

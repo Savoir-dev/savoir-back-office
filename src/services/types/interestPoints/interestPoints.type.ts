@@ -1,7 +1,8 @@
 export interface InterestPoint {
+  uid: string;
   type: string;
-  image: null | File;
-  audio: null | File;
+  image?: File;
+  audio?: File;
   title: string;
   subtitle: string;
   shortDesc: string;
@@ -11,13 +12,13 @@ export interface InterestPoint {
   guide: string;
   color: string;
   audioDesc: string;
-  tags: string[];
-  latitude: number;
-  longitude: number;
+  tags: { tag: string }[];
+  latitude: string;
+  longitude: string;
 }
 
 export interface InterestPointFromApi {
-  id: number;
+  uid: string;
   type: string;
   image: string;
   audio: string;
@@ -31,6 +32,6 @@ export interface InterestPointFromApi {
   color: string;
   audioDesc: string;
   tags: string[];
-  latitude: number;
-  longitude: number;
+  latitude: string;
+  longitude: string;
 }

@@ -1,53 +1,52 @@
 import {
   AspectRatio,
   Badge,
-  Box,
   Button,
   Card,
   Dialog,
   Flex,
   Spinner,
   Text,
-} from '@radix-ui/themes'
-import { InterestPointFromApi } from '../../../../services/types/interestPoints/interestPoints.type'
-import { space } from '../../../../styles/const'
-import AudioPlayer from 'react-h5-audio-player'
-import styled from 'styled-components'
-import { MapPin, Trash } from 'lucide-react'
-import { useState } from 'react'
-import { CreateInterestPointModal } from '../createInterestPointModal'
-import { deleteInterestPointByInterestPointId } from '../../../../services/interestPoints/interestPoints.services'
-import { useMutation } from 'react-query'
+} from "@radix-ui/themes";
+import { useMutation } from "react-query";
+import AudioPlayer from "react-h5-audio-player";
+import styled from "styled-components";
+import { MapPin, Trash } from "lucide-react";
+import { useState } from "react";
+
+import { InterestPointFromApi } from "../../../../services/types/interestPoints/interestPoints.type";
+import { space } from "../../../../styles/const";
+import { CreateInterestPointModal } from "../createInterestPointModal";
+import { deleteInterestPointByInterestPointId } from "../../../../services/interestPoints/interestPoints.services";
 
 export const InterestPointCard = ({
   interestPoint,
 }: {
-  interestPoint: InterestPointFromApi
+  interestPoint: InterestPointFromApi;
 }) => {
-  const [isEditing, setIsEditing] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isDeleteLoading, setIsDeleteLoading] = useState<boolean>(false)
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState<boolean>(false);
 
   const onCloseDialog = () => {
-    setIsEditing(false)
-    setIsDialogOpen(false)
-  }
+    setIsEditing(false);
+    setIsDialogOpen(false);
+  };
 
   const mutate = useMutation({
-    mutationFn: (id: number) => {
-      console.log('test')
-      return deleteInterestPointByInterestPointId(id)
+    mutationFn: (uid: string) => {
+      return deleteInterestPointByInterestPointId(uid);
     },
     onSuccess: () => {
-      setIsDeleteLoading(false)
-      setIsDialogOpen(false)
+      setIsDeleteLoading(false);
+      setIsDialogOpen(false);
     },
-  })
+  });
 
-  const deleteInterestPoint = (id: number) => {
-    setIsDeleteLoading(true)
-    mutate.mutate(id)
-  }
+  const deleteInterestPoint = (uid: string) => {
+    setIsDeleteLoading(true);
+    mutate.mutate(uid);
+  };
 
   return (
     <Dialog.Root open={isDialogOpen}>
@@ -64,8 +63,8 @@ export const InterestPointCard = ({
             size="1"
             color="orange"
             onClick={() => {
-              setIsEditing(true)
-              setIsDialogOpen(true)
+              setIsEditing(true);
+              setIsDialogOpen(true);
             }}
           >
             Edit
@@ -76,9 +75,9 @@ export const InterestPointCard = ({
             src={interestPoint.image}
             alt="interest point image"
             style={{
-              objectFit: 'cover',
-              width: '100%',
-              height: '100%',
+              objectFit: "cover",
+              width: "100%",
+              height: "100%",
               borderRadius: space[1],
             }}
           />
@@ -96,7 +95,7 @@ export const InterestPointCard = ({
           <Text size="2" weight="bold">
             {interestPoint.subtitle}
           </Text>
-          <Text size="2" style={{ textDecoration: 'underline' }}>
+          <Text size="2" style={{ textDecoration: "underline" }}>
             {interestPoint.type}
           </Text>
           <Text size="2">{interestPoint.shortDesc}</Text>
@@ -112,7 +111,10 @@ export const InterestPointCard = ({
         </Flex>
       </Card>
       {isEditing ? (
-        <CreateInterestPointModal interestPoint={interestPoint} />
+        <CreateInterestPointModal
+          interestPoint={interestPoint}
+          close={onCloseDialog}
+        />
       ) : (
         <Dialog.Content onPointerDownOutside={onCloseDialog}>
           <Dialog.Title>Delete user</Dialog.Title>
@@ -134,7 +136,7 @@ export const InterestPointCard = ({
             <Button
               disabled={isDeleteLoading}
               color="red"
-              onClick={() => deleteInterestPoint(interestPoint.id)}
+              onClick={() => deleteInterestPoint(interestPoint.uid)}
             >
               Delete
             </Button>
@@ -145,9 +147,9 @@ export const InterestPointCard = ({
         </Dialog.Content>
       )}
     </Dialog.Root>
-  )
-}
+  );
+};
 
 const CustomAudioStyled = styled(AudioPlayer)`
   box-shadow: none;
-`
+`;
