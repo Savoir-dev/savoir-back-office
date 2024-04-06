@@ -103,10 +103,10 @@ export const ItineraryCard: FC<ItineraryCardProps> = ({ itinerary }) => {
             </Grid>
           </Flex>
           <Flex style={{ marginTop: space[4] }} justify="end" gap="2">
-            <Button color="orange">Edit</Button>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Close
             </Button>
+            <Button color="orange">Edit</Button>
           </Flex>
         </Flex>
       </Dialog.Content>
