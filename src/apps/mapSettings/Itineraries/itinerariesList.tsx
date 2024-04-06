@@ -1,40 +1,25 @@
-import { interestPointsFakeData } from '../interestPoints/interestPointList'
-import { ItineraryCard } from './components/itineraryCard'
+import { useQuery } from "react-query";
+import { AxiosResponse } from "axios";
 
-export const itinerariesFakeData = [
-  {
-    title: 'Itinerary 1',
-    length: 2,
-    interestPoints: interestPointsFakeData,
-  },
-  {
-    title: 'Itinerary 2',
-    length: 2,
-    interestPoints: interestPointsFakeData,
-  },
-  {
-    title: 'Itinerary 4',
-    length: 2,
-    interestPoints: interestPointsFakeData,
-  },
-  {
-    title: 'Itinerary 5',
-    length: 2,
-    interestPoints: interestPointsFakeData,
-  },
-  {
-    title: 'Itinerary 6',
-    length: 2,
-    interestPoints: interestPointsFakeData,
-  },
-]
+import { Itinerary } from "../../../services/types/itineraries.type";
+import { getItineraries } from "../../../services/intineraries/itineraries.services";
+
+import { ItineraryCard } from "./components/itineraryCard";
 
 export const ItinerariesList = () => {
+  const { data: itinerariesData } = useQuery({
+    queryKey: "itineraries",
+    queryFn: () => getItineraries(),
+    select: (data): AxiosResponse<Itinerary[]> => data.data,
+  });
+
+  const itineraries = itinerariesData?.data || [];
+
   return (
     <>
-      {itinerariesFakeData.map((itinerary, index) => {
-        return <ItineraryCard key={index} itinerary={itinerary} />
+      {itineraries.map((itinerary) => {
+        return <ItineraryCard key={itinerary.uid} itinerary={itinerary} />;
       })}
     </>
-  )
-}
+  );
+};

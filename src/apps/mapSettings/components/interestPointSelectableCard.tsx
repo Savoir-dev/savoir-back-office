@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FC } from "react";
 
 import { colors, space } from "../../../styles/const";
-import { InterestPointFromApi } from "../../../services/types/interestPoints/interestPoints.type";
+import { InterestPointFromApi } from "../../../services/types/interestPoints.type";
 
 interface Props {
   interestPoint: InterestPointFromApi;

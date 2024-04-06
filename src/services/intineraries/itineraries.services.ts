@@ -1,6 +1,6 @@
 import AxiosService from "../api";
-import { InterestPointFromApi } from "../types/interestPoints/interestPoints.type";
-import { Itinerary } from "./itineraries.type";
+import { InterestPointFromApi } from "../types/interestPoints.type";
+import { Itinerary } from "../types/itineraries.type";
 
 // GET
 export const getItineraries = async () =>

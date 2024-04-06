@@ -1,12 +1,12 @@
 import AxiosService from "../api";
-import { InterestPoint } from "../types/interestPoints/interestPoints.type";
+import { InterestPoint } from "../types/interestPoints.type";
 
 // GET
 export const getInterestPoints = async () =>
   await AxiosService.getInstance().get(`/interestPoint`);
 
 export const getInterestPointsByWalkingTour = async () =>
-  await AxiosService.getInstance().get(`/interestPoint/walkingTour`);
+  await AxiosService.getInstance().get(`/interestPoint?type=walkingTour`);
 
 // POST
 export const postInterestPoint = async (newInterestPoint: InterestPoint) => {

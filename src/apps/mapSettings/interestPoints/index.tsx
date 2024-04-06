@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Box, Dialog, Flex } from "@radix-ui/themes";
 
-import { InterestPointList } from "./interestPointList";
 import { CreateInterestPointModal } from "./createInterestPointModal";
 import { Button } from "../../../components/atoms/button";
+
+import { InterestPointList } from "./interestPointList";
 
 export const InterestPointsApp = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

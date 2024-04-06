@@ -34,4 +34,5 @@ export interface InterestPointFromApi {
   tags: string[];
   latitude: string;
   longitude: string;
+  isLinkedToItinerary: boolean;
 }

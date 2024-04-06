@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "react-query";
 import { AxiosResponse } from "axios";
 
 import { PageHeader } from "../../components/molecules/pageHeader";
-import { User } from "../../services/types/users/users.type";
+import { User } from "../../services/types/users.type";
 import { space } from "../../styles/const";
 import {
   deleteUserById,

@@ -1,23 +1,18 @@
 import { Card, DataList, Dialog, Flex, Grid, Text } from "@radix-ui/themes";
 import { MapPin, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, FC } from "react";
 
-import { InterestPoint } from "../../../../services/types/interestPoints/interestPoints.type";
+import { Itinerary } from "../../../../services/types/itineraries.type";
 import styled from "styled-components";
 import { colors, space } from "../../../../styles/const";
 import { InterestPointSelectableCard } from "../../components/interestPointSelectableCard";
-import { interestPointsFakeData } from "../../interestPoints/interestPointList";
 import { Button } from "../../../../components/atoms/button";
 
-interface Props {
-  itinerary: {
-    title: string;
-    length: number;
-    interestPoints: InterestPoint[];
-  };
+interface ItineraryCardProps {
+  itinerary: Itinerary;
 }
 
-export const ItineraryCard = ({ itinerary }: Props) => {
+export const ItineraryCard: FC<ItineraryCardProps> = ({ itinerary }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   return (
     <Dialog.Root open={isDialogOpen}>
@@ -39,7 +34,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
                 <DataList.Label minWidth="40px">Title</DataList.Label>
                 <DataList.Value>
                   <Text size="3" weight="bold">
-                    {itinerary.title}
+                    {itinerary.name}
                   </Text>
                 </DataList.Value>
               </DataList.Item>
@@ -96,7 +91,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
               width="auto"
               style={{ padding: space[2], position: "relative" }}
             >
-              {interestPointsFakeData.map((interestPoint, index) => (
+              {itinerary.interestPoints.map((interestPoint, index) => (
                 <InterestPointSelectableCard
                   key={index}
                   order={itinerary.interestPoints.indexOf(interestPoint) + 1}

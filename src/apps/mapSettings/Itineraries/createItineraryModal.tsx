@@ -5,9 +5,9 @@ import { AxiosResponse } from "axios";
 
 import { InterestPointSelectableCard } from "../components/interestPointSelectableCard";
 import { space } from "../../../styles/const";
-import { InterestPointFromApi } from "../../../services/types/interestPoints/interestPoints.type";
+import { InterestPointFromApi } from "../../../services/types/interestPoints.type";
 import { Button } from "../../../components/atoms/button";
-import { getInterestPoints } from "../../../services/interestPoints/interestPoints.services";
+import { getInterestPointsByWalkingTour } from "../../../services/interestPoints/interestPoints.services";
 interface Props {
   close: () => void;
   isTitleField?: boolean;
@@ -42,8 +42,8 @@ export const CreateItineraryModal = ({
   };
 
   const { data: interestPointsData } = useQuery({
-    queryKey: "interestPoints",
-    queryFn: () => getInterestPoints(),
+    queryKey: "interestPointsByWalkingTour",
+    queryFn: () => getInterestPointsByWalkingTour(),
     select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
   });
   const interestPoints = interestPointsData?.data || [];

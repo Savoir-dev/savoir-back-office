@@ -12,17 +12,18 @@ import { useMutation } from "react-query";
 import AudioPlayer from "react-h5-audio-player";
 import styled from "styled-components";
 import { MapPin, Trash } from "lucide-react";
-import { useState } from "react";
+import { useState, FC } from "react";
 
-import { InterestPointFromApi } from "../../../../services/types/interestPoints/interestPoints.type";
+import { InterestPointFromApi } from "../../../../services/types/interestPoints.type";
 import { space } from "../../../../styles/const";
 import { CreateInterestPointModal } from "../createInterestPointModal";
 import { deleteInterestPointByInterestPointId } from "../../../../services/interestPoints/interestPoints.services";
 
-export const InterestPointCard = ({
-  interestPoint,
-}: {
+interface InterestPointCardProps {
   interestPoint: InterestPointFromApi;
+}
+export const InterestPointCard: FC<InterestPointCardProps> = ({
+  interestPoint,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -56,9 +57,12 @@ export const InterestPointCard = ({
           position="absolute"
           style={{ zIndex: 1, top: space[5], left: space[5] }}
         >
-          <Button size="1" color="red" onClick={() => setIsDialogOpen(true)}>
-            <Trash size={16} />
-          </Button>
+          {!interestPoint.isLinkedToItinerary && (
+            <Button size="1" color="red" onClick={() => setIsDialogOpen(true)}>
+              <Trash size={16} />
+            </Button>
+          )}
+
           <Button
             size="1"
             color="orange"
@@ -110,8 +114,9 @@ export const InterestPointCard = ({
           <Text size="2">By {interestPoint.guide}</Text>
         </Flex>
       </Card>
-      {isEditing ? (
+      {isDialogOpen ? (
         <CreateInterestPointModal
+          isEditing={isEditing}
           interestPoint={interestPoint}
           close={onCloseDialog}
         />

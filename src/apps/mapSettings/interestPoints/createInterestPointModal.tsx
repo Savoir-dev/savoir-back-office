@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, FC } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { Image, Mic, Plus, X } from "lucide-react";
 import {
@@ -19,18 +19,16 @@ import {
 } from "react-hook-form";
 
 import { space } from "../../../styles/const";
-import { postInterestPoint } from "../../../services/interestPoints/interestPoints.services";
+import {
+  postInterestPoint,
+  putInterestPoint,
+} from "../../../services/interestPoints/interestPoints.services";
 import {
   InterestPoint,
   InterestPointFromApi,
-} from "../../../services/types/interestPoints/interestPoints.type";
+} from "../../../services/types/interestPoints.type";
 import { Button } from "../../../components/atoms/button";
 import { MapSelector } from "../../generalSettings/mapSelector";
-
-interface Props {
-  close: () => void;
-  interestPoint?: InterestPointFromApi;
-}
 
 const formKey = "interestPointFormState";
 
@@ -45,7 +43,17 @@ const convertToFormInterestPoint = (
   tags: ip.tags.map((tag) => ({ tag })),
 });
 
-export const CreateInterestPointModal = ({ close, interestPoint }: Props) => {
+interface InterestPointForm {
+  isEditing?: boolean;
+  interestPoint?: InterestPointFromApi;
+  close: () => void;
+}
+
+export const CreateInterestPointModal: FC<InterestPointForm> = ({
+  isEditing,
+  interestPoint,
+  close,
+}) => {
   const [newTag, setNewTag] = useState("");
   const [location, setLocation] = useState<{ lat: number; lng: number }>({
     lat: 41.38879,
@@ -86,9 +94,10 @@ export const CreateInterestPointModal = ({ close, interestPoint }: Props) => {
   });
 
   const queryClient = useQueryClient();
+
   const { mutate } = useMutation({
     mutationFn: (data: InterestPoint) => {
-      return postInterestPoint(data);
+      return isEditing ? putInterestPoint(data) : postInterestPoint(data);
     },
     onSuccess: () => {
       sessionStorage.removeItem(formKey);
@@ -498,7 +507,7 @@ export const CreateInterestPointModal = ({ close, interestPoint }: Props) => {
           <Button variant="outline" onClick={close}>
             Close
           </Button>
-          <Button color="orange">Create</Button>
+          <Button color="orange">{isEditing ? "Edit" : "Create"}</Button>
         </Flex>
       </form>
     </Dialog.Content>
