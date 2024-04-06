@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Dialog, Flex, Grid, Text, TextField } from "@radix-ui/themes";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AxiosResponse } from "axios";
 
 import { InterestPointSelectableCard } from "../components/interestPointSelectableCard";
 import { space } from "../../../styles/const";
 import { InterestPointFromApi } from "../../../services/types/interestPoints.type";
+import { PostItinerary } from "../../../services/types/itineraries.type";
 import { Button } from "../../../components/atoms/button";
 import { getInterestPointsByWalkingTour } from "../../../services/interestPoints/interestPoints.services";
+import { postItinerary } from "../../../services/intineraries/itineraries.services";
 interface Props {
   close: () => void;
   isTitleField?: boolean;
@@ -19,9 +21,13 @@ export const CreateItineraryModal = ({
   isTitleField,
   preSelectedInterestPoints = [],
 }: Props) => {
+  const [name, setName] = useState("");
+  const [duration, setDuration] = useState("");
   const [selectedInterestPoints, setSelectedInterestPoints] = useState<
     InterestPointFromApi[]
   >(preSelectedInterestPoints);
+
+  const queryClient = useQueryClient();
 
   const toggleInterestPointSelection = (
     interestPoint: InterestPointFromApi
@@ -41,11 +47,32 @@ export const CreateItineraryModal = ({
     return selectedInterestPoints.includes(interestPoint);
   };
 
+  const { mutate } = useMutation({
+    mutationFn: (data: PostItinerary) => {
+      return postItinerary(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["itineraries"],
+      });
+      close();
+    },
+  });
+
   const { data: interestPointsData } = useQuery({
     queryKey: "interestPointsByWalkingTour",
     queryFn: () => getInterestPointsByWalkingTour(),
     select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
   });
+
+  const handleSubmit = () => {
+    mutate({
+      name,
+      duration,
+      interestPoints: selectedInterestPoints,
+    });
+  };
+
   const interestPoints = interestPointsData?.data || [];
 
   return (
@@ -57,9 +84,21 @@ export const CreateItineraryModal = ({
             <Text size="2" weight="bold">
               Title
             </Text>
-            <TextField.Root placeholder="Title..." />
+            <TextField.Root
+              placeholder="Title..."
+              onChange={(e) => setName(e.target.value)}
+            />
           </Flex>
         )}
+        <Flex direction="column">
+          <Text size="2" weight="bold">
+            Duration
+          </Text>
+          <TextField.Root
+            placeholder="2h30"
+            onChange={(e) => setDuration(e.target.value)}
+          />
+        </Flex>
         <Text size="2" weight="bold">
           Interest points
         </Text>
@@ -86,9 +125,11 @@ export const CreateItineraryModal = ({
         </Flex>
       </Flex>
       <Flex style={{ marginTop: space[4] }} justify="end" gap="2">
-        <Button color="orange">Create</Button>
         <Button variant="outline" onClick={close}>
           Close
+        </Button>
+        <Button color="orange" onClick={handleSubmit}>
+          Create
         </Button>
       </Flex>
     </Dialog.Content>
