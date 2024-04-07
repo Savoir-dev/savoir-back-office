@@ -24,3 +24,18 @@ class GeneralSettingsAppRoutes {
   generalSettings = () => generalSettings;
 }
 export const generalSettingsAppRoutes = new GeneralSettingsAppRoutes();
+
+// Auth pages
+export const auth = "/auth";
+export const login = "login";
+export const register = "register";
+export const forgetPassword = "forget-password";
+
+class AuthAppRoutes {
+  auth = () => auth;
+  login = () => `${auth}/${login}`;
+  register = () => `${auth}/${register}`;
+  forgetPassword = () => `${auth}/${forgetPassword}`;
+}
+
+export const authAppRoutes = new AuthAppRoutes();

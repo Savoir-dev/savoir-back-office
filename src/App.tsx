@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter } from "react-router-dom";
-import styled from "styled-components";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { useState, useEffect } from 'react'
+import { BrowserRouter } from 'react-router-dom'
+import styled from 'styled-components'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { Navbar } from "./navigation/navbar";
-import { AppRouter } from "./navigation/router";
+import { Navbar } from './navigation/navbar'
+import { AppRouter } from './navigation/router'
+import { AuthApp } from './apps/auth'
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000,
       retry: (failureCount) => {
-        return failureCount < 3;
+        return failureCount < 3
       },
       refetchOnWindowFocus: true,
     },
@@ -20,42 +21,49 @@ const queryClient = new QueryClient({
       onSuccess: () => {},
       onSettled: () => {},
       retry: (failureCount) => {
-        return failureCount < 2;
+        return failureCount < 2
       },
     },
   },
-});
+})
 
 function App() {
+  const [isLogged, setIsLogged] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(() => {
-    const storedIsCollapsed = localStorage.getItem("isCollapsed");
-    return storedIsCollapsed ? JSON.parse(storedIsCollapsed) : false;
-  });
+    const storedIsCollapsed = localStorage.getItem('isCollapsed')
+    return storedIsCollapsed ? JSON.parse(storedIsCollapsed) : false
+  })
 
-  const toggleSidebar = () => setIsCollapsed(!isCollapsed);
+  const toggleSidebar = () => setIsCollapsed(!isCollapsed)
 
   useEffect(() => {
-    localStorage.setItem("isCollapsed", JSON.stringify(isCollapsed));
-  }, [isCollapsed]);
+    localStorage.setItem('isCollapsed', JSON.stringify(isCollapsed))
+  }, [isCollapsed])
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Navbar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
-        <AppWrapperStyled isCollapsed={isCollapsed}>
-          <AppRouter />
-        </AppWrapperStyled>
-      </BrowserRouter>
+      {isLogged ? (
+        <BrowserRouter>
+          <Navbar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
+          <AppWrapperStyled isCollapsed={isCollapsed}>
+            <AppRouter />
+          </AppWrapperStyled>
+        </BrowserRouter>
+      ) : (
+        <BrowserRouter>
+          <AuthApp />
+        </BrowserRouter>
+      )}
     </QueryClientProvider>
-  );
+  )
 }
 
 const AppWrapperStyled = styled.div<{ isCollapsed: boolean }>`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  margin-left: ${(props) => (props.isCollapsed ? "80px" : "200px")};
+  margin-left: ${(props) => (props.isCollapsed ? '80px' : '200px')};
   transition: 0.3s ease;
-`;
+`
 
-export default App;
+export default App
