@@ -6,34 +6,34 @@ import {
   Text,
   TextArea,
   TextField,
-} from "@radix-ui/themes";
-import styled from "styled-components";
-import { useEffect, useState, FC } from "react";
-import { useMutation, useQueryClient } from "react-query";
-import { Image, Mic, Plus, X } from "lucide-react";
+} from '@radix-ui/themes'
+import styled from 'styled-components'
+import { useEffect, useState, FC } from 'react'
+import { useMutation, useQueryClient } from 'react-query'
+import { Image, Mic, Plus, X } from 'lucide-react'
 import {
   useForm,
   useFieldArray,
   Controller,
   SubmitHandler,
-} from "react-hook-form";
+} from 'react-hook-form'
 
-import { space } from "../../../styles/const";
+import { space } from '../../../styles/const'
 import {
   postInterestPoint,
   putInterestPoint,
-} from "../../../services/interestPoints/interestPoints.services";
+} from '../../../services/interestPoints/interestPoints.services'
 import {
   InterestPoint,
   InterestPointFromApi,
-} from "../../../services/types/interestPoints.type";
-import { Button } from "../../../components/atoms/button";
-import { MapSelector } from "../../generalSettings/mapSelector";
+} from '../../../services/types/interestPoints.type'
+import { Button } from '../../../components/atoms/button'
+import { MapSelector } from '../../generalSettings/mapSelector'
 
-const formKey = "interestPointFormState";
+const formKey = 'interestPointFormState'
 
 const convertToFormInterestPoint = (
-  ip: InterestPointFromApi
+  ip: InterestPointFromApi,
 ): InterestPoint => ({
   ...ip,
   latitude: ip.latitude.toString(),
@@ -41,12 +41,12 @@ const convertToFormInterestPoint = (
   image: undefined,
   audio: undefined,
   tags: ip.tags.map((tag) => ({ tag })),
-});
+})
 
 interface InterestPointForm {
-  isEditing?: boolean;
-  interestPoint?: InterestPointFromApi;
-  close: () => void;
+  isEditing?: boolean
+  interestPoint?: InterestPointFromApi
+  close: () => void
 }
 
 export const CreateInterestPointModal: FC<InterestPointForm> = ({
@@ -54,126 +54,129 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
   interestPoint,
   close,
 }) => {
-  const [newTag, setNewTag] = useState("");
+  const [newTag, setNewTag] = useState('')
   const [location, setLocation] = useState<{ lat: number; lng: number }>({
     lat: 41.38879,
     lng: 2.15899,
-  });
+  })
 
   const truncateName = (name: string, length = 10) => {
-    const maxLength = length;
-    return name.length > maxLength
-      ? `${name.substring(0, maxLength)}...`
-      : name;
-  };
+    const maxLength = length
+    return name.length > maxLength ? `${name.substring(0, maxLength)}...` : name
+  }
 
   const { control, handleSubmit, reset, watch } = useForm<InterestPoint>({
     defaultValues: interestPoint
       ? convertToFormInterestPoint(interestPoint)
       : {
-          type: "",
+          type: '',
           image: undefined,
           audio: undefined,
-          title: "",
-          subtitle: "",
-          shortDesc: "",
-          longDesc: "",
-          duration: "",
-          information: "",
-          guide: "",
-          color: "orange",
-          latitude: "",
-          longitude: "",
-          audioDesc: "",
+          title: '',
+          subtitle: '',
+          shortDesc: '',
+          longDesc: '',
+          duration: '',
+          information: '',
+          guide: '',
+          color: 'orange',
+          latitude: '',
+          longitude: '',
+          audioDesc: '',
           tags: [],
         },
-  });
+  })
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "tags",
-  });
+    name: 'tags',
+  })
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
     mutationFn: (data: InterestPoint) => {
-      return isEditing ? putInterestPoint(data) : postInterestPoint(data);
+      return isEditing ? putInterestPoint(data) : postInterestPoint(data)
     },
     onSuccess: () => {
-      sessionStorage.removeItem(formKey);
+      sessionStorage.removeItem(formKey)
       queryClient.invalidateQueries({
-        queryKey: ["interestPoints"],
-      });
-      close();
+        queryKey: ['interestPoints'],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['interestPointsByWalkingTour'],
+      })
+      close()
     },
-  });
+  })
 
   const onSubmit: SubmitHandler<InterestPoint> = (data) => {
     const adjustedData = {
       ...data,
       latitude: location.lat.toString(),
       longitude: location.lng.toString(),
-    };
-    mutate(adjustedData);
-  };
+    }
+    mutate(adjustedData)
+  }
 
   const validation = {
     title: {
-      required: "Title is required",
+      required: 'Title is required',
     },
     subtitle: {
-      required: "Subtitle is required",
+      required: 'Subtitle is required',
     },
     type: {
-      required: "Type is required",
+      required: 'Type is required',
     },
     image: {
-      required: "Image is required",
+      required: 'Image is required',
     },
     audio: {
-      required: "Audio is required",
+      required: 'Audio is required',
     },
     shortDesc: {
-      required: "Short description is required",
+      required: 'Short description is required',
     },
     longDesc: {
-      required: "Long description is required",
+      required: 'Long description is required',
     },
     duration: {
-      required: "Duration is required",
+      required: 'Duration is required',
     },
     information: {
-      required: "Information is required",
+      required: 'Information is required',
     },
     guide: {
-      required: "Guide is required",
+      required: 'Guide is required',
     },
-  };
+  }
 
   const handleAddTag = () => {
     if (newTag) {
-      append({ tag: newTag });
-      setNewTag("");
+      append({ tag: newTag })
+      setNewTag('')
     }
-  };
+  }
 
   useEffect(() => {
-    const savedFormState = sessionStorage.getItem(formKey);
+    const savedFormState = sessionStorage.getItem(formKey)
     if (savedFormState) {
-      reset({ ...JSON.parse(savedFormState), image: null });
+      reset({ ...JSON.parse(savedFormState), image: null })
     }
-  }, [reset]);
+  }, [reset])
 
   useEffect(() => {
     const subscription = watch((value) => {
-      sessionStorage.setItem(formKey, JSON.stringify(value));
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
+      sessionStorage.setItem(formKey, JSON.stringify(value))
+    })
+    return () => subscription.unsubscribe()
+  }, [watch])
 
   return (
-    <Dialog.Content onPointerDownOutside={close} maxWidth={"1200px"}>
-      <Dialog.Title>Create a new interest point</Dialog.Title>
+    <Dialog.Content onPointerDownOutside={close} maxWidth={'1200px'}>
+      <Dialog.Title>
+        {isEditing ? 'Edit' : 'Create'} a new interest point
+      </Dialog.Title>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex justify="between">
           <Flex direction="column">
@@ -186,7 +189,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                 <Controller
                   control={control}
                   name="image"
-                  rules={validation["image"]}
+                  rules={validation['image']}
                   render={({ field: { onChange, value } }) => (
                     <FilePicker as="label">
                       {value ? (
@@ -208,7 +211,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                           <Image color="orange" size={30} />
                           <input
                             type="file"
-                            style={{ display: "none" }}
+                            style={{ display: 'none' }}
                             accept="image/*"
                             onChange={(e) =>
                               e.target.files && onChange(e.target.files[0])
@@ -222,7 +225,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                 <Controller
                   control={control}
                   name="audio"
-                  rules={validation["audio"]}
+                  rules={validation['audio']}
                   render={({ field: { onChange, value } }) => (
                     <FilePicker as="label">
                       {value ? (
@@ -244,7 +247,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                           <Mic color="orange" size={30} />
                           <input
                             type="file"
-                            style={{ display: "none" }}
+                            style={{ display: 'none' }}
                             accept="audio/*"
                             onChange={(e) =>
                               e.target.files && onChange(e.target.files[0])
@@ -277,7 +280,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                   name="audioDesc"
                   render={({ field: { onChange, value } }) => (
                     <TextArea
-                      style={{ width: "100%" }}
+                      style={{ width: '100%' }}
                       value={value}
                       onChange={onChange}
                     />
@@ -291,12 +294,12 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                   Type
                 </Text>
                 <Controller
-                  rules={validation["type"]}
+                  rules={validation['type']}
                   control={control}
                   name="type"
                   render={({ field: { value, onChange } }) => (
                     <Select.Root value={value} onValueChange={onChange}>
-                      {" "}
+                      {' '}
                       <Select.Trigger />
                       <Select.Content>
                         <Select.Item value="whatIsThis">
@@ -317,7 +320,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                     Title
                   </Text>
                   <Controller
-                    rules={validation["title"]}
+                    rules={validation['title']}
                     control={control}
                     name="title"
                     render={({ field: { onChange, value } }) => (
@@ -334,7 +337,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                     subtitle
                   </Text>
                   <Controller
-                    rules={validation["subtitle"]}
+                    rules={validation['subtitle']}
                     control={control}
                     name="subtitle"
                     render={({ field: { onChange, value } }) => (
@@ -352,7 +355,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                   </Text>
                   <Controller
                     control={control}
-                    rules={validation["duration"]}
+                    rules={validation['duration']}
                     name="duration"
                     render={({ field: { onChange, value } }) => (
                       <TextField.Root
@@ -371,7 +374,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                   </Text>
                   <Controller
                     control={control}
-                    rules={validation["shortDesc"]}
+                    rules={validation['shortDesc']}
                     name="shortDesc"
                     render={({ field: { onChange, value } }) => (
                       <TextArea value={value} onChange={onChange} />
@@ -401,8 +404,8 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                     value={newTag}
                     placeholder="Food..."
                     onChange={(e) => {
-                      e.preventDefault();
-                      setNewTag(e.target.value);
+                      e.preventDefault()
+                      setNewTag(e.target.value)
                     }}
                   />
                   <Button color="orange" onClick={handleAddTag}>
@@ -420,7 +423,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                       <X
                         onClick={() => remove(index)}
                         size={10}
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: 'pointer' }}
                       />
                     </Badge>
                   ))}
@@ -432,7 +435,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                   </Text>
                   <Controller
                     control={control}
-                    rules={validation["information"]}
+                    rules={validation['information']}
                     name="information"
                     render={({ field: { onChange, value } }) => (
                       <TextField.Root value={value} onChange={onChange} />
@@ -446,7 +449,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                 </Text>
                 <Controller
                   control={control}
-                  rules={validation["guide"]}
+                  rules={validation['guide']}
                   name="guide"
                   render={({ field: { onChange, value } }) => (
                     <TextField.Root value={value} onChange={onChange} />
@@ -463,8 +466,8 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                 lng: location.lng || 2.15899,
               }}
               setLocation={({ lat, lng }) => {
-                console.log("test");
-                setLocation({ lat: lat, lng: lng });
+                console.log('test')
+                setLocation({ lat: lat, lng: lng })
               }}
             />
             <Flex direction="row" gap="2">
@@ -507,12 +510,12 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
           <Button variant="outline" onClick={close}>
             Close
           </Button>
-          <Button color="orange">{isEditing ? "Edit" : "Create"}</Button>
+          <Button color="orange">{isEditing ? 'Edit' : 'Create'}</Button>
         </Flex>
       </form>
     </Dialog.Content>
-  );
-};
+  )
+}
 
 const FilePicker = styled.div`
   display: flex;
@@ -526,4 +529,4 @@ const FilePicker = styled.div`
   border: 1px solid orange;
   border-radius: ${space[2]};
   cursor: pointer;
-`;
+`

@@ -1,83 +1,99 @@
-import { useState } from "react";
-import { Dialog, Flex, Grid, Text, TextField } from "@radix-ui/themes";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { AxiosResponse } from "axios";
+import { useState } from 'react'
+import { Dialog, Flex, Grid, Text, TextField } from '@radix-ui/themes'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { AxiosResponse } from 'axios'
 
-import { InterestPointSelectableCard } from "../components/interestPointSelectableCard";
-import { space } from "../../../styles/const";
-import { InterestPointFromApi } from "../../../services/types/interestPoints.type";
-import { PostItinerary } from "../../../services/types/itineraries.type";
-import { Button } from "../../../components/atoms/button";
-import { getInterestPointsByWalkingTour } from "../../../services/interestPoints/interestPoints.services";
-import { postItinerary } from "../../../services/intineraries/itineraries.services";
+import { InterestPointSelectableCard } from '../components/interestPointSelectableCard'
+import { space } from '../../../styles/const'
+import { InterestPointFromApi } from '../../../services/types/interestPoints.type'
+import {
+  Itinerary,
+  PostItinerary,
+} from '../../../services/types/itineraries.type'
+import { Button } from '../../../components/atoms/button'
+import { getInterestPointsByWalkingTour } from '../../../services/interestPoints/interestPoints.services'
+import {
+  postItinerary,
+  putItinerary,
+} from '../../../services/intineraries/itineraries.services'
 interface Props {
-  close: () => void;
-  isTitleField?: boolean;
-  preSelectedInterestPoints?: InterestPointFromApi[];
+  close: () => void
+  isTitleField?: boolean
+  preSelectedInterestPoints?: InterestPointFromApi[]
+  itinerary?: Itinerary
 }
 
 export const CreateItineraryModal = ({
   close,
   isTitleField,
   preSelectedInterestPoints = [],
+  itinerary,
 }: Props) => {
-  const [name, setName] = useState("");
-  const [duration, setDuration] = useState("");
+  const [name, setName] = useState(itinerary?.name || '')
+  const [duration, setDuration] = useState(itinerary?.duration || '')
   const [selectedInterestPoints, setSelectedInterestPoints] = useState<
     InterestPointFromApi[]
-  >(preSelectedInterestPoints);
+  >(preSelectedInterestPoints)
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const toggleInterestPointSelection = (
-    interestPoint: InterestPointFromApi
+    interestPoint: InterestPointFromApi,
   ) => {
     if (isInterestPointSelected(interestPoint)) {
       setSelectedInterestPoints(
-        selectedInterestPoints.filter((point) => point !== interestPoint)
-      );
+        selectedInterestPoints.filter(
+          (selectedPoint) => selectedPoint.uid !== interestPoint.uid,
+        ),
+      )
     } else {
-      setSelectedInterestPoints([...selectedInterestPoints, interestPoint]);
+      setSelectedInterestPoints([...selectedInterestPoints, interestPoint])
     }
-  };
+  }
 
   const isInterestPointSelected = (
-    interestPoint: InterestPointFromApi
+    interestPoint: InterestPointFromApi,
   ): boolean => {
-    return selectedInterestPoints.includes(interestPoint);
-  };
+    return selectedInterestPoints.some(
+      (selectedPoint) => selectedPoint.uid === interestPoint.uid,
+    )
+  }
 
   const { mutate } = useMutation({
-    mutationFn: (data: PostItinerary) => {
-      return postItinerary(data);
+    mutationFn: (data: PostItinerary | Itinerary) => {
+      return itinerary
+        ? putItinerary(data as Itinerary)
+        : postItinerary(data as PostItinerary)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["itineraries"],
-      });
-      close();
+        queryKey: ['itineraries'],
+      })
+      close()
     },
-  });
+  })
 
   const { data: interestPointsData } = useQuery({
-    queryKey: "interestPointsByWalkingTour",
+    queryKey: 'interestPointsByWalkingTour',
     queryFn: () => getInterestPointsByWalkingTour(),
     select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
-  });
+  })
 
   const handleSubmit = () => {
     mutate({
       name,
       duration,
       interestPoints: selectedInterestPoints,
-    });
-  };
+    })
+  }
 
-  const interestPoints = interestPointsData?.data || [];
+  const interestPoints = interestPointsData?.data || []
 
   return (
     <Dialog.Content onPointerDownOutside={close}>
-      <Dialog.Title>Create a new itinerary</Dialog.Title>
+      <Dialog.Title>
+        {itinerary ? 'Edit' : 'Create'} a new itinerary
+      </Dialog.Title>
       <Flex direction="column" gap="2">
         {isTitleField && (
           <Flex direction="column">
@@ -86,6 +102,7 @@ export const CreateItineraryModal = ({
             </Text>
             <TextField.Root
               placeholder="Title..."
+              value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </Flex>
@@ -96,6 +113,7 @@ export const CreateItineraryModal = ({
           </Text>
           <TextField.Root
             placeholder="2h30"
+            value={duration}
             onChange={(e) => setDuration(e.target.value)}
           />
         </Flex>
@@ -104,18 +122,22 @@ export const CreateItineraryModal = ({
         </Text>
         <Flex
           direction="column"
-          style={{ overflowY: "auto", maxHeight: "500px" }}
+          style={{ overflowY: 'auto', maxHeight: '500px' }}
         >
           <Grid
             columns="2"
             gap="2"
             width="auto"
-            style={{ padding: space[2], position: "relative" }}
+            style={{ padding: space[2], position: 'relative' }}
           >
-            {interestPoints.map((interestPoint, index) => (
+            {interestPoints.map((interestPoint) => (
               <InterestPointSelectableCard
-                key={index}
-                order={selectedInterestPoints.indexOf(interestPoint) + 1}
+                key={interestPoint.uid}
+                order={
+                  selectedInterestPoints.findIndex(
+                    (selectedPoint) => selectedPoint.uid === interestPoint.uid,
+                  ) + 1
+                }
                 interestPoint={interestPoint}
                 selected={isInterestPointSelected(interestPoint)}
                 onSelect={() => toggleInterestPointSelection(interestPoint)}
@@ -129,9 +151,9 @@ export const CreateItineraryModal = ({
           Close
         </Button>
         <Button color="orange" onClick={handleSubmit}>
-          Create
+          {itinerary ? 'Edit' : 'Create'}
         </Button>
       </Flex>
     </Dialog.Content>
-  );
-};
+  )
+}
