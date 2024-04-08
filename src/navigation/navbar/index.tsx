@@ -32,7 +32,7 @@ const Tabs = [
   {
     name: "Map settings",
     icon: MapPinned,
-    path: mapSettingsAppRoutes.mapSettings(),
+    path: mapSettingsAppRoutes.basePath,
   },
 ];
 

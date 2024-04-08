@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import { Navbar } from "./navigation/navbar";
 import { AppRouter } from "./navigation/router";
-import { AuthApp } from "./apps/auth";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +27,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const [isLogged, setIsLogged] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const storedIsCollapsed = localStorage.getItem("isCollapsed");
     return storedIsCollapsed ? JSON.parse(storedIsCollapsed) : false;
@@ -40,20 +38,21 @@ function App() {
     localStorage.setItem("isCollapsed", JSON.stringify(isCollapsed));
   }, [isCollapsed]);
 
+  const location = useLocation();
+
+  const isAuthRoute = location.pathname.startsWith("/auth");
+
+  const ContentWrapper = isAuthRoute ? React.Fragment : AppWrapperStyled;
+
   return (
     <QueryClientProvider client={queryClient}>
-      {isLogged ? (
-        <BrowserRouter>
-          <Navbar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
-          <AppWrapperStyled $isCollapsed={isCollapsed}>
-            <AppRouter />
-          </AppWrapperStyled>
-        </BrowserRouter>
-      ) : (
-        <BrowserRouter>
-          <AuthApp />
-        </BrowserRouter>
+      {!isAuthRoute && (
+        <Navbar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
       )}
+
+      <ContentWrapper $isCollapsed={isCollapsed}>
+        <AppRouter />
+      </ContentWrapper>
     </QueryClientProvider>
   );
 }

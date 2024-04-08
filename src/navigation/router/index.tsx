@@ -1,37 +1,60 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { UsersApp } from '../../apps/users'
+import { Route, Routes } from "react-router-dom";
+
+import { UsersApp } from "../../apps/users";
 import {
-  interestPoints,
   mapSettingsAppRoutes,
   usersAppRoutes,
-  itineraries,
   generalSettingsAppRoutes,
-} from '../internalRouter'
-import { MapSettingsApp } from '../../apps/mapSettings'
-import { InterestPointsApp } from '../../apps/mapSettings/interestPoints'
-import { ItinerariesApp } from '../../apps/mapSettings/Itineraries'
-import { GeneralSettingsApp } from '../../apps/generalSettings'
+  authAppRoutes,
+} from "../internalRouter";
+import { MapSettingsApp } from "../../apps/mapSettings";
+import { InterestPointsApp } from "../../apps/mapSettings/interestPoints";
+import { ItinerariesApp } from "../../apps/mapSettings/Itineraries";
+import { GeneralSettingsApp } from "../../apps/generalSettings";
+import { AuthApp } from "../../apps/auth";
 
+import { ProtectedRoute } from "./protectedRoute";
+import { DefaultRouteRedirect } from "./DefaultRouteRedirect";
 export const AppRouter = () => {
   return (
     <Routes>
+      <Route path={authAppRoutes.login()} element={<AuthApp />} />
+
       <Route
         path={generalSettingsAppRoutes.generalSettings()}
-        element={<GeneralSettingsApp />}
+        element={
+          <ProtectedRoute>
+            <GeneralSettingsApp />
+          </ProtectedRoute>
+        }
       />
-      <Route path={usersAppRoutes.users()} element={<UsersApp />} />
       <Route
-        path={mapSettingsAppRoutes.mapSettings()}
-        element={<MapSettingsApp />}
+        path={usersAppRoutes.users()}
+        element={
+          <ProtectedRoute>
+            <UsersApp />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={mapSettingsAppRoutes.basePath}
+        element={
+          <ProtectedRoute>
+            <MapSettingsApp />
+          </ProtectedRoute>
+        }
       >
         <Route index element={<ItinerariesApp />} />
-        <Route path={itineraries} element={<ItinerariesApp />} />
-        <Route path={interestPoints} element={<InterestPointsApp />} />
+        <Route
+          path={mapSettingsAppRoutes.itineraries()}
+          element={<ItinerariesApp />}
+        />
+        <Route
+          path={mapSettingsAppRoutes.interestPoints()}
+          element={<InterestPointsApp />}
+        />
       </Route>
-      <Route
-        path="/"
-        element={<Navigate replace to={usersAppRoutes.users()} />}
-      />
+      <Route path="/" element={<DefaultRouteRedirect />} />
     </Routes>
-  )
-}
+  );
+};

@@ -1,4 +1,3 @@
-import { itineraries } from "../../navigation/internalRouter";
 import AxiosService from "../api";
 import { InterestPointFromApi } from "../types/interestPoints.type";
 import { Itinerary, PostItinerary } from "../types/itineraries.type";
