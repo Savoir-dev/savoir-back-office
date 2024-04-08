@@ -1,12 +1,11 @@
-import AxiosService from "../api";
+import api from "../api";
 import { InterestPoint } from "../types/interestPoints.type";
 
 // GET
-export const getInterestPoints = async () =>
-  await AxiosService.getInstance().get(`/interestPoint`);
+export const getInterestPoints = async () => await api.get(`/interestPoint`);
 
 export const getInterestPointsByWalkingTour = async () =>
-  await AxiosService.getInstance().get(`/interestPoint?type=walkingTour`);
+  await api.get(`/interestPoint?type=walkingTour`);
 
 // POST
 export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
@@ -38,7 +37,7 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
     )
   );
 
-  return await AxiosService.getInstance().post("/interestPoint", formData, {
+  return await api.post("/interestPoint", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -73,17 +72,13 @@ export const putInterestPoint = async (interestPoint: InterestPoint) => {
     )
   );
 
-  return await AxiosService.getInstance().put(
-    `/interestPoint/${interestPoint.uid}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  return await api.put(`/interestPoint/${interestPoint.uid}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 // DELETE
 export const deleteInterestPointByInterestPointId = async (uid: string) =>
-  await AxiosService.getInstance().delete(`/interestPoint/${uid}`);
+  await api.delete(`/interestPoint/${uid}`);

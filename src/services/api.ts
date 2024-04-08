@@ -1,43 +1,54 @@
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 
-type SuccessResponse<T> = {
-  status: "success";
-  data: T;
-};
+export const baseApi = axios.create({
+  baseURL: import.meta.env.VITE_API_SERVER_URL,
+});
 
-type ErrorResponse = {
-  status: "error";
-  error: {
-    message: string;
-    code: number;
-  };
-};
+baseApi.interceptors.request.use(
+  async (config) => {
+    const token = await localStorage.getItem("accessToken");
 
-export type APIResponse<T> = SuccessResponse<T> | ErrorResponse;
-class AxiosService {
-  private static instance: AxiosInstance;
-
-  public static getInstance(): AxiosInstance {
-    if (!AxiosService.instance) {
-      AxiosService.instance = axios.create({
-        baseURL: import.meta.env.VITE_API_SERVER_URL,
-      });
-    }
-
-    return AxiosService.instance;
-  }
-
-  public static updateToken(token: string | null): void {
     if (token) {
-      AxiosService.getInstance().defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${token}`;
-    } else {
-      delete AxiosService.getInstance().defaults.headers.common[
-        "Authorization"
-      ];
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-}
+);
 
-export default AxiosService;
+baseApi.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    console.log("error :", error);
+    const originalRequest = error.config;
+
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const refreshToken = await localStorage.getItem("refreshToken");
+        const response = await baseApi.post("/auth/refreshToken", {
+          refreshToken,
+        });
+
+        await localStorage.setItem(
+          "accessToken",
+          response.data.jwtAuthenticated
+        );
+        await localStorage.setItem("refreshToken", response.data.refreshToken);
+
+        baseApi.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${response.data.accessToken}`;
+        return baseApi(originalRequest);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default baseApi;

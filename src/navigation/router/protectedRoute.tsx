@@ -7,10 +7,9 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const isAuthenticated = Boolean(localStorage.getItem("token")); // Ou votre logique d'authentification
+  const isAuthenticated = Boolean(localStorage.getItem("jwtAuthenticated"));
 
   if (!isAuthenticated) {
-    // Rediriger vers la page de connexion si non authentifié
     return <Navigate to={authAppRoutes.login()} replace />;
   }
 

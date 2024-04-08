@@ -1,5 +1,3 @@
-// RouteDefinitions.ts
-
 export type UriType = string;
 
 class AppRoute {

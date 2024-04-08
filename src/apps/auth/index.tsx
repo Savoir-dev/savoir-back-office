@@ -37,8 +37,13 @@ export const AuthApp: FC = () => {
     mutationFn: (data: { email: string; password: string }) => {
       return login(data);
     },
-    onSuccess: ({ data }: { data: string }) => {
-      localStorage.setItem("token", data);
+    onSuccess: ({
+      data,
+    }: {
+      data: { jwtAuthenticated: string; refreshToken: string };
+    }) => {
+      localStorage.setItem("jwtAuthenticated", data.jwtAuthenticated);
+      localStorage.setItem("refreshToken", data.refreshToken);
       navigate(generalSettingsAppRoutes.generalSettings());
     },
   });

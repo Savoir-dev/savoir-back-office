@@ -6,7 +6,7 @@ export const DefaultRouteRedirect: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("jwtAuthenticated");
     console.log(token);
     if (token) {
       navigate(generalSettingsAppRoutes.generalSettings());
