@@ -28,7 +28,7 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const [isLogged, setIsLogged] = useState(true);
+  const [isLogged, setIsLogged] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const storedIsCollapsed = localStorage.getItem("isCollapsed");
     return storedIsCollapsed ? JSON.parse(storedIsCollapsed) : false;

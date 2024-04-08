@@ -1,35 +1,29 @@
-import { Flex, Text, TextField } from '@radix-ui/themes'
-import { Controller, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
-import { authAppRoutes } from '../../../navigation/internalRouter'
-import { CustomCard, Wrapper } from '../style'
-import { Button } from '../../../components/atoms/button'
+import { Flex, Text, TextField } from "@radix-ui/themes";
+import { Controller, useForm } from "react-hook-form";
+
+import { CustomCard, Wrapper } from "../style";
+import { Button } from "../../../components/atoms/button";
 
 export const LoginPage = () => {
   const { control } = useForm({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
-  })
+  });
 
   const validation = {
     email: {
-      required: 'This field is required',
+      required: "This field is required",
       pattern: {
         value: /^\S+@\S+$/i,
-        message: 'Invalid email',
+        message: "Invalid email",
       },
     },
     password: {
-      required: 'This field is required',
+      required: "This field is required",
     },
-  }
-
-  const navigate = useNavigate()
-  const onRegisterNavigate = () => {
-    navigate(authAppRoutes.register())
-  }
+  };
 
   return (
     <Wrapper>
@@ -37,11 +31,11 @@ export const LoginPage = () => {
         <form>
           <Flex direction="column" gap="2">
             <Flex direction="column">
-              <Text size="2" weight="bold">
+              <Text size="3" weight="bold">
                 Email
               </Text>
               <Controller
-                rules={validation['email']}
+                rules={validation["email"]}
                 control={control}
                 name="email"
                 render={({ field: { onChange, value } }) => (
@@ -54,15 +48,16 @@ export const LoginPage = () => {
               />
             </Flex>
             <Flex direction="column">
-              <Text size="2" weight="bold">
+              <Text size="3" weight="bold">
                 Password
               </Text>
               <Controller
-                rules={validation['password']}
+                rules={validation["password"]}
                 control={control}
                 name="password"
                 render={({ field: { onChange, value } }) => (
                   <TextField.Root
+                    type="password"
                     placeholder=""
                     value={value}
                     onChange={onChange}
@@ -71,21 +66,13 @@ export const LoginPage = () => {
               />
             </Flex>
             <Flex width="100%" direction="column" align="center" gap="1">
-              <Button style={{ width: '100%' }} color="orange" type="submit">
+              <Button style={{ width: "100%" }} color="orange" type="submit">
                 Login
               </Button>
-              <Button
-                onClick={onRegisterNavigate}
-                variant="outline"
-                style={{ width: '100%' }}
-                color="orange"
-                type="submit"
-              >
-                Register
-              </Button>
+
               <Text
                 color="orange"
-                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                style={{ textDecoration: "underline", cursor: "pointer" }}
               >
                 Forget password
               </Text>
@@ -94,5 +81,5 @@ export const LoginPage = () => {
         </form>
       </CustomCard>
     </Wrapper>
-  )
-}
+  );
+};

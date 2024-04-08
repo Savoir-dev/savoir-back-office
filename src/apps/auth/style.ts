@@ -4,6 +4,7 @@ import { Card } from "@radix-ui/themes";
 
 export const CustomCard = styled(Card)`
   background-color: white;
+  width: 400px;
 `;
 
 export const Wrapper = styled.div`

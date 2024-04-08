@@ -34,7 +34,6 @@ export const forgetPassword = "forget-password";
 class AuthAppRoutes {
   auth = () => auth;
   login = () => `${auth}/${login}`;
-  register = () => `${auth}/${register}`;
   forgetPassword = () => `${auth}/${forgetPassword}`;
 }
 
