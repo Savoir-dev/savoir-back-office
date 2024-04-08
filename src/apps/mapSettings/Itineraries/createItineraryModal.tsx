@@ -1,26 +1,26 @@
-import { useState } from 'react'
-import { Dialog, Flex, Grid, Text, TextField } from '@radix-ui/themes'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { AxiosResponse } from 'axios'
+import { useState } from "react";
+import { Dialog, Flex, Grid, Text, TextField } from "@radix-ui/themes";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { AxiosResponse } from "axios";
 
-import { InterestPointSelectableCard } from '../components/interestPointSelectableCard'
-import { space } from '../../../styles/const'
-import { InterestPointFromApi } from '../../../services/types/interestPoints.type'
+import { InterestPointSelectableCard } from "../components/interestPointSelectableCard";
+import { space } from "../../../styles/const";
+import { InterestPointFromApi } from "../../../services/types/interestPoints.type";
 import {
   Itinerary,
   PostItinerary,
-} from '../../../services/types/itineraries.type'
-import { Button } from '../../../components/atoms/button'
-import { getInterestPointsByWalkingTour } from '../../../services/interestPoints/interestPoints.services'
+} from "../../../services/types/itineraries.type";
+import { Button } from "../../../components/atoms/button";
+import { getInterestPointsByWalkingTour } from "../../../services/interestPoints/interestPoints.services";
 import {
   postItinerary,
   putItinerary,
-} from '../../../services/intineraries/itineraries.services'
+} from "../../../services/intineraries/itineraries.services";
 interface Props {
-  close: () => void
-  isTitleField?: boolean
-  preSelectedInterestPoints?: InterestPointFromApi[]
-  itinerary?: Itinerary
+  close: () => void;
+  isTitleField?: boolean;
+  preSelectedInterestPoints?: InterestPointFromApi[];
+  itinerary?: Itinerary;
 }
 
 export const CreateItineraryModal = ({
@@ -29,70 +29,72 @@ export const CreateItineraryModal = ({
   preSelectedInterestPoints = [],
   itinerary,
 }: Props) => {
-  const [name, setName] = useState(itinerary?.name || '')
-  const [duration, setDuration] = useState(itinerary?.duration || '')
+  const [name, setName] = useState(itinerary?.name || "");
+  const [duration, setDuration] = useState(itinerary?.duration || "");
   const [selectedInterestPoints, setSelectedInterestPoints] = useState<
     InterestPointFromApi[]
-  >(preSelectedInterestPoints)
+  >(preSelectedInterestPoints);
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const toggleInterestPointSelection = (
-    interestPoint: InterestPointFromApi,
+    interestPoint: InterestPointFromApi
   ) => {
     if (isInterestPointSelected(interestPoint)) {
       setSelectedInterestPoints(
         selectedInterestPoints.filter(
-          (selectedPoint) => selectedPoint.uid !== interestPoint.uid,
-        ),
-      )
+          (selectedPoint) => selectedPoint.uid !== interestPoint.uid
+        )
+      );
     } else {
-      setSelectedInterestPoints([...selectedInterestPoints, interestPoint])
+      setSelectedInterestPoints([...selectedInterestPoints, interestPoint]);
     }
-  }
+  };
 
   const isInterestPointSelected = (
-    interestPoint: InterestPointFromApi,
+    interestPoint: InterestPointFromApi
   ): boolean => {
     return selectedInterestPoints.some(
-      (selectedPoint) => selectedPoint.uid === interestPoint.uid,
-    )
-  }
+      (selectedPoint) => selectedPoint.uid === interestPoint.uid
+    );
+  };
 
   const { mutate } = useMutation({
     mutationFn: (data: PostItinerary | Itinerary) => {
+      console.log("foo");
       return itinerary
-        ? putItinerary(data as Itinerary)
-        : postItinerary(data as PostItinerary)
+        ? putItinerary(itinerary.uid, data as Itinerary)
+        : postItinerary(data as PostItinerary);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['itineraries'],
-      })
-      close()
+        queryKey: ["itineraries"],
+      });
+      close();
     },
-  })
+  });
 
   const { data: interestPointsData } = useQuery({
-    queryKey: 'interestPointsByWalkingTour',
+    queryKey: "interestPointsByWalkingTour",
     queryFn: () => getInterestPointsByWalkingTour(),
     select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
-  })
+  });
 
   const handleSubmit = () => {
+    console.log("foijfio");
     mutate({
       name,
       duration,
       interestPoints: selectedInterestPoints,
-    })
-  }
+    });
+  };
 
-  const interestPoints = interestPointsData?.data || []
+  const interestPoints = interestPointsData?.data || [];
 
   return (
     <Dialog.Content onPointerDownOutside={close}>
       <Dialog.Title>
-        {itinerary ? 'Edit' : 'Create'} a new itinerary
+        {itinerary ? "Edit" : "Create"} a new itinerary
       </Dialog.Title>
       <Flex direction="column" gap="2">
         {isTitleField && (
@@ -122,20 +124,20 @@ export const CreateItineraryModal = ({
         </Text>
         <Flex
           direction="column"
-          style={{ overflowY: 'auto', maxHeight: '500px' }}
+          style={{ overflowY: "auto", maxHeight: "500px" }}
         >
           <Grid
             columns="2"
             gap="2"
             width="auto"
-            style={{ padding: space[2], position: 'relative' }}
+            style={{ padding: space[2], position: "relative" }}
           >
             {interestPoints.map((interestPoint) => (
               <InterestPointSelectableCard
                 key={interestPoint.uid}
                 order={
                   selectedInterestPoints.findIndex(
-                    (selectedPoint) => selectedPoint.uid === interestPoint.uid,
+                    (selectedPoint) => selectedPoint.uid === interestPoint.uid
                   ) + 1
                 }
                 interestPoint={interestPoint}
@@ -151,9 +153,9 @@ export const CreateItineraryModal = ({
           Close
         </Button>
         <Button color="orange" onClick={handleSubmit}>
-          {itinerary ? 'Edit' : 'Create'}
+          {itinerary ? "Edit" : "Create"}
         </Button>
       </Flex>
     </Dialog.Content>
-  )
-}
+  );
+};

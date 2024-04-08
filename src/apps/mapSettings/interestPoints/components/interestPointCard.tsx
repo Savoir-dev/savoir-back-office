@@ -5,10 +5,9 @@ import {
   Card,
   Dialog,
   Flex,
-  Spinner,
   Text,
 } from "@radix-ui/themes";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import AudioPlayer from "react-h5-audio-player";
 import styled from "styled-components";
 import { MapPin, Trash } from "lucide-react";
@@ -25,28 +24,30 @@ interface InterestPointCardProps {
 export const InterestPointCard: FC<InterestPointCardProps> = ({
   interestPoint,
 }) => {
+  const queryClient = useQueryClient();
+
   const [isEditing, setIsEditing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isDeleteLoading, setIsDeleteLoading] = useState<boolean>(false);
 
   const onCloseDialog = () => {
     setIsEditing(false);
     setIsDialogOpen(false);
   };
 
-  const mutate = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: (uid: string) => {
       return deleteInterestPointByInterestPointId(uid);
     },
     onSuccess: () => {
-      setIsDeleteLoading(false);
       setIsDialogOpen(false);
+      queryClient.invalidateQueries({
+        queryKey: ["interestPoints"],
+      });
     },
   });
 
   const deleteInterestPoint = (uid: string) => {
-    setIsDeleteLoading(true);
-    mutate.mutate(uid);
+    mutate(uid);
   };
 
   return (
@@ -114,7 +115,7 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
           <Text size="2">By {interestPoint.guide}</Text>
         </Flex>
       </Card>
-      {isDialogOpen ? (
+      {isDialogOpen && isEditing ? (
         <CreateInterestPointModal
           isEditing={isEditing}
           interestPoint={interestPoint}
@@ -137,15 +138,19 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
             </Flex>
           </Card>
           <Flex gap="2" justify="end" align="center">
-            {isDeleteLoading && <Spinner />}
             <Button
-              disabled={isDeleteLoading}
+              loading={isLoading}
+              disabled={isLoading}
               color="red"
               onClick={() => deleteInterestPoint(interestPoint.uid)}
             >
               Delete
             </Button>
-            <Button variant="outline" onClick={onCloseDialog}>
+            <Button
+              variant="outline"
+              onClick={onCloseDialog}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
           </Flex>

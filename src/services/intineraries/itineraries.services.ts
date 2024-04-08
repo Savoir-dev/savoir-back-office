@@ -1,3 +1,4 @@
+import { itineraries } from "../../navigation/internalRouter";
 import AxiosService from "../api";
 import { InterestPointFromApi } from "../types/interestPoints.type";
 import { Itinerary, PostItinerary } from "../types/itineraries.type";
@@ -24,7 +25,7 @@ export const postItinerary = async (newItinerary: PostItinerary) => {
 };
 
 // PUT
-export const putItinerary = async (itinerary: Itinerary) => {
+export const putItinerary = async (uid: string, itinerary: Itinerary) => {
   const itineraryToInterestPoints = itinerary.interestPoints.map(
     (interestPoint: InterestPointFromApi, index: number) => ({
       uid: interestPoint.uid,
@@ -38,7 +39,7 @@ export const putItinerary = async (itinerary: Itinerary) => {
   };
 
   return await AxiosService.getInstance().put(
-    `/itinerary/${itinerary.uid}`,
+    `/itinerary/${uid}`,
     updatedItinerary
   );
 };

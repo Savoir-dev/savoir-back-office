@@ -1,20 +1,20 @@
-import { Card, DataList, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
-import { MapPin, Plus } from 'lucide-react'
-import { useState } from 'react'
+import { Card, DataList, Dialog, Flex, Grid, Text } from "@radix-ui/themes";
+import { MapPin, Plus } from "lucide-react";
+import { useState } from "react";
 
-import styled from 'styled-components'
-import { colors, space } from '../../../../styles/const'
-import { Button } from '../../../../components/atoms/button'
-import { CreateItineraryModal } from '../createItineraryModal'
-import { Itinerary } from '../../../../services/types/itineraries.type'
+import styled from "styled-components";
+import { colors, space } from "../../../../styles/const";
+import { Button } from "../../../../components/atoms/button";
+import { CreateItineraryModal } from "../createItineraryModal";
+import { Itinerary } from "../../../../services/types/itineraries.type";
 
 interface Props {
-  itinerary: Itinerary
+  itinerary: Itinerary;
 }
 
 export const ItineraryCard = ({ itinerary }: Props) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const onCloseDialog = () => setIsDialogOpen(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const onCloseDialog = () => setIsDialogOpen(false);
   return (
     <Dialog.Root open={isDialogOpen}>
       <Card size="3">
@@ -62,7 +62,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
                 </CustomCard>
               </StyledConnector>
             ))}
-            <StyledConnector isAddNew={true}>
+            <StyledConnector>
               <Flex direction="column" align="center" gap="2">
                 <Button
                   size="1"
@@ -83,8 +83,8 @@ export const ItineraryCard = ({ itinerary }: Props) => {
         preSelectedInterestPoints={itinerary.interestPoints}
       />
     </Dialog.Root>
-  )
-}
+  );
+};
 
 const ScrollableFlex = styled(Flex)`
   margin-top: ${space[5]};
@@ -92,14 +92,14 @@ const ScrollableFlex = styled(Flex)`
   display: flex;
   overflow-x: auto;
   flex-wrap: nowrap;
-`
+`;
 
 const CustomCard = styled.div`
   min-width: 100px;
   padding: ${space[2]};
   border-radius: 4px;
   border: 1px solid ${colors.lightSmoke};
-`
+`;
 
 const StyledConnector = styled.div`
   display: flex;
@@ -107,8 +107,8 @@ const StyledConnector = styled.div`
   min-width: 150px;
 
   &:not(:last-child)::after {
-    content: '';
+    content: "";
     width: 100%;
     border-bottom: 1px dashed;
   }
-`
+`;

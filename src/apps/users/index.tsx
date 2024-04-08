@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import { Card, Dialog, Flex, Spinner, Table, Text } from "@radix-ui/themes";
 import { useMutation, useQuery } from "react-query";
 import { AxiosResponse } from "axios";
@@ -29,7 +29,7 @@ const users = [
   },
 ];
 
-export const UsersApp = () => {
+export const UsersApp: FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | undefined>();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState<boolean>(false);
@@ -44,7 +44,6 @@ export const UsersApp = () => {
     queryFn: () => getAllUsers(),
     select: (data: AxiosResponse<User[]>) => data,
   });
-  console.log(data);
 
   const deleteUser = useMutation({
     mutationFn: (id: string | undefined) => {
@@ -86,17 +85,15 @@ export const UsersApp = () => {
               <Table.Cell>{user.phoneNumber}</Table.Cell>
               <Table.Cell>{user.city}</Table.Cell>
               <Table.Cell>
-                <Dialog.Trigger>
-                  <Button
-                    onClick={() => {
-                      setSelectedUser(user);
-                      setIsDialogOpen(true);
-                    }}
-                    color="red"
-                  >
-                    Delete
-                  </Button>
-                </Dialog.Trigger>
+                <Button
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setIsDialogOpen(true);
+                  }}
+                  color="red"
+                >
+                  Delete
+                </Button>
               </Table.Cell>
             </Table.Row>
           ))}

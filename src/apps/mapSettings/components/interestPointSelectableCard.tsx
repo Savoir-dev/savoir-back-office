@@ -24,7 +24,7 @@ export const InterestPointSelectableCard: FC<Props> = ({
       <Card
         key={interestPoint.title}
         style={{ cursor: "pointer" }}
-        isSelected={selected}
+        $isSelected={selected}
         onClick={onSelect}
       >
         <AspectRatio ratio={12 / 5}>
@@ -79,10 +79,10 @@ const OrderNumber = styled.div`
   z-index: 1;
 `;
 
-const Card = styled.div<{ isSelected: boolean }>`
+const Card = styled.div<{ $isSelected: boolean }>`
   padding: ${space[3]};
   border-radius: ${space[2]};
-  border: ${(props) => (props.isSelected ? "orange" : colors.lightSmoke)} 1px
+  border: ${(props) => (props.$isSelected ? "orange" : colors.lightSmoke)} 1px
     solid;
   background-color: white;
   display: flex;

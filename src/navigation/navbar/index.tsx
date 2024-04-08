@@ -1,51 +1,51 @@
-import { FC } from 'react'
-import styled from 'styled-components'
-import { useNavigate } from 'react-router-dom'
+import { FC } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import {
   Users as UsersIcon,
   MapPinned,
   Smartphone,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react'
-import { Flex, Text } from '@radix-ui/themes'
+} from "lucide-react";
+import { Flex, Text } from "@radix-ui/themes";
 
-import { colors, space } from '../../styles/const'
+import { colors, space } from "../../styles/const";
 import {
   generalSettingsAppRoutes,
   mapSettingsAppRoutes,
   usersAppRoutes,
-} from '../internalRouter'
-import { isLocation } from '../../utils/isLocation'
+} from "../internalRouter";
+import { isLocation } from "../../utils/isLocation";
 
 const Tabs = [
   {
-    name: 'General settings',
+    name: "General settings",
     icon: Smartphone,
     path: generalSettingsAppRoutes.generalSettings(),
   },
   {
-    name: 'Users settings',
+    name: "Users settings",
     icon: UsersIcon,
     path: usersAppRoutes.users(),
   },
   {
-    name: 'Map settings',
+    name: "Map settings",
     icon: MapPinned,
     path: mapSettingsAppRoutes.mapSettings(),
   },
-]
+];
 
 interface NavbarProps {
-  isCollapsed: boolean
-  toggleSidebar: () => void
+  isCollapsed: boolean;
+  toggleSidebar: () => void;
 }
 
 export const Navbar: FC<NavbarProps> = ({ isCollapsed, toggleSidebar }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
-    <NavbarStyled isCollapsed={isCollapsed}>
+    <NavbarStyled $isCollapsed={isCollapsed}>
       <div onClick={toggleSidebar}>
         {isCollapsed ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
       </div>
@@ -55,8 +55,8 @@ export const Navbar: FC<NavbarProps> = ({ isCollapsed, toggleSidebar }) => {
           align="center"
           gap="2"
           key={tab.name}
-          isActive={isLocation(tab.path)}
-          isCollapsed={isCollapsed}
+          $isActive={isLocation(tab.path)}
+          $isCollapsed={isCollapsed}
           onClick={() => navigate(tab.path)}
         >
           <div style={{ flexShrink: 0 }}>
@@ -68,8 +68,8 @@ export const Navbar: FC<NavbarProps> = ({ isCollapsed, toggleSidebar }) => {
           {!isCollapsed && (
             <Text
               size="2"
-              color={isLocation(tab.path) ? 'amber' : 'gray'}
-              style={{ whiteSpace: 'nowrap' }}
+              color={isLocation(tab.path) ? "amber" : "gray"}
+              style={{ whiteSpace: "nowrap" }}
             >
               {tab.name}
             </Text>
@@ -77,26 +77,26 @@ export const Navbar: FC<NavbarProps> = ({ isCollapsed, toggleSidebar }) => {
         </NavbarItem>
       ))}
     </NavbarStyled>
-  )
-}
+  );
+};
 
-const NavbarStyled = styled.nav<{ isCollapsed: boolean }>`
+const NavbarStyled = styled.nav<{ $isCollapsed: boolean }>`
   display: flex;
   gap: ${space[2]};
   padding: ${space[5]};
   background-color: ${colors.pumpkin};
   flex-direction: column;
   position: fixed;
-  width: ${(props) => (props.isCollapsed ? '80px' : '200px')};
+  width: ${(props) => (props.$isCollapsed ? "80px" : "200px")};
   transition: 0.3s ease;
   height: 100%;
-`
+`;
 
-const NavbarItem = styled(Flex)<{ isActive: boolean; isCollapsed: boolean }>`
+const NavbarItem = styled(Flex)<{ $isActive: boolean; $isCollapsed: boolean }>`
   cursor: pointer;
   background-color: ${(props) =>
-    props.isActive ? colors.lightSmoke : 'transparent'};
+    props.$isActive ? colors.lightSmoke : "transparent"};
   padding: ${space[1]};
   border-radius: ${space[1]};
-  width: ${(props) => (props.isCollapsed ? '32px' : 'auto')};
-`
+  width: ${(props) => (props.$isCollapsed ? "32px" : "auto")};
+`;
