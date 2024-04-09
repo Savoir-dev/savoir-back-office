@@ -1,25 +1,46 @@
-import { Card, DataList, Dialog, Flex, Grid, Text } from "@radix-ui/themes";
-import { MapPin, Plus } from "lucide-react";
-import { useState } from "react";
+import { Card, DataList, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
+import { MapPin, Plus } from 'lucide-react'
+import { useState } from 'react'
 
-import styled from "styled-components";
-import { colors, space } from "../../../../styles/const";
-import { Button } from "../../../../components/atoms/button";
-import { CreateItineraryModal } from "../createItineraryModal";
-import { Itinerary } from "../../../../services/types/itineraries.type";
+import styled from 'styled-components'
+import { colors, space } from '../../../../styles/const'
+import { Button } from '../../../../components/atoms/button'
+import { CreateItineraryModal } from '../createItineraryModal'
+import { Itinerary } from '../../../../services/types/itineraries.type'
+import { useMutation, useQueryClient } from 'react-query'
+import { deleteItinerary } from '../../../../services/intineraries/itineraries.services'
 
 interface Props {
-  itinerary: Itinerary;
+  itinerary: Itinerary
 }
 
 export const ItineraryCard = ({ itinerary }: Props) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const onCloseDialog = () => setIsDialogOpen(false);
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const onCloseDialog = () => setIsDialogOpen(false)
+  const queryClient = useQueryClient()
+
+  const { mutate } = useMutation({
+    mutationFn: (uid: string | undefined) => {
+      return deleteItinerary(uid)
+    },
+    onSuccess: () => {
+      setIsDialogOpen(false)
+      queryClient.invalidateQueries({
+        queryKey: ['itineraries'],
+      })
+    },
+  })
+
+  const onDeleteItinerary = (uid: string) => {
+    mutate(uid)
+  }
+
   return (
     <Dialog.Root open={isDialogOpen}>
       <Card size="3">
         <Flex direction="column" gap="3">
-          <div>
+          <Flex gap="2">
             <Button
               size="1"
               color="orange"
@@ -28,7 +49,18 @@ export const ItineraryCard = ({ itinerary }: Props) => {
             >
               <Text weight="bold">Edit</Text>
             </Button>
-          </div>
+            <Button
+              size="1"
+              color="red"
+              variant="outline"
+              onClick={() => {
+                setIsDeleting(true)
+                setIsDialogOpen(true)
+              }}
+            >
+              <Text weight="bold">Delete</Text>
+            </Button>
+          </Flex>
           <Flex direction="column">
             <DataList.Root>
               <DataList.Item align="center">
@@ -76,15 +108,52 @@ export const ItineraryCard = ({ itinerary }: Props) => {
           </ScrollableFlex>
         </Flex>
       </Card>
-      <CreateItineraryModal
-        isTitleField
-        close={onCloseDialog}
-        itinerary={itinerary}
-        preSelectedInterestPoints={itinerary.interestPoints}
-      />
+      {isDeleting ? (
+        <Dialog.Content>
+          <Dialog.Title>Delete Itinerary</Dialog.Title>
+          <Dialog.Description>
+            Are you sure you want to delete this itinerary?
+          </Dialog.Description>
+          <Card style={{ margin: `${space[4]} 0` }}>
+            <Flex justify="between">
+              <Flex direction="column">
+                <Text size="3" weight="bold">
+                  Name
+                </Text>
+                <Text size="3">{itinerary.name}</Text>
+              </Flex>
+            </Flex>
+          </Card>
+          <Flex gap="2" justify="end" align="center">
+            <Button
+              color="red"
+              onClick={() => onDeleteItinerary(itinerary.uid)}
+            >
+              Delete
+            </Button>
+            <Button
+              color="orange"
+              variant="outline"
+              onClick={() => {
+                setIsDeleting(false)
+                onCloseDialog()
+              }}
+            >
+              Cancel
+            </Button>
+          </Flex>
+        </Dialog.Content>
+      ) : (
+        <CreateItineraryModal
+          isTitleField
+          close={onCloseDialog}
+          itinerary={itinerary}
+          preSelectedInterestPoints={itinerary.interestPoints}
+        />
+      )}
     </Dialog.Root>
-  );
-};
+  )
+}
 
 const ScrollableFlex = styled(Flex)`
   margin-top: ${space[5]};
@@ -92,14 +161,14 @@ const ScrollableFlex = styled(Flex)`
   display: flex;
   overflow-x: auto;
   flex-wrap: nowrap;
-`;
+`
 
 const CustomCard = styled.div`
   min-width: 100px;
   padding: ${space[2]};
   border-radius: 4px;
   border: 1px solid ${colors.lightSmoke};
-`;
+`
 
 const StyledConnector = styled.div`
   display: flex;
@@ -107,8 +176,8 @@ const StyledConnector = styled.div`
   min-width: 150px;
 
   &:not(:last-child)::after {
-    content: "";
+    content: '';
     width: 100%;
     border-bottom: 1px dashed;
   }
-`;
+`

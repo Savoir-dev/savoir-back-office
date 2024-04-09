@@ -8,7 +8,6 @@ import { Button } from '../../components/atoms/button'
 import { MapSelector } from './mapSelector'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { AxiosResponse } from 'axios'
 import {
   getSettings,
   putSettings,

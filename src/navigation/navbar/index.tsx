@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Newspaper,
+  LogOut,
 } from 'lucide-react'
 import { Flex, Text } from '@radix-ui/themes'
 
@@ -83,6 +84,22 @@ export const Navbar: FC<NavbarProps> = ({ isCollapsed, toggleSidebar }) => {
           )}
         </NavbarItem>
       ))}
+      <NavbarItem
+        align="center"
+        gap="2"
+        $isCollapsed={isCollapsed}
+        onClick={() => {
+          localStorage.removeItem('jwtAuthenticated')
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          navigate('/')
+        }}
+      >
+        <LogOut color={colors.deepBlack} />
+        <Text size="2" color="gray">
+          Logout
+        </Text>
+      </NavbarItem>
     </NavbarStyled>
   )
 }
@@ -99,7 +116,10 @@ const NavbarStyled = styled.nav<{ $isCollapsed: boolean }>`
   height: 100%;
 `
 
-const NavbarItem = styled(Flex)<{ $isActive: boolean; $isCollapsed: boolean }>`
+const NavbarItem = styled(Flex)<{
+  $isActive?: boolean
+  $isCollapsed?: boolean
+}>`
   cursor: pointer;
   background-color: ${(props) =>
     props.$isActive ? colors.lightSmoke : 'transparent'};

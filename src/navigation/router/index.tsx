@@ -17,8 +17,8 @@ import { AuthApp } from '../../apps/auth'
 import { ProtectedRoute } from './protectedRoute'
 import { DefaultRouteRedirect } from './DefaultRouteRedirect'
 import { GuideAndNewsApp } from '../../apps/guidesAndNews'
-import { NewsApp } from '../../apps/guidesAndNews/newsApp'
-import { GuideApp } from '../../apps/guidesAndNews/guidesApp'
+import { NewsApp } from '../../apps/guidesAndNews/news/newsApp'
+import { GuideApp } from '../../apps/guidesAndNews/guides/guidesApp'
 export const AppRouter = () => {
   return (
     <Routes>

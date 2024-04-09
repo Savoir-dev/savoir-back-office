@@ -38,3 +38,7 @@ export const putItinerary = async (uid: string, itinerary: Itinerary) => {
 
   return await api.put(`/itinerary/${uid}`, updatedItinerary);
 };
+
+// DELETE
+export const deleteItinerary = async (uid: string | undefined) =>
+  await api.delete(`/itinerary/${uid}`);
