@@ -1,58 +1,56 @@
-import { Card, Flex, Text } from '@radix-ui/themes'
-import styled from 'styled-components'
+import { Card, Flex, Text } from "@radix-ui/themes";
+import styled from "styled-components";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { PageHeader } from '../../components/molecules/pageHeader'
-import { colors, space } from '../../styles/const'
-import { Button } from '../../components/atoms/button'
+import { PageHeader } from "../../components/molecules/pageHeader";
+import { colors, space } from "../../styles/const";
+import { Button } from "../../components/atoms/button";
 
-import { MapSelector } from './mapSelector'
-import { useEffect, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { AxiosResponse } from 'axios'
+import { MapSelector } from "./mapSelector";
+
 import {
   getSettings,
   putSettings,
-} from '../../services/settings/settings.services'
-import { ISettings } from '../../services/types/settings.type'
+} from "../../services/settings/settings.services";
+import { ISettings } from "../../services/types/settings.type";
 
 export const GeneralSettingsApp = () => {
-  const queryClient = useQueryClient()
-  const { data: settingsData, isSuccess } = useQuery({
-    queryKey: 'settings',
+  const [welcomePageImage, setWelcomePageImage] = useState<File | null>(null);
+  const [location, setLocation] = useState({ lat: 0, lng: 0 });
+
+  const queryClient = useQueryClient();
+  const { data: settingsData, isLoading } = useQuery({
+    queryKey: "settings",
     queryFn: getSettings,
+    onSuccess: ({ data }) => {
+      setWelcomePageImage(data[0].welcomePageImage);
+      setLocation({ lat: data[0].latitude, lng: data[0].longitude });
+    },
     select: (data) => data.data,
-  })
-
-  const [welcomePageImage, setWelcomePageImage] = useState('')
-  const [location, setLocation] = useState({ lat: 0, lng: 0 })
-
-  useEffect(() => {
-    if (isSuccess && settingsData?.data[0]) {
-      const settings = settingsData.data[0]
-      setWelcomePageImage(settings.welcomePageImage)
-      setLocation({ lat: settings.latitude, lng: settings.longitude })
-    }
-  }, [isSuccess, settingsData])
+  });
 
   const { mutate } = useMutation({
     mutationFn: (settings: ISettings) => {
-      return putSettings(settings)
+      return putSettings(settings);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['settings'],
-      })
+        queryKey: ["settings"],
+      });
     },
-  })
+  });
 
   const onSave = () => {
     mutate({
       uid: settingsData.data[0].uid,
       welcomePageImage,
-      latitude: location.lat,
-      longitude: location.lng,
-    })
-  }
+      latitude: location.lat.toString(),
+      longitude: location.lng.toString(),
+    });
+  };
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <>
@@ -76,7 +74,7 @@ export const GeneralSettingsApp = () => {
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
-                        setWelcomePageImage(e.target.files[0])
+                        setWelcomePageImage(e.target.files[0]);
                       }}
                     />
                   </CustomButton>
@@ -105,19 +103,19 @@ export const GeneralSettingsApp = () => {
         <Button
           color="orange"
           size="3"
-          style={{ width: '100px', marginRight: space[2] }}
+          style={{ width: "100px", marginRight: space[2] }}
           onClick={onSave}
         >
           Save
         </Button>
       </Flex>
     </>
-  )
-}
+  );
+};
 
 const Wrapper = styled.div`
   padding: ${space[3]};
-`
+`;
 
 const ImageStyled = styled.img`
   width: 300px;
@@ -125,13 +123,13 @@ const ImageStyled = styled.img`
   border-radius: ${space[1]};
   object-fit: cover;
   border: 1px solid ${colors.deepBlack};
-`
+`;
 
 const CustomButton = styled(Button)`
   position: relative;
   overflow: hidden;
   display: inline-block;
-`
+`;
 
 const HiddenInput = styled.input`
   position: absolute;
@@ -141,4 +139,4 @@ const HiddenInput = styled.input`
   height: 100%;
   opacity: 0;
   cursor: pointer;
-`
+`;
