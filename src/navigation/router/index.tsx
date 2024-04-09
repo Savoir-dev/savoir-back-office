@@ -1,25 +1,28 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from 'react-router-dom'
 
-import { UsersApp } from "../../apps/users";
+import { UsersApp } from '../../apps/users'
 import {
   mapSettingsAppRoutes,
   usersAppRoutes,
   generalSettingsAppRoutes,
   authAppRoutes,
-} from "../internalRouter";
-import { MapSettingsApp } from "../../apps/mapSettings";
-import { InterestPointsApp } from "../../apps/mapSettings/interestPoints";
-import { ItinerariesApp } from "../../apps/mapSettings/Itineraries";
-import { GeneralSettingsApp } from "../../apps/generalSettings";
-import { AuthApp } from "../../apps/auth";
+  guideAndNewsAppRoutes,
+} from '../internalRouter'
+import { MapSettingsApp } from '../../apps/mapSettings'
+import { InterestPointsApp } from '../../apps/mapSettings/interestPoints'
+import { ItinerariesApp } from '../../apps/mapSettings/Itineraries'
+import { GeneralSettingsApp } from '../../apps/generalSettings'
+import { AuthApp } from '../../apps/auth'
 
-import { ProtectedRoute } from "./protectedRoute";
-import { DefaultRouteRedirect } from "./DefaultRouteRedirect";
+import { ProtectedRoute } from './protectedRoute'
+import { DefaultRouteRedirect } from './DefaultRouteRedirect'
+import { GuideAndNewsApp } from '../../apps/guidesAndNews'
+import { NewsApp } from '../../apps/guidesAndNews/newsApp'
+import { GuideApp } from '../../apps/guidesAndNews/guidesApp'
 export const AppRouter = () => {
   return (
     <Routes>
       <Route path={authAppRoutes.login()} element={<AuthApp />} />
-
       <Route
         path={generalSettingsAppRoutes.generalSettings()}
         element={
@@ -36,6 +39,18 @@ export const AppRouter = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path={guideAndNewsAppRoutes.basePath}
+        element={
+          <ProtectedRoute>
+            <GuideAndNewsApp />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<NewsApp />} />
+        <Route path={guideAndNewsAppRoutes.news()} element={<NewsApp />} />
+        <Route path={guideAndNewsAppRoutes.guides()} element={<GuideApp />} />
+      </Route>
       <Route
         path={mapSettingsAppRoutes.basePath}
         element={
@@ -56,5 +71,5 @@ export const AppRouter = () => {
       </Route>
       <Route path="/" element={<DefaultRouteRedirect />} />
     </Routes>
-  );
-};
+  )
+}

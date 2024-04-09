@@ -6,13 +6,54 @@ import { colors, space } from '../../styles/const'
 import { Button } from '../../components/atoms/button'
 
 import { MapSelector } from './mapSelector'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { AxiosResponse } from 'axios'
+import {
+  getSettings,
+  putSettings,
+} from '../../services/settings/settings.services'
+import { ISettings } from '../../services/types/settings.type'
 
 export const GeneralSettingsApp = () => {
-  const [location, setLocation] = useState<{ lat: number; lng: number }>({
-    lat: 41.38879,
-    lng: 2.15899,
+  const queryClient = useQueryClient()
+  const { data: settingsData, isSuccess } = useQuery({
+    queryKey: 'settings',
+    queryFn: getSettings,
+    select: (data) => data.data,
   })
+
+  const [welcomePageImage, setWelcomePageImage] = useState('')
+  const [location, setLocation] = useState({ lat: 0, lng: 0 })
+
+  useEffect(() => {
+    if (isSuccess && settingsData?.data[0]) {
+      const settings = settingsData.data[0]
+      setWelcomePageImage(settings.welcomePageImage)
+      setLocation({ lat: settings.latitude, lng: settings.longitude })
+    }
+  }, [isSuccess, settingsData])
+
+  const { mutate } = useMutation({
+    mutationFn: (settings: ISettings) => {
+      return putSettings(settings)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['settings'],
+      })
+    },
+  })
+
+  const onSave = () => {
+    mutate({
+      uid: settingsData.data[0].uid,
+      welcomePageImage,
+      latitude: location.lat,
+      longitude: location.lng,
+    })
+  }
+
   return (
     <>
       <PageHeader title="General settings" />
@@ -23,15 +64,26 @@ export const GeneralSettingsApp = () => {
               <Text size="5" style={{ margin: space[2] }} weight="bold">
                 Welcome page picture
               </Text>
-              <Flex direction="column" gap="2">
-                <ImageStyled
-                  src={
-                    'https://images.unsplash.com/photo-1579282240050-352db0a14c21?q=80&w=3052&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                  }
-                  alt="interest point image"
-                />
-                <Button color="orange">Change picture</Button>
-              </Flex>
+              {welcomePageImage ? (
+                <Flex direction="column" gap="2">
+                  <ImageStyled
+                    src={welcomePageImage}
+                    alt="interest point image"
+                  />
+                  <CustomButton color="orange">
+                    Change picture
+                    <HiddenInput
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        setWelcomePageImage(e.target.files[0])
+                      }}
+                    />
+                  </CustomButton>
+                </Flex>
+              ) : (
+                <Button color="orange">Add picture</Button>
+              )}
             </Flex>
           </Card>
           <Card>
@@ -49,6 +101,16 @@ export const GeneralSettingsApp = () => {
           </Card>
         </Flex>
       </Wrapper>
+      <Flex align="end" justify="end">
+        <Button
+          color="orange"
+          size="3"
+          style={{ width: '100px', marginRight: space[2] }}
+          onClick={onSave}
+        >
+          Save
+        </Button>
+      </Flex>
     </>
   )
 }
@@ -63,4 +125,20 @@ const ImageStyled = styled.img`
   border-radius: ${space[1]};
   object-fit: cover;
   border: 1px solid ${colors.deepBlack};
+`
+
+const CustomButton = styled(Button)`
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+`
+
+const HiddenInput = styled.input`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 `
