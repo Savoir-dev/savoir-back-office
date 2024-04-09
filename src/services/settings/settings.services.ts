@@ -11,7 +11,9 @@ export const putSettings = async (settings: ISettings) => {
   formData.append("latitude", settings.latitude);
   formData.append("longitude", settings.longitude);
 
-  console.log("formData", formData);
-
-  return await api.put(`/settings/${settings.uid}`, formData);
+  return await api.put(`/settings/${settings.uid}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };

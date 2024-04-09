@@ -1,13 +1,14 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
 import styled from 'styled-components'
+import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 import { PageHeader } from '../../components/molecules/pageHeader'
 import { colors, space } from '../../styles/const'
 import { Button } from '../../components/atoms/button'
 
 import { MapSelector } from './mapSelector'
-import { useEffect, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+
 import {
   getSettings,
   putSettings,
@@ -15,23 +16,19 @@ import {
 import { ISettings } from '../../services/types/settings.type'
 
 export const GeneralSettingsApp = () => {
-  const queryClient = useQueryClient()
-  const { data: settingsData, isSuccess } = useQuery({
-    queryKey: 'settings',
-    queryFn: getSettings,
-    select: (data) => data.data,
-  })
-
-  const [welcomePageImage, setWelcomePageImage] = useState('')
+  const [welcomePageImage, setWelcomePageImage] = useState<File | null>(null)
   const [location, setLocation] = useState({ lat: 0, lng: 0 })
 
-  useEffect(() => {
-    if (isSuccess && settingsData?.data[0]) {
-      const settings = settingsData.data[0]
-      setWelcomePageImage(settings.welcomePageImage)
-      setLocation({ lat: settings.latitude, lng: settings.longitude })
-    }
-  }, [isSuccess, settingsData])
+  const queryClient = useQueryClient()
+  const { data: settingsData, isLoading } = useQuery({
+    queryKey: 'settings',
+    queryFn: getSettings,
+    onSuccess: ({ data }) => {
+      setWelcomePageImage(data[0].welcomePageImage)
+      setLocation({ lat: data[0].latitude, lng: data[0].longitude })
+    },
+    select: (data) => data.data,
+  })
 
   const { mutate } = useMutation({
     mutationFn: (settings: ISettings) => {
@@ -48,10 +45,12 @@ export const GeneralSettingsApp = () => {
     mutate({
       uid: settingsData.data[0].uid,
       welcomePageImage,
-      latitude: location.lat,
-      longitude: location.lng,
+      latitude: location.lat.toString(),
+      longitude: location.lng.toString(),
     })
   }
+
+  if (isLoading) return <div>Loading...</div>
 
   return (
     <>
