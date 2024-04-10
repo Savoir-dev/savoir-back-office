@@ -19,10 +19,15 @@ import { DefaultRouteRedirect } from './DefaultRouteRedirect'
 import { GuideAndNewsApp } from '../../apps/guidesAndNews'
 import { NewsApp } from '../../apps/guidesAndNews/news/newsApp'
 import { GuideApp } from '../../apps/guidesAndNews/guides/guidesApp'
+import { ForgetPasswordApp } from '../../apps/auth/pages/forgetPassword'
 export const AppRouter = () => {
   return (
     <Routes>
       <Route path={authAppRoutes.login()} element={<AuthApp />} />
+      <Route
+        path={authAppRoutes.forgetPassword()}
+        element={<ForgetPasswordApp />}
+      />
       <Route
         path={generalSettingsAppRoutes.generalSettings()}
         element={

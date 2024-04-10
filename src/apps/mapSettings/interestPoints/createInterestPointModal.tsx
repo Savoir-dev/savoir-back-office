@@ -35,22 +35,17 @@ interface InterestPointForm {
   close: () => void
 }
 
-interface InterestPointTranslationWithLocal extends InterestPointTranslation {
-  local: string
-}
-
 export const CreateInterestPointModal: FC<InterestPointForm> = ({
   isEditing,
   interestPoint,
   close,
 }) => {
   const [translatedInterestPoints, setTranslatedInterestPoints] = useState<
-    InterestPointTranslationWithLocal[]
+    InterestPointTranslation[]
   >([
     {
-      local: 'en',
       uid: '',
-      language: 'english',
+      language: 'en',
       title: '',
       subtitle: '',
       shortDesc: '',
@@ -58,13 +53,12 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
       audioDesc: '',
       tags: [],
       information: '',
-      audio: '',
+      audio_en: '',
       interestPointId: '',
     },
     {
-      local: 'fr',
       uid: '',
-      language: 'french',
+      language: 'fr',
       title: '',
       subtitle: '',
       shortDesc: '',
@@ -72,13 +66,12 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
       audioDesc: '',
       tags: [],
       information: '',
-      audio: '',
+      audio_fr: '',
       interestPointId: '',
     },
     {
-      local: 'es',
       uid: '',
-      language: 'spanish',
+      language: 'es',
       title: '',
       subtitle: '',
       shortDesc: '',
@@ -86,7 +79,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
       audioDesc: '',
       tags: [],
       information: '',
-      audio: '',
+      audio_es: '',
       interestPointId: '',
     },
   ])
@@ -131,43 +124,26 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
   })
 
   const handleInterestPointTranslation = (
-    local: string,
     newTranslation: InterestPointTranslation,
   ) => {
-    const index = translatedInterestPoints.findIndex(
-      (translation) => translation.local === local,
-    )
-    const newTranslatedInterestPoints = [...translatedInterestPoints]
-    newTranslatedInterestPoints[index] = {
-      ...newTranslatedInterestPoints[index],
-      ...newTranslation,
-    }
-    setTranslatedInterestPoints(newTranslatedInterestPoints)
+    setTranslatedInterestPoints((prev) => {
+      return prev.map((translation) => {
+        return translation.language == newTranslation.language
+          ? { ...newTranslation }
+          : translation
+      })
+    })
   }
 
   const onSubmit = (data: InterestPoint) => {
+    console.log('translatedInterestPoints', translatedInterestPoints)
     const adjustedData = {
       ...data,
       latitude: location.lat.toString(),
       longitude: location.lng.toString(),
-      interestPointTranslation: translatedInterestPoints.map(
-        (interestPoint) => {
-          return {
-            language: interestPoint.language,
-            title: interestPoint.title,
-            subtitle: interestPoint.subtitle,
-            shortDesc: interestPoint.shortDesc,
-            longDesc: interestPoint.longDesc,
-            audioDesc: interestPoint.audioDesc,
-            tags: interestPoint.tags,
-            information: interestPoint.information,
-            audio: interestPoint.audio,
-          }
-        },
-      ),
+      interestPointTranslation: translatedInterestPoints,
     }
 
-    console.log(adjustedData)
     mutate(adjustedData)
   }
 
@@ -203,8 +179,8 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
             {translatedInterestPoints?.map((interestPointTranslation) => {
               return (
                 <Tabs.Trigger
-                  value={interestPointTranslation.local}
-                  key={interestPointTranslation.local}
+                  value={interestPointTranslation.language}
+                  key={interestPointTranslation.language}
                   style={{ marginRight: space[2] }}
                 >
                   <Text>{interestPointTranslation.language}</Text>
@@ -217,11 +193,11 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
           {translatedInterestPoints?.map((interestPointTranslation, i) => {
             return (
               <Tabs.Content
-                key={interestPointTranslation.local}
-                value={interestPointTranslation.local}
+                key={interestPointTranslation.language}
+                value={interestPointTranslation.language}
               >
                 <CreateInterestPointForm
-                  local={interestPointTranslation.local}
+                  local={interestPointTranslation.language}
                   handleSubmit={handleInterestPointTranslation}
                   isOriginal={i === 0}
                   setLocation={setLocation}

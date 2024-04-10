@@ -46,6 +46,7 @@ export const CreateInterestPointForm: FC<Props> = ({
 
   const { control, watch } = useForm<InterestPointTranslation>({
     defaultValues: {
+      language: interestPointTranslation.language,
       title: interestPointTranslation.title,
       subtitle: interestPointTranslation.subtitle,
       audio: interestPointTranslation.audio,
@@ -58,9 +59,15 @@ export const CreateInterestPointForm: FC<Props> = ({
   })
 
   useEffect(() => {
-    const interestPointTranslation = watch()
-    handleSubmit(local, interestPointTranslation)
-  }, [watch()])
+    const interestPointTranslation = watch((value) => {
+      const localAudio = `audio_${local}`
+      handleSubmit({
+        ...value,
+        [localAudio]: value.audio,
+      })
+    })
+    return () => interestPointTranslation.unsubscribe()
+  }, [watch])
 
   const validation = {
     title: {
@@ -100,7 +107,8 @@ export const CreateInterestPointForm: FC<Props> = ({
     name: 'tags',
   })
 
-  const handleAddTag = () => {
+  const handleAddTag = (e) => {
+    e.preventDefault()
     if (newTag) {
       append({ tag: newTag })
       setNewTag('')

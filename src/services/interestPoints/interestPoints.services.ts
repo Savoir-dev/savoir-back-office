@@ -25,10 +25,15 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
   formData.append("guide", newInterestPoint.guide);
   formData.append("type", newInterestPoint.type);
   formData.append("color", newInterestPoint.color);
-  formData.append(
-    "translations",
-    JSON.stringify(newInterestPoint.interestPointTranslations)
-  );
+
+  const updatedTranslatedInterestPoints =
+    newInterestPoint.interestPointTranslation.map((interestPoint) => {
+      const copyOfInterestPoint = JSON.parse(JSON.stringify(interestPoint));
+      delete copyOfInterestPoint.audio;
+      return copyOfInterestPoint;
+    });
+
+  formData.append("translations", updatedTranslatedInterestPoints);
 
   console.log("formData", formData);
 
