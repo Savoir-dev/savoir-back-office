@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
+import { useState } from 'react'
 import { Button, Dialog } from '@radix-ui/themes'
 import { CreateGuideModal } from './createGuideModal'
 import { GuidesList } from './guidesList'

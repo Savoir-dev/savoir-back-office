@@ -4,6 +4,9 @@ import { InterestPoint } from "../types/interestPoints.type";
 // GET
 export const getInterestPoints = async () => await api.get(`/interestPoint`);
 
+export const getInterestPointByInterestPointId = async (uid: string) =>
+  await api.get(`/interestPoint/${uid}`);
+
 export const getInterestPointsByWalkingTour = async () =>
   await api.get(`/interestPoint?type=walkingTour`);
 
@@ -12,29 +15,19 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
   console.log("newInterestPoint", newInterestPoint);
   const formData = new FormData();
 
-  if (newInterestPoint.image && newInterestPoint.audio) {
+  if (newInterestPoint.image) {
     formData.append("image", newInterestPoint.image);
-    formData.append("audio", newInterestPoint.audio);
   }
 
   formData.append("latitude", newInterestPoint.latitude);
   formData.append("longitude", newInterestPoint.longitude);
-  formData.append("title", newInterestPoint.title);
-  formData.append("subtitle", newInterestPoint.subtitle);
-  formData.append("shortDesc", newInterestPoint.shortDesc);
-  formData.append("longDesc", newInterestPoint.longDesc);
   formData.append("duration", newInterestPoint.duration);
   formData.append("guide", newInterestPoint.guide);
-  formData.append("information", newInterestPoint.information);
   formData.append("type", newInterestPoint.type);
-  formData.append("audioDesc", newInterestPoint.audioDesc);
   formData.append("color", newInterestPoint.color);
-
   formData.append(
-    "tags",
-    JSON.stringify(
-      newInterestPoint.tags.map((tagObject: { tag: string }) => tagObject.tag)
-    )
+    "interestPointTranslation",
+    JSON.stringify(newInterestPoint.InterestPointTranslation)
   );
 
   return await api.post("/interestPoint", formData, {

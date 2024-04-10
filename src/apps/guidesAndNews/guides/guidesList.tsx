@@ -1,57 +1,104 @@
-import { Card, Flex, Grid, Text } from '@radix-ui/themes'
+import { Button, Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
 import { space } from '../../../styles/const'
-
-const guidesFakeData = [
-  {
-    image: 'https://via.placeholder.com/150',
-    title: 'Guide 1',
-    shortDesc: 'Short description of guide 1',
-    longDesc: 'Long description of guide 1',
-  },
-  {
-    image: 'https://via.placeholder.com/150',
-    title: 'Guide 2',
-    shortDesc: 'Short description of guide 2',
-    longDesc: 'Long description of guide 2',
-  },
-  {
-    image: 'https://via.placeholder.com/150',
-    title: 'Guide 3',
-    shortDesc: 'Short description of guide 3',
-    longDesc: 'Long description of guide 3',
-  },
-]
+import { useQuery } from 'react-query'
+import { getGuides } from '../../../services/guidesAndNews/guidesAndNews.services'
+import { Guide } from '../../../services/guidesAndNews/guidesAndNews.type'
+import { AxiosResponse } from 'axios'
+import { Trash } from 'lucide-react'
+import { useState } from 'react'
+import { CreateGuideModal } from './createGuideModal'
 
 export const GuidesList = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+
+  const { data: guidesData } = useQuery({
+    queryKey: ['guides'],
+    queryFn: () => {
+      return getGuides()
+    },
+    select: (data): AxiosResponse<Guide[]> => data.data,
+  })
+
+  const guides = guidesData?.data || []
+
+  const onCloseModal = () => {
+    setIsDialogOpen(false)
+  }
+
   return (
-    <Grid
-      columns="3"
-      gap="3"
-      width="auto"
-      style={{
-        marginTop: space[3],
-      }}
-    >
-      {guidesFakeData.map((guide, index) => (
-        <Card key={index}>
-          <Flex direction="column" gap="2">
-            <img
-              src={guide.image}
-              alt="interest point image"
-              style={{
-                objectFit: 'cover',
-                width: '200px',
-                borderRadius: space[1],
-              }}
-            />
-            <Flex direction="column">
-              <Text weight="bold">{guide.title}</Text>
-              <Text>{guide.shortDesc}</Text>
-              <Text>{guide.longDesc}</Text>
+    <Dialog.Root open={isDialogOpen}>
+      <Grid
+        columns="3"
+        gap="3"
+        width="auto"
+        style={{
+          marginTop: space[3],
+        }}
+      >
+        {guides.map((guide, index) => (
+          <Card key={index}>
+            {/* <Flex
+              gap="2"
+              position="absolute"
+              style={{ zIndex: 1, top: space[5], left: space[5] }}
+            >
+              <Button
+                size="1"
+                color="red"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <Trash size={16} />
+              </Button>
+
+              <Button
+                size="1"
+                color="orange"
+                onClick={() => {
+                  setIsEditing(true)
+                  setIsDialogOpen(true)
+                }}
+              >
+                Edit
+              </Button>
+            </Flex> */}
+            <Flex direction="column" gap="2">
+              <img
+                src={guide.image}
+                alt="interest point image"
+                style={{
+                  objectFit: 'cover',
+                  width: '200px',
+                  borderRadius: space[1],
+                }}
+              />
+              <Flex direction="column">
+                <Flex direction="column">
+                  <Text size="3" weight="bold">
+                    Short description
+                  </Text>
+                  <Text>{guide.shortDesc}</Text>
+                </Flex>
+                <Flex direction="column">
+                  <Text size="3" weight="bold">
+                    Long description
+                  </Text>
+                  <Text>{guide.longDesc}</Text>
+                </Flex>
+              </Flex>
             </Flex>
-          </Flex>
-        </Card>
-      ))}
-    </Grid>
+            {isEditing ? (
+              <CreateGuideModal
+                close={onCloseModal}
+                guide={guide}
+                isEditing={isEditing}
+              />
+            ) : (
+              <Dialog.Content></Dialog.Content>
+            )}
+          </Card>
+        ))}
+      </Grid>
+    </Dialog.Root>
   )
 }

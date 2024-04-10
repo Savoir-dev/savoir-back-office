@@ -1,38 +1,36 @@
 export interface InterestPoint {
   uid: string;
+  duration: string;
   type: string;
   image?: File;
-  audio?: File;
+  color: string;
+  latitude: string;
+  longitude: string;
+  guide: string;
+  interestPointTranslation: InterestPointTranslation[];
+}
+export interface InterestPointTranslation {
+  uid: string;
+  language: string;
   title: string;
   subtitle: string;
   shortDesc: string;
   longDesc: string;
-  duration: string;
-  information: string;
-  guide: string;
-  color: string;
   audioDesc: string;
-  tags: { tag: string }[];
-  latitude: string;
-  longitude: string;
+  tags: string[];
+  information: string;
+  audio: string;
+  interestPointId: string;
 }
 
 export interface InterestPointFromApi {
   uid: string;
+  duration: string;
   type: string;
   image: string;
-  audio: string;
-  title: string;
-  subtitle: string;
-  shortDesc: string;
-  longDesc: string;
-  duration: string;
-  information: string;
-  guide: string;
   color: string;
-  audioDesc: string;
-  tags: string[];
   latitude: string;
   longitude: string;
-  isLinkedToItinerary: boolean;
+  guide: string;
+  interestPointTranslation: InterestPointTranslation[];
 }

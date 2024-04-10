@@ -80,7 +80,22 @@ export const GeneralSettingsApp = () => {
                   </CustomButton>
                 </Flex>
               ) : (
-                <Button color="orange">Add picture</Button>
+                <Flex direction="column" gap="2">
+                  <ImageStyled
+                    src={welcomePageImage}
+                    alt="interest point image"
+                  />
+                  <CustomButton color="orange">
+                    Add picture
+                    <HiddenInput
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        setWelcomePageImage(e.target.files[0])
+                      }}
+                    />
+                  </CustomButton>
+                </Flex>
               )}
             </Flex>
           </Card>
