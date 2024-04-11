@@ -30,10 +30,42 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
     newInterestPoint.interestPointTranslation.map((interestPoint) => {
       const copyOfInterestPoint = JSON.parse(JSON.stringify(interestPoint));
       delete copyOfInterestPoint.audio;
+      delete copyOfInterestPoint.audio_es;
+      delete copyOfInterestPoint.audio_en;
+      delete copyOfInterestPoint.audio_fr;
       return copyOfInterestPoint;
     });
 
-  formData.append("translations", updatedTranslatedInterestPoints);
+  formData.append(
+    "audio_es",
+    newInterestPoint.interestPointTranslation.find(
+      (translation) => translation.language === "es"
+    )?.audio || ""
+  );
+
+  formData.append(
+    "audio_en",
+    newInterestPoint.interestPointTranslation.find(
+      (translation) => translation.language === "en"
+    )?.audio || ""
+  );
+
+  formData.append(
+    "audio_fr",
+    newInterestPoint.interestPointTranslation.find(
+      (translation) => translation.language === "fr"
+    )?.audio || ""
+  );
+
+  console.log(
+    "updatedTranslatedInterestPoints",
+    updatedTranslatedInterestPoints
+  );
+
+  formData.append(
+    "translations",
+    JSON.stringify(updatedTranslatedInterestPoints)
+  );
 
   console.log("formData", formData);
 
@@ -45,34 +77,64 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
 };
 
 // PUT
-export const putInterestPoint = async (interestPoint: InterestPoint) => {
+export const putInterestPoint = async (updatedInterestPoint: InterestPoint) => {
   const formData = new FormData();
 
-  if (interestPoint.image && interestPoint.audio) {
-    formData.append("image", interestPoint.image);
-    formData.append("audio", interestPoint.audio);
+  if (updatedInterestPoint.image) {
+    formData.append("image", updatedInterestPoint.image);
   }
 
-  formData.append("title", interestPoint.title);
-  formData.append("subtitle", interestPoint.subtitle);
-  formData.append("shortDesc", interestPoint.shortDesc);
-  formData.append("longDesc", interestPoint.longDesc);
-  formData.append("duration", interestPoint.duration);
-  formData.append("guide", interestPoint.guide);
-  formData.append("information", interestPoint.information);
-  formData.append("type", interestPoint.type);
-  formData.append("audioDesc", interestPoint.audioDesc);
-  formData.append("color", interestPoint.color);
-  formData.append("latitude", interestPoint.latitude);
-  formData.append("longitude", interestPoint.longitude);
+  formData.append("latitude", updatedInterestPoint.latitude);
+  formData.append("longitude", updatedInterestPoint.longitude);
+  formData.append("duration", updatedInterestPoint.duration);
+  formData.append("guide", updatedInterestPoint.guide);
+  formData.append("type", updatedInterestPoint.type);
+  formData.append("color", updatedInterestPoint.color);
+
+  const updatedTranslatedInterestPoints =
+    updatedInterestPoint.interestPointTranslation.map((interestPoint) => {
+      const copyOfInterestPoint = JSON.parse(JSON.stringify(interestPoint));
+      delete copyOfInterestPoint.audio;
+      delete copyOfInterestPoint.audio_es;
+      delete copyOfInterestPoint.audio_en;
+      delete copyOfInterestPoint.audio_fr;
+      return copyOfInterestPoint;
+    });
+
   formData.append(
-    "tags",
-    JSON.stringify(
-      interestPoint.tags.map((tagObject: { tag: string }) => tagObject.tag)
-    )
+    "audio_es",
+    updatedInterestPoint.interestPointTranslation.find(
+      (translation) => translation.language === "es"
+    )?.audio || ""
   );
 
-  return await api.put(`/interestPoint/${interestPoint.uid}`, formData, {
+  formData.append(
+    "audio_en",
+    updatedInterestPoint.interestPointTranslation.find(
+      (translation) => translation.language === "en"
+    )?.audio || ""
+  );
+
+  formData.append(
+    "audio_fr",
+    updatedInterestPoint.interestPointTranslation.find(
+      (translation) => translation.language === "fr"
+    )?.audio || ""
+  );
+
+  console.log(
+    "updatedTranslatedInterestPoints",
+    updatedTranslatedInterestPoints
+  );
+
+  formData.append(
+    "translations",
+    JSON.stringify(updatedTranslatedInterestPoints)
+  );
+
+  console.log("formData", formData);
+
+  return await api.put(`/interestPoint/${updatedInterestPoint.uid}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

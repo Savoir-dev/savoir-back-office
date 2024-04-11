@@ -25,8 +25,7 @@ const convertToFormInterestPoint = (
   latitude: ip.latitude.toString(),
   longitude: ip.longitude.toString(),
   image: undefined,
-  audio: undefined,
-  tags: ip.tags.map((tag) => ({ tag })),
+  interestPointTranslation: [],
 })
 
 interface InterestPointForm {
@@ -40,46 +39,48 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
   interestPoint,
   close,
 }) => {
+  console.log('interestPoint', interestPoint)
+
   const [translatedInterestPoints, setTranslatedInterestPoints] = useState<
     InterestPointTranslation[]
   >([
     {
-      uid: '',
+      uid: interestPoint?.translations[0].uid || '',
       language: 'en',
-      title: '',
-      subtitle: '',
-      shortDesc: '',
-      longDesc: '',
-      audioDesc: '',
-      tags: [],
-      information: '',
-      audio_en: '',
+      title: interestPoint?.translations[0].title || '',
+      subtitle: interestPoint?.translations[0].subtitle || '',
+      shortDesc: interestPoint?.translations[0].shortDesc || '',
+      longDesc: interestPoint?.translations[0].longDesc || '',
+      audioDesc: interestPoint?.translations[0].audioDesc || '',
+      tags: interestPoint?.translations[0].tags || [],
+      information: interestPoint?.translations[0].information || '',
+      audio_en: interestPoint?.translations[0].audio || '',
       interestPointId: '',
     },
     {
-      uid: '',
+      uid: interestPoint?.translations[1]?.uid || '',
       language: 'fr',
-      title: '',
-      subtitle: '',
-      shortDesc: '',
-      longDesc: '',
-      audioDesc: '',
-      tags: [],
-      information: '',
-      audio_fr: '',
+      title: interestPoint?.translations[1]?.title || '',
+      subtitle: interestPoint?.translations[1]?.subtitle || '',
+      shortDesc: interestPoint?.translations[1]?.shortDesc || '',
+      longDesc: interestPoint?.translations[1]?.longDesc || '',
+      audioDesc: interestPoint?.translations[1]?.audioDesc || '',
+      tags: interestPoint?.translations[1]?.tags || [],
+      information: interestPoint?.translations[1]?.information || '',
+      audio_fr: interestPoint?.translations[1]?.audio || '',
       interestPointId: '',
     },
     {
-      uid: '',
+      uid: interestPoint?.translations[2]?.uid || '',
       language: 'es',
-      title: '',
-      subtitle: '',
-      shortDesc: '',
-      longDesc: '',
-      audioDesc: '',
-      tags: [],
-      information: '',
-      audio_es: '',
+      title: interestPoint?.translations[2]?.title || '',
+      subtitle: interestPoint?.translations[2]?.subtitle || '',
+      shortDesc: interestPoint?.translations[2]?.shortDesc || '',
+      longDesc: interestPoint?.translations[2]?.longDesc || '',
+      audioDesc: interestPoint?.translations[2]?.audioDesc || '',
+      tags: interestPoint?.translations[2]?.tags || [],
+      information: interestPoint?.translations[2]?.information || '',
+      audio_es: interestPoint?.translations[2]?.audio || '',
       interestPointId: '',
     },
   ])
@@ -136,13 +137,14 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
   }
 
   const onSubmit = (data: InterestPoint) => {
-    console.log('translatedInterestPoints', translatedInterestPoints)
+    console.log('data-->', data)
     const adjustedData = {
       ...data,
       latitude: location.lat.toString(),
       longitude: location.lng.toString(),
       interestPointTranslation: translatedInterestPoints,
     }
+    console.log('adjustedData-->', adjustedData)
 
     mutate(adjustedData)
   }
@@ -161,12 +163,12 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
     return () => subscription.unsubscribe()
   }, [watch])
 
-  const { data: interestPointByIdData } = useQuery({
-    queryKey: ['interestPoints'],
-    queryFn: () =>
-      interestPoint && getInterestPointByInterestPointId(interestPoint?.uid),
-    select: (data): InterestPointFromApi => data?.data,
-  })
+  // const { data: interestPointByIdData } = useQuery({
+  //   queryKey: ['interestPoints'],
+  //   queryFn: () =>
+  //     interestPoint && getInterestPointByInterestPointId(interestPoint?.uid),
+  //   select: (data): InterestPointFromApi => data?.data,
+  // })
 
   return (
     <Dialog.Content onPointerDownOutside={close} maxWidth={'1200px'}>

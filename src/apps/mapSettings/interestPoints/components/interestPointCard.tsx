@@ -6,70 +6,70 @@ import {
   Dialog,
   Flex,
   Text,
-} from "@radix-ui/themes";
-import { useMutation, useQueryClient } from "react-query";
-import AudioPlayer from "react-h5-audio-player";
-import styled from "styled-components";
-import { MapPin, Trash } from "lucide-react";
-import { useState, FC } from "react";
+} from '@radix-ui/themes'
+import { useMutation, useQueryClient } from 'react-query'
+import AudioPlayer from 'react-h5-audio-player'
+import styled from 'styled-components'
+import { MapPin, Trash } from 'lucide-react'
+import { useState, FC } from 'react'
 
-import { InterestPointFromApi } from "../../../../services/types/interestPoints.type";
-import { space } from "../../../../styles/const";
-import { CreateInterestPointModal } from "../createInterestPointModal";
-import { deleteInterestPointByInterestPointId } from "../../../../services/interestPoints/interestPoints.services";
+import { InterestPointFromApi } from '../../../../services/types/interestPoints.type'
+import { space } from '../../../../styles/const'
+import { CreateInterestPointModal } from '../createInterestPointModal'
+import { deleteInterestPointByInterestPointId } from '../../../../services/interestPoints/interestPoints.services'
 
 interface InterestPointCardProps {
-  interestPoint: InterestPointFromApi;
+  interestPoint: InterestPointFromApi
 }
 export const InterestPointCard: FC<InterestPointCardProps> = ({
   interestPoint,
 }) => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const onCloseDialog = () => {
-    setIsEditing(false);
-    setIsDialogOpen(false);
-  };
+    setIsEditing(false)
+    setIsDialogOpen(false)
+  }
 
   const { mutate, isLoading } = useMutation({
     mutationFn: (uid: string) => {
-      return deleteInterestPointByInterestPointId(uid);
+      return deleteInterestPointByInterestPointId(uid)
     },
     onSuccess: () => {
-      setIsDialogOpen(false);
+      setIsDialogOpen(false)
       queryClient.invalidateQueries({
-        queryKey: ["interestPoints"],
-      });
+        queryKey: ['interestPoints'],
+      })
     },
-  });
+  })
 
   const deleteInterestPoint = (uid: string) => {
-    mutate(uid);
-  };
+    mutate(uid)
+  }
 
   return (
     <Dialog.Root open={isDialogOpen}>
-      <Card key={interestPoint.title}>
+      <Card key={interestPoint.translations[0].title}>
         <Flex
           gap="2"
           position="absolute"
           style={{ zIndex: 1, top: space[5], left: space[5] }}
         >
-          {!interestPoint.isLinkedToItinerary && (
+          {/* {!interestPoint.isLinkedToItinerary && (
             <Button size="1" color="red" onClick={() => setIsDialogOpen(true)}>
               <Trash size={16} />
             </Button>
-          )}
+          )} */}
 
           <Button
             size="1"
             color="orange"
             onClick={() => {
-              setIsEditing(true);
-              setIsDialogOpen(true);
+              setIsEditing(true)
+              setIsDialogOpen(true)
             }}
           >
             Edit
@@ -80,9 +80,9 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
             src={interestPoint.image}
             alt="interest point image"
             style={{
-              objectFit: "cover",
-              width: "100%",
-              height: "100%",
+              objectFit: 'cover',
+              width: '100%',
+              height: '100%',
               borderRadius: space[1],
             }}
           />
@@ -91,27 +91,27 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
           <Flex align="center" gap="1">
             <MapPin color={interestPoint.color} size={16} />
             <Text size="4" weight="bold">
-              {interestPoint.title}
+              {interestPoint.translations[0].title}
             </Text>
           </Flex>
           <Text>
             {interestPoint.latitude}, {interestPoint.longitude}
           </Text>
           <Text size="2" weight="bold">
-            {interestPoint.subtitle}
+            {interestPoint.translations[0].subtitle}
           </Text>
-          <Text size="2" style={{ textDecoration: "underline" }}>
+          <Text size="2" style={{ textDecoration: 'underline' }}>
             {interestPoint.type}
           </Text>
-          <Text size="2">{interestPoint.shortDesc}</Text>
+          <Text size="2">{interestPoint.translations[0].shortDesc}</Text>
           <Flex gap="1">
-            {interestPoint.tags.map((tag, index) => (
+            {interestPoint.translations[0].tags.map((tag, index) => (
               <Badge color="orange" key={index}>
                 {tag}
               </Badge>
             ))}
           </Flex>
-          <CustomAudioStyled src={interestPoint.audio} />
+          <CustomAudioStyled src={interestPoint.translations[0].audio} />
           <Text size="2">By {interestPoint.guide}</Text>
         </Flex>
       </Card>
@@ -133,7 +133,7 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
                 <Text size="3" weight="bold">
                   Name
                 </Text>
-                <Text size="3">{interestPoint.title}</Text>
+                <Text size="3">{interestPoint.translations[0].title}</Text>
               </Flex>
             </Flex>
           </Card>
@@ -157,9 +157,9 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
         </Dialog.Content>
       )}
     </Dialog.Root>
-  );
-};
+  )
+}
 
 const CustomAudioStyled = styled(AudioPlayer)`
   box-shadow: none;
-`;
+`

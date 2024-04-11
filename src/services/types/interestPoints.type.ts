@@ -32,5 +32,5 @@ export interface InterestPointFromApi {
   latitude: string;
   longitude: string;
   guide: string;
-  interestPointTranslation: InterestPointTranslation[];
+  translations: InterestPointTranslation[];
 }
