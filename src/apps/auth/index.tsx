@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { Flex, Text, TextField } from '@radix-ui/themes'
 import { Controller, useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
@@ -12,8 +12,11 @@ import {
 } from '../../navigation/internalRouter'
 
 import { CustomCard, Wrapper } from './style'
+import { Eye, EyeOff, Search } from 'lucide-react'
+import { space } from '../../styles/const'
 
 export const AuthApp: FC = () => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const navigate = useNavigate()
 
   const { control, handleSubmit } = useForm({
@@ -86,12 +89,39 @@ export const AuthApp: FC = () => {
                 control={control}
                 name="password"
                 render={({ field: { onChange, value } }) => (
-                  <TextField.Root
-                    type="password"
-                    placeholder=""
-                    value={value}
-                    onChange={onChange}
-                  />
+                  <>
+                    <TextField.Root
+                      value={value}
+                      onChange={onChange}
+                      type={isPasswordVisible ? 'text' : 'password'}
+                      placeholder=""
+                    >
+                      <TextField.Slot
+                        style={{ width: 0, padding: space[1] }}
+                      ></TextField.Slot>
+                      <TextField.Slot pr="3">
+                        {!isPasswordVisible ? (
+                          <Eye
+                            onClick={() =>
+                              setIsPasswordVisible(!isPasswordVisible)
+                            }
+                            style={{ cursor: 'pointer' }}
+                            height="16"
+                            width="16"
+                          />
+                        ) : (
+                          <EyeOff
+                            onClick={() =>
+                              setIsPasswordVisible(!isPasswordVisible)
+                            }
+                            style={{ cursor: 'pointer' }}
+                            height="16"
+                            width="16"
+                          />
+                        )}
+                      </TextField.Slot>
+                    </TextField.Root>
+                  </>
                 )}
               />
             </Flex>

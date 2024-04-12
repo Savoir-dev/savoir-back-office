@@ -67,7 +67,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
                 <DataList.Label minWidth="40px">Title</DataList.Label>
                 <DataList.Value>
                   <Text size="3" weight="bold">
-                    {itinerary.name}
+                    {itinerary.translations[0].title}
                   </Text>
                 </DataList.Value>
               </DataList.Item>
@@ -88,7 +88,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
                   <Flex direction="column" align="center" gap="2">
                     <MapPin color={interestPoint.color} />
                     <Text size="2" weight="bold">
-                      {interestPoint.title}
+                      {interestPoint.translations[0].title}
                     </Text>
                   </Flex>
                 </CustomCard>
@@ -120,7 +120,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
                 <Text size="3" weight="bold">
                   Name
                 </Text>
-                <Text size="3">{itinerary.name}</Text>
+                <Text size="3">{itinerary.translations[0].title}</Text>
               </Flex>
             </Flex>
           </Card>

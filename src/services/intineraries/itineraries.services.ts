@@ -7,6 +7,7 @@ export const getItineraries = async () => await api.get(`/itinerary`);
 
 // POST
 export const postItinerary = async (newItinerary: PostItinerary) => {
+  console.log("ici-->", newItinerary);
   const itineraryToInterestPoints = newItinerary.interestPoints.map(
     (interestPoint: InterestPointFromApi, index: number) => ({
       uid: interestPoint.uid,

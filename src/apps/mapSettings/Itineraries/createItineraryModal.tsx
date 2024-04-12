@@ -8,6 +8,7 @@ import { space } from '../../../styles/const'
 import { InterestPointFromApi } from '../../../services/types/interestPoints.type'
 import {
   Itinerary,
+  ItineraryTranslations,
   PostItinerary,
 } from '../../../services/types/itineraries.type'
 import { Button } from '../../../components/atoms/button'
@@ -30,7 +31,14 @@ export const CreateItineraryModal = ({
   preSelectedInterestPoints = [],
   itinerary,
 }: Props) => {
-  const [translatedItineraries, setTranslatedItineraries] = useState([
+  const [generalValues, setGeneralValues] = useState({
+    duration: itinerary?.duration || '',
+    guide: itinerary?.guide || '',
+    color: itinerary?.color || '',
+  })
+  const [translatedItineraries, setTranslatedItineraries] = useState<
+    ItineraryTranslations[]
+  >([
     {
       language: 'en',
       title: itinerary?.translations[0].title || '',
@@ -38,18 +46,16 @@ export const CreateItineraryModal = ({
     },
     {
       language: 'fr',
-      title: itinerary?.translations[2].title || '',
-      subtitle: itinerary?.translations[2].subtitle || '',
+      title: itinerary?.translations[2]?.title || '',
+      subtitle: itinerary?.translations[2]?.subtitle || '',
     },
     {
       language: 'es',
-      title: itinerary?.translations[1].title || '',
-      subtitle: itinerary?.translations[1].subtitle || '',
+      title: itinerary?.translations[1]?.title || '',
+      subtitle: itinerary?.translations[1]?.subtitle || '',
     },
   ])
 
-  const [name, setName] = useState(itinerary?.name || '')
-  const [duration, setDuration] = useState(itinerary?.duration || '')
   const [selectedInterestPoints, setSelectedInterestPoints] = useState<
     InterestPointFromApi[]
   >(preSelectedInterestPoints)
@@ -78,23 +84,40 @@ export const CreateItineraryModal = ({
   })
 
   const handleSubmit = () => {
+    console.log('generalValues', generalValues)
     mutate({
-      name,
-      duration,
+      duration: generalValues.duration,
+      color: generalValues.color,
+      guide: generalValues.guide,
+      translations: translatedItineraries,
       interestPoints: selectedInterestPoints,
     })
   }
 
-  const setSubtitleByLanguage = (language: string) => {
-    return translatedItineraries.find(
-      (translatedItinerary) => translatedItinerary.language === language,
-    )?.subtitle
+  const setTitleByLanguage = (language: string, newTitle: string) => {
+    const updatedItineraries = translatedItineraries.map(
+      (translatedItinerary) => {
+        if (translatedItinerary.language === language) {
+          return { ...translatedItinerary, title: newTitle }
+        }
+        return translatedItinerary
+      },
+    )
+
+    setTranslatedItineraries(updatedItineraries)
   }
 
-  const setTitleByLanguage = (language: string) => {
-    return translatedItineraries.find(
-      (translatedItinerary) => translatedItinerary.language === language,
-    )?.title
+  const setSubtitleByLanguage = (language: string, newSubtitle: string) => {
+    const updatedItineraries = translatedItineraries.map(
+      (translatedItinerary) => {
+        if (translatedItinerary.language === language) {
+          return { ...translatedItinerary, subtitle: newSubtitle }
+        }
+        return translatedItinerary
+      },
+    )
+
+    setTranslatedItineraries(updatedItineraries)
   }
 
   const interestPoints = interestPointsData?.data || []
@@ -125,14 +148,12 @@ export const CreateItineraryModal = ({
               key={translatedItinerary.language}
             >
               <CreateItineraryForm
+                generalValues={generalValues}
+                setGeneralValues={setGeneralValues}
                 key={translatedItinerary.language}
                 translatedItinerary={translatedItinerary}
                 setTitleByLanguage={setTitleByLanguage}
                 setSubtitleByLanguage={setSubtitleByLanguage}
-                name={name}
-                setName={setName}
-                duration={duration}
-                setDuration={setDuration}
                 selectedInterestPoints={selectedInterestPoints}
                 setSelectedInterestPoints={setSelectedInterestPoints}
                 interestPoints={interestPoints}
