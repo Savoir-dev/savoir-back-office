@@ -4,13 +4,16 @@ import { Controller, useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { CustomCard, Wrapper } from '../style'
 import { forgetPassword } from '../../../services/auth/login.services'
+import { PasswordTextField } from '../components/passwordTextField'
 
-export const ForgetPasswordApp: FC = () => {
-  const [mailSent, setMailSent] = useState(false)
+export const ChangePasswordApp: FC = () => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
       email: '',
+      password: '',
+      confirmPassword: '',
     },
   })
 
@@ -28,12 +31,9 @@ export const ForgetPasswordApp: FC = () => {
     mutationFn: (data: { email: string }) => {
       return forgetPassword(data.email)
     },
-    onSuccess: () => {
-      setMailSent(true)
-    },
   })
 
-  const onSubmit = (data: { email: string }) => {
+  const onSubmit = (data: { email: string; password: string }) => {
     mutate(data)
   }
 
@@ -58,7 +58,41 @@ export const ForgetPasswordApp: FC = () => {
                   />
                 )}
               />
-              {mailSent && <Text>A mail has been sent on your address</Text>}
+            </Flex>
+            <Flex direction="column">
+              <Text size="3" weight="bold">
+                Password
+              </Text>
+              <Controller
+                rules={validation['email']}
+                control={control}
+                name="password"
+                render={({ field: { onChange, value } }) => (
+                  <TextField.Root
+                    placeholder=""
+                    value={value}
+                    onChange={onChange}
+                  />
+                )}
+              />
+            </Flex>
+            <Flex direction="column">
+              <Text size="3" weight="bold">
+                Confirm Password
+              </Text>
+              <Controller
+                rules={validation['password']}
+                control={control}
+                name="password"
+                render={({ field: { onChange, value } }) => (
+                  <PasswordTextField
+                    value={value}
+                    onChange={onChange}
+                    isPasswordVisible={isPasswordVisible}
+                    setIsPasswordVisible={setIsPasswordVisible}
+                  />
+                )}
+              />
             </Flex>
             <Flex width="100%" direction="column" align="center" gap="1">
               <Button

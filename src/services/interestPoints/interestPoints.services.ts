@@ -4,8 +4,9 @@ import { InterestPoint } from "../types/interestPoints.type";
 // GET
 export const getInterestPoints = async () => await api.get(`/interestPoint`);
 
-export const getInterestPointByInterestPointId = async (uid: string) =>
-  await api.get(`/interestPoint/${uid}`);
+export const getInterestPointByInterestPointId = async (
+  uid: string | undefined
+) => await api.get(`/interestPoint/${uid}`);
 
 export const getInterestPointsByWalkingTour = async () =>
   await api.get(`/interestPoint?type=walkingTour`);

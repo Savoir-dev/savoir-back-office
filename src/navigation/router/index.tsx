@@ -20,6 +20,7 @@ import { GuideAndNewsApp } from '../../apps/guidesAndNews'
 import { NewsApp } from '../../apps/guidesAndNews/news/newsApp'
 import { GuideApp } from '../../apps/guidesAndNews/guides/guidesApp'
 import { ForgetPasswordApp } from '../../apps/auth/pages/forgetPassword'
+import { ChangePasswordApp } from '../../apps/auth/pages/changePassword'
 export const AppRouter = () => {
   return (
     <Routes>
@@ -27,6 +28,10 @@ export const AppRouter = () => {
       <Route
         path={authAppRoutes.forgetPassword()}
         element={<ForgetPasswordApp />}
+      />
+      <Route
+        path={authAppRoutes.forgetPassword()}
+        element={<ChangePasswordApp />}
       />
       <Route
         path={generalSettingsAppRoutes.generalSettings()}

@@ -15,6 +15,7 @@ import {
   InterestPointTranslation,
 } from '../../../services/types/interestPoints.type'
 import { CreateInterestPointForm } from './components/createInterestPointForm'
+import { AxiosResponse } from 'axios'
 
 const formKey = 'interestPointFormState'
 
@@ -39,51 +40,60 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
   interestPoint,
   close,
 }) => {
-  console.log('interestPoint', interestPoint)
+  const { data: interestPointData } = useQuery({
+    queryKey: 'interestPoints',
+    queryFn: () => getInterestPointByInterestPointId(interestPoint?.uid),
+    select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
+  })
+
+  const EditableInterestPoint = interestPointData?.data || []
+  console.log('EditableInterestPoint', EditableInterestPoint)
 
   const [translatedInterestPoints, setTranslatedInterestPoints] = useState<
     InterestPointTranslation[]
   >([
     {
-      uid: interestPoint?.translations[0].uid || '',
+      uid: EditableInterestPoint[0]?.uid || '',
       language: 'en',
-      title: interestPoint?.translations[0].title || '',
-      subtitle: interestPoint?.translations[0].subtitle || '',
-      shortDesc: interestPoint?.translations[0].shortDesc || '',
-      longDesc: interestPoint?.translations[0].longDesc || '',
-      audioDesc: interestPoint?.translations[0].audioDesc || '',
-      tags: interestPoint?.translations[0].tags || [],
-      information: interestPoint?.translations[0].information || '',
-      audio_en: interestPoint?.translations[0].audio || '',
+      title: EditableInterestPoint[0]?.translations[0]?.title || '',
+      subtitle: EditableInterestPoint[0]?.translations[0]?.subtitle || '',
+      shortDesc: EditableInterestPoint[0]?.translations[0]?.shortDesc || '',
+      longDesc: EditableInterestPoint[0]?.translations[0]?.longDesc || '',
+      audioDesc: EditableInterestPoint[0]?.translations[0]?.audioDesc || '',
+      tags: EditableInterestPoint[0]?.translations[0]?.tags || [],
+      information: EditableInterestPoint[0]?.translations[0]?.information || '',
+      audio_en: EditableInterestPoint[0]?.translations[0]?.audio || '',
       interestPointId: '',
     },
     {
-      uid: interestPoint?.translations[1]?.uid || '',
+      uid: EditableInterestPoint[1]?.uid || '',
       language: 'fr',
-      title: interestPoint?.translations[1]?.title || '',
-      subtitle: interestPoint?.translations[1]?.subtitle || '',
-      shortDesc: interestPoint?.translations[1]?.shortDesc || '',
-      longDesc: interestPoint?.translations[1]?.longDesc || '',
-      audioDesc: interestPoint?.translations[1]?.audioDesc || '',
-      tags: interestPoint?.translations[1]?.tags || [],
-      information: interestPoint?.translations[1]?.information || '',
-      audio_fr: interestPoint?.translations[1]?.audio || '',
+      title: EditableInterestPoint[1]?.translations[0]?.title || '',
+      subtitle: EditableInterestPoint[1]?.translations[0]?.subtitle || '',
+      shortDesc: EditableInterestPoint[1]?.translations[0]?.shortDesc || '',
+      longDesc: EditableInterestPoint[1]?.translations[0]?.longDesc || '',
+      audioDesc: EditableInterestPoint[1]?.translations[0]?.audioDesc || '',
+      tags: EditableInterestPoint[1]?.translations[0]?.tags || [],
+      information: EditableInterestPoint[1]?.translations[0]?.information || '',
+      audio_fr: EditableInterestPoint[1]?.translations[0]?.audio || '',
       interestPointId: '',
     },
     {
-      uid: interestPoint?.translations[2]?.uid || '',
+      uid: EditableInterestPoint[2]?.uid || '',
       language: 'es',
-      title: interestPoint?.translations[2]?.title || '',
-      subtitle: interestPoint?.translations[2]?.subtitle || '',
-      shortDesc: interestPoint?.translations[2]?.shortDesc || '',
-      longDesc: interestPoint?.translations[2]?.longDesc || '',
-      audioDesc: interestPoint?.translations[2]?.audioDesc || '',
-      tags: interestPoint?.translations[2]?.tags || [],
-      information: interestPoint?.translations[2]?.information || '',
-      audio_es: interestPoint?.translations[2]?.audio || '',
+      title: EditableInterestPoint[2]?.translations[0]?.title || '',
+      subtitle: EditableInterestPoint[2]?.translations[0]?.subtitle || '',
+      shortDesc: EditableInterestPoint[2]?.translations[0]?.shortDesc || '',
+      longDesc: EditableInterestPoint[2]?.translations[0]?.longDesc || '',
+      audioDesc: EditableInterestPoint[2]?.translations[0]?.audioDesc || '',
+      tags: EditableInterestPoint[2]?.translations[0]?.tags || [],
+      information: EditableInterestPoint[2]?.translations[0]?.information || '',
+      audio_es: EditableInterestPoint[2]?.translations[0]?.audio || '',
       interestPointId: '',
     },
   ])
+
+  console.log('test', translatedInterestPoints)
 
   const [location, setLocation] = useState<{ lat: number; lng: number }>({
     lat: 41.38879,
@@ -162,13 +172,6 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
     })
     return () => subscription.unsubscribe()
   }, [watch])
-
-  // const { data: interestPointByIdData } = useQuery({
-  //   queryKey: ['interestPoints'],
-  //   queryFn: () =>
-  //     interestPoint && getInterestPointByInterestPointId(interestPoint?.uid),
-  //   select: (data): InterestPointFromApi => data?.data,
-  // })
 
   return (
     <Dialog.Content onPointerDownOutside={close} maxWidth={'1200px'}>

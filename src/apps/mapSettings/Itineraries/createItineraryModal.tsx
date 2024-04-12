@@ -20,14 +20,12 @@ import {
 import { CreateItineraryForm } from './components/createItineraryForm'
 interface Props {
   close: () => void
-  isTitleField?: boolean
   preSelectedInterestPoints?: InterestPointFromApi[]
   itinerary?: Itinerary
 }
 
 export const CreateItineraryModal = ({
   close,
-  isTitleField,
   preSelectedInterestPoints = [],
   itinerary,
 }: Props) => {

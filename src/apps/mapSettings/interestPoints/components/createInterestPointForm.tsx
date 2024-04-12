@@ -23,7 +23,7 @@ interface Props {
   setLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>
   controlMainSettings: Control<InterestPoint>
   isOriginal?: boolean
-  handleSubmit: (local: string, data: InterestPointTranslation) => void
+  handleSubmit: (data: InterestPointTranslation) => void
   local: string
   interestPointTranslation: InterestPointTranslation
 }
@@ -218,6 +218,7 @@ export const CreateInterestPointForm: FC<Props> = ({
               Audio description
             </Text>
             <Controller
+              defaultValue={interestPointTranslation.audioDesc}
               control={control}
               name="audioDesc"
               render={({ field: { onChange, value } }) => (

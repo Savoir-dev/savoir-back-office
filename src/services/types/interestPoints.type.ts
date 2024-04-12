@@ -23,6 +23,8 @@ export interface InterestPointTranslation {
   interestPointId: string;
 }
 
+export interface InterestPointTranslationFromApi {}
+
 export interface InterestPointFromApi {
   uid: string;
   duration: string;

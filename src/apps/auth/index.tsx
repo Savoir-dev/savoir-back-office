@@ -12,8 +12,7 @@ import {
 } from '../../navigation/internalRouter'
 
 import { CustomCard, Wrapper } from './style'
-import { Eye, EyeOff, Search } from 'lucide-react'
-import { space } from '../../styles/const'
+import { PasswordTextField } from './components/passwordTextField'
 
 export const AuthApp: FC = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
@@ -89,39 +88,12 @@ export const AuthApp: FC = () => {
                 control={control}
                 name="password"
                 render={({ field: { onChange, value } }) => (
-                  <>
-                    <TextField.Root
-                      value={value}
-                      onChange={onChange}
-                      type={isPasswordVisible ? 'text' : 'password'}
-                      placeholder=""
-                    >
-                      <TextField.Slot
-                        style={{ width: 0, padding: space[1] }}
-                      ></TextField.Slot>
-                      <TextField.Slot pr="3">
-                        {!isPasswordVisible ? (
-                          <Eye
-                            onClick={() =>
-                              setIsPasswordVisible(!isPasswordVisible)
-                            }
-                            style={{ cursor: 'pointer' }}
-                            height="16"
-                            width="16"
-                          />
-                        ) : (
-                          <EyeOff
-                            onClick={() =>
-                              setIsPasswordVisible(!isPasswordVisible)
-                            }
-                            style={{ cursor: 'pointer' }}
-                            height="16"
-                            width="16"
-                          />
-                        )}
-                      </TextField.Slot>
-                    </TextField.Root>
-                  </>
+                  <PasswordTextField
+                    value={value}
+                    onChange={onChange}
+                    isPasswordVisible={isPasswordVisible}
+                    setIsPasswordVisible={setIsPasswordVisible}
+                  />
                 )}
               />
             </Flex>
