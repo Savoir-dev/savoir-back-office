@@ -1,12 +1,11 @@
-import api from "../api";
-import { InterestPointFromApi } from "../types/interestPoints.type";
-import { Itinerary, PostItinerary } from "../types/itineraries.type";
+import api from "../../api";
+import { InterestPointFromApi } from "../../types/interestPoints.type";
+import { Itinerary, PostItinerary } from "../../types/itineraries.type";
 
 // GET
 export const getItineraries = async () => await api.get(`/itinerary`);
 
 export const getItineraryByUid = async (uid: string | undefined) => {
-  console.log("uid", uid);
   return await api.get(`/itinerary/${uid}`);
 };
 // POST

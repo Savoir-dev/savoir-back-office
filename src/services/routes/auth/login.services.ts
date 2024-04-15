@@ -1,4 +1,4 @@
-import { baseApi } from "../api";
+import { baseApi } from "../../api";
 
 // POST
 export const login = async (user: { email: string; password: string }) => {

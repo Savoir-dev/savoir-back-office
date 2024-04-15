@@ -1,5 +1,5 @@
-import api from "../api";
-import { ISettings } from "../types/settings.type";
+import api from "../../api";
+import { ISettings } from "../../types/settings.type";
 
 // GET
 export const getSettings = async () => await api.get(`/settings`);

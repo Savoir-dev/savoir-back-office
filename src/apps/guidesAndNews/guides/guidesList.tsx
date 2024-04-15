@@ -1,30 +1,30 @@
-import { Button, Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
-import { space } from '../../../styles/const'
-import { useQuery } from 'react-query'
-import { getGuides } from '../../../services/guidesAndNews/guidesAndNews.services'
-import { Guide } from '../../../services/guidesAndNews/guidesAndNews.type'
-import { AxiosResponse } from 'axios'
-import { Trash } from 'lucide-react'
-import { useState } from 'react'
-import { CreateGuideModal } from './createGuideModal'
+import { Button, Card, Dialog, Flex, Grid, Text } from "@radix-ui/themes";
+import { space } from "../../../styles/const";
+import { useQuery } from "react-query";
+import { getGuides } from "../../../services/routes/guidesAndNews/guidesAndNews.services";
+import { Guide } from "../../../services/routes/guidesAndNews/guidesAndNews.type";
+import { AxiosResponse } from "axios";
+import { Trash } from "lucide-react";
+import { useState } from "react";
+import { CreateGuideModal } from "./createGuideModal";
 
 export const GuidesList = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const { data: guidesData } = useQuery({
-    queryKey: ['guides'],
+    queryKey: ["guides"],
     queryFn: () => {
-      return getGuides()
+      return getGuides();
     },
     select: (data): AxiosResponse<Guide[]> => data.data,
-  })
+  });
 
-  const guides = guidesData?.data || []
+  const guides = guidesData?.data || [];
 
   const onCloseModal = () => {
-    setIsDialogOpen(false)
-  }
+    setIsDialogOpen(false);
+  };
 
   return (
     <Dialog.Root open={isDialogOpen}>
@@ -67,8 +67,8 @@ export const GuidesList = () => {
                 src={guide.image}
                 alt="interest point image"
                 style={{
-                  objectFit: 'cover',
-                  width: '200px',
+                  objectFit: "cover",
+                  width: "200px",
                   borderRadius: space[1],
                 }}
               />
@@ -100,5 +100,5 @@ export const GuidesList = () => {
         ))}
       </Grid>
     </Dialog.Root>
-  )
-}
+  );
+};

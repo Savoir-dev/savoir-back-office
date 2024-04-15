@@ -9,7 +9,7 @@ import { space } from "../../styles/const";
 import {
   deleteUserById,
   getAllUsers,
-} from "../../services/users/users.services";
+} from "../../services/routes/users/users.services";
 import { Button } from "../../components/atoms/button";
 
 const users = [

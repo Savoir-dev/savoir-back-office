@@ -1,119 +1,114 @@
 import {
-  Badge,
   Button,
   Flex,
   Select,
   Text,
   TextArea,
   TextField,
-} from '@radix-ui/themes'
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
-import { Control, Controller, useFieldArray, useForm } from 'react-hook-form'
-import { FilePicker } from '../../../../components/atoms/FilePicker'
-import { Image, Mic, Plus, X } from 'lucide-react'
-import { space } from '../../../../styles/const'
-import { MapSelector } from '../../../generalSettings/mapSelector'
+  Badge,
+} from "@radix-ui/themes";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import {
+  Control,
+  Controller,
+  UseFormGetValues,
+  UseFormSetValue,
+} from "react-hook-form";
+import { FilePicker } from "../../../../components/atoms/FilePicker";
+import { Image, Mic, Plus, X } from "lucide-react";
+import { space } from "../../../../styles/const";
+import { MapSelector } from "../../../generalSettings/mapSelector";
 import {
   InterestPoint,
   InterestPointTranslation,
-} from '../../../../services/types/interestPoints.type'
+} from "../../../../services/types/interestPoints.type";
 
 interface Props {
-  location: { lat: number; lng: number }
-  setLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>
-  controlMainSettings: Control<InterestPoint>
-  isOriginal?: boolean
-  handleSubmit: (data: InterestPointTranslation) => void
-  local: string
-  interestPointTranslation: InterestPointTranslation
+  location: { lat: number; lng: number };
+  control: Control<InterestPoint>;
+  index: number;
+  interestPointTranslation: InterestPointTranslation;
+  isOriginal?: boolean;
+  setLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>;
+  getValues: UseFormGetValues<InterestPoint>;
+  setValue: UseFormSetValue<InterestPoint>;
 }
 
 export const CreateInterestPointForm: FC<Props> = ({
   location,
-  setLocation,
-  controlMainSettings,
-  isOriginal = true,
-  handleSubmit,
-  local,
+  control,
+  index,
   interestPointTranslation,
+  isOriginal = true,
+  setLocation,
+  getValues,
+  setValue,
 }) => {
-  const [newTag, setNewTag] = useState('')
+  const [tags, setTags] = useState<string[]>([]);
+
+  const [newTag, setNewTag] = useState("");
 
   const truncateName = (name: string, length = 10) => {
-    const maxLength = length
-    return name.length > maxLength ? `${name.substring(0, maxLength)}...` : name
-  }
-
-  const { control, watch } = useForm<InterestPointTranslation>({
-    defaultValues: {
-      language: interestPointTranslation.language,
-      title: interestPointTranslation.title,
-      subtitle: interestPointTranslation.subtitle,
-      audio: interestPointTranslation.audio,
-      audioDesc: interestPointTranslation.audioDesc,
-      shortDesc: interestPointTranslation.shortDesc,
-      longDesc: interestPointTranslation.longDesc,
-      information: interestPointTranslation.information,
-      tags: interestPointTranslation.tags,
-    },
-  })
-
-  useEffect(() => {
-    const interestPointTranslation = watch((value) => {
-      const localAudio = `audio_${local}`
-      handleSubmit({
-        ...value,
-        [localAudio]: value.audio,
-      })
-    })
-    return () => interestPointTranslation.unsubscribe()
-  }, [watch])
+    const maxLength = length;
+    return name.length > maxLength
+      ? `${name.substring(0, maxLength)}...`
+      : name;
+  };
 
   const validation = {
     title: {
-      required: 'Title is required',
+      required: "Title is required",
     },
     subtitle: {
-      required: 'Subtitle is required',
+      required: "Subtitle is required",
     },
     type: {
-      required: 'Type is required',
+      required: "Type is required",
     },
     image: {
-      required: 'Image is required',
+      required: "Image is required",
     },
     audio: {
-      required: 'Audio is required',
+      required: "Audio is required",
     },
     shortDesc: {
-      required: 'Short description is required',
+      required: "Short description is required",
     },
     longDesc: {
-      required: 'Long description is required',
+      required: "Long description is required",
     },
     duration: {
-      required: 'Duration is required',
+      required: "Duration is required",
     },
     information: {
-      required: 'Information is required',
+      required: "Information is required",
     },
     guide: {
-      required: 'Guide is required',
+      required: "Guide is required",
     },
-  }
+  };
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'tags',
-  })
+  const handleAddTag = () => {
+    const updatedTags = [...tags, newTag];
 
-  const handleAddTag = (e) => {
-    e.preventDefault()
-    if (newTag) {
-      append({ tag: newTag })
-      setNewTag('')
+    setValue(`translations.${index}.tags`, updatedTags);
+    setTags(updatedTags);
+    setNewTag("");
+  };
+
+  const handleRemoveTag = (tagIndex: number) => {
+    const updatedTags = tags.filter((_, index) => index !== tagIndex);
+    setTags(updatedTags);
+
+    setValue(`translations.${index}.tags`, updatedTags);
+  };
+
+  useEffect(() => {
+    const formData = getValues();
+    if (formData && formData.translations && formData.translations[index]) {
+      setTags(formData.translations[index].tags || []);
     }
-  }
+  }, [getValues, index]);
 
   return (
     <Flex justify="between">
@@ -126,9 +121,9 @@ export const CreateInterestPointForm: FC<Props> = ({
           <Flex gap="2">
             {isOriginal && (
               <Controller
-                control={controlMainSettings}
+                control={control}
                 name="image"
-                rules={validation['image']}
+                rules={validation["image"]}
                 render={({ field: { onChange, value } }) => (
                   <FilePicker as="label">
                     {value ? (
@@ -150,7 +145,7 @@ export const CreateInterestPointForm: FC<Props> = ({
                         <Image color="orange" size={30} />
                         <input
                           type="file"
-                          style={{ display: 'none' }}
+                          style={{ display: "none" }}
                           accept="image/*"
                           onChange={(e) =>
                             e.target.files && onChange(e.target.files[0])
@@ -164,11 +159,11 @@ export const CreateInterestPointForm: FC<Props> = ({
             )}
             <Controller
               control={control}
-              name="audio"
-              rules={validation['audio']}
-              render={({ field: { onChange, value } }) => (
+              name={`translations.${index}.audio`}
+              rules={{ required: "Audio file is required" }}
+              render={({ field: { onChange, value, ref } }) => (
                 <FilePicker as="label">
-                  {value ? (
+                  {value?.name ? (
                     <Flex
                       gap="2"
                       direction="column"
@@ -187,11 +182,12 @@ export const CreateInterestPointForm: FC<Props> = ({
                       <Mic color="orange" size={30} />
                       <input
                         type="file"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                         accept="audio/*"
                         onChange={(e) =>
                           e.target.files && onChange(e.target.files[0])
                         }
+                        ref={ref}
                       />
                     </>
                   )}
@@ -205,7 +201,7 @@ export const CreateInterestPointForm: FC<Props> = ({
                 Color
               </Text>
               <Controller
-                control={controlMainSettings}
+                control={control}
                 name="color"
                 render={({ field: { onChange, value } }) => (
                   <input type="color" value={value} onChange={onChange} />
@@ -220,10 +216,10 @@ export const CreateInterestPointForm: FC<Props> = ({
             <Controller
               defaultValue={interestPointTranslation.audioDesc}
               control={control}
-              name="audioDesc"
+              name={`translations.${index}.audioDesc`}
               render={({ field: { onChange, value } }) => (
                 <TextArea
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                   value={value}
                   onChange={onChange}
                 />
@@ -238,8 +234,8 @@ export const CreateInterestPointForm: FC<Props> = ({
                 Type
               </Text>
               <Controller
-                rules={validation['type']}
-                control={controlMainSettings}
+                rules={validation["type"]}
+                control={control}
                 name="type"
                 render={({ field: { value, onChange } }) => (
                   <Select.Root value={value} onValueChange={onChange}>
@@ -264,9 +260,9 @@ export const CreateInterestPointForm: FC<Props> = ({
                 Title
               </Text>
               <Controller
-                rules={validation['title']}
+                rules={validation["title"]}
                 control={control}
-                name="title"
+                name={`translations.${index}.title`}
                 render={({ field: { onChange, value } }) => (
                   <TextField.Root
                     placeholder="Sagrada familia..."
@@ -281,9 +277,9 @@ export const CreateInterestPointForm: FC<Props> = ({
                 subtitle
               </Text>
               <Controller
-                rules={validation['subtitle']}
+                rules={validation["subtitle"]}
                 control={control}
-                name="subtitle"
+                name={`translations.${index}.subtitle`}
                 render={({ field: { onChange, value } }) => (
                   <TextField.Root
                     placeholder="A beautiful church..."
@@ -299,8 +295,8 @@ export const CreateInterestPointForm: FC<Props> = ({
                   Duration
                 </Text>
                 <Controller
-                  control={controlMainSettings}
-                  rules={validation['duration']}
+                  control={control}
+                  rules={validation["duration"]}
                   name="duration"
                   render={({ field: { onChange, value } }) => (
                     <TextField.Root
@@ -320,8 +316,8 @@ export const CreateInterestPointForm: FC<Props> = ({
               </Text>
               <Controller
                 control={control}
-                rules={validation['shortDesc']}
-                name="shortDesc"
+                rules={validation["shortDesc"]}
+                name={`translations.${index}.shortDesc`}
                 render={({ field: { onChange, value } }) => (
                   <TextArea value={value} onChange={onChange} />
                 )}
@@ -333,7 +329,7 @@ export const CreateInterestPointForm: FC<Props> = ({
               </Text>
               <Controller
                 control={control}
-                name="longDesc"
+                name={`translations.${index}.longDesc`}
                 render={({ field: { onChange, value } }) => (
                   <TextArea value={value} onChange={onChange} />
                 )}
@@ -350,8 +346,8 @@ export const CreateInterestPointForm: FC<Props> = ({
                 value={newTag}
                 placeholder="Food..."
                 onChange={(e) => {
-                  e.preventDefault()
-                  setNewTag(e.target.value)
+                  e.preventDefault();
+                  setNewTag(e.target.value);
                 }}
               />
               <Button color="orange" onClick={handleAddTag}>
@@ -362,13 +358,13 @@ export const CreateInterestPointForm: FC<Props> = ({
               style={{ marginTop: space[2], marginBottom: space[2] }}
               gap="2"
             >
-              {fields.map((field, index) => (
-                <Badge size="3" color="orange" key={index}>
-                  {field.tag}
+              {tags.map((tag, tagIndex) => (
+                <Badge key={tagIndex}>
+                  {tag}
                   <X
-                    onClick={() => remove(index)}
+                    onClick={() => handleRemoveTag(tagIndex)}
                     size={10}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                   />
                 </Badge>
               ))}
@@ -380,8 +376,8 @@ export const CreateInterestPointForm: FC<Props> = ({
               </Text>
               <Controller
                 control={control}
-                rules={validation['information']}
-                name="information"
+                rules={validation["information"]}
+                name={`translations.${index}.information`}
                 render={({ field: { onChange, value } }) => (
                   <TextField.Root value={value} onChange={onChange} />
                 )}
@@ -394,8 +390,8 @@ export const CreateInterestPointForm: FC<Props> = ({
                 Guide
               </Text>
               <Controller
-                control={controlMainSettings}
-                rules={validation['guide']}
+                control={control}
+                rules={validation["guide"]}
                 name="guide"
                 render={({ field: { onChange, value } }) => (
                   <TextField.Root value={value} onChange={onChange} />
@@ -413,7 +409,7 @@ export const CreateInterestPointForm: FC<Props> = ({
             lng: location.lng || 2.15899,
           }}
           setLocation={({ lat, lng }) => {
-            setLocation({ lat: lat, lng: lng })
+            setLocation({ lat: lat, lng: lng });
           }}
         />
         <Flex direction="row" gap="2">
@@ -422,7 +418,7 @@ export const CreateInterestPointForm: FC<Props> = ({
               Latitude
             </Text>
             <Controller
-              control={controlMainSettings}
+              control={control}
               name="latitude"
               render={({ field }) => (
                 <TextField.Root
@@ -438,7 +434,7 @@ export const CreateInterestPointForm: FC<Props> = ({
               Longitude
             </Text>
             <Controller
-              control={controlMainSettings}
+              control={control}
               name="longitude"
               render={({ field }) => (
                 <TextField.Root
@@ -452,5 +448,5 @@ export const CreateInterestPointForm: FC<Props> = ({
         </Flex>
       </Flex>
     </Flex>
-  )
-}
+  );
+};

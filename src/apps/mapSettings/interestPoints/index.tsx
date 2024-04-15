@@ -21,7 +21,7 @@ export const InterestPointsApp = () => {
           </Button>
         </Box>
         <InterestPointList />
-        <CreateInterestPointModal close={onCloseDialog} />
+        {isDialogOpen && <CreateInterestPointModal close={onCloseDialog} />}
       </Flex>
     </Dialog.Root>
   );

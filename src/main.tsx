@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "react-h5-audio-player/lib/styles.css";
@@ -9,11 +8,9 @@ import App from "./App.tsx";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Theme>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </Theme>
-  </React.StrictMode>
+  <Theme>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Theme>
 );

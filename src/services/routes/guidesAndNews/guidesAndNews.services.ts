@@ -1,4 +1,4 @@
-import api from "../api";
+import api from "../../api";
 import { Guide, GuidePost, NewsPost } from "./guidesAndNews.type";
 
 // GET

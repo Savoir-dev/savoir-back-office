@@ -1,19 +1,19 @@
-import { Card, DataList, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
-import { MapPin, Plus } from 'lucide-react'
-import { useState } from 'react'
+import { Card, DataList, Dialog, Flex, Grid, Text } from "@radix-ui/themes";
+import { MapPin, Plus } from "lucide-react";
+import { useState } from "react";
 
-import styled from 'styled-components'
-import { colors, space } from '../../../../styles/const'
-import { Button } from '../../../../components/atoms/button'
-import { CreateItineraryModal } from '../createItineraryModal'
-import { Itinerary } from '../../../../services/types/itineraries.type'
-import { useMutation, useQueryClient } from 'react-query'
-import { deleteItinerary } from '../../../../services/intineraries/itineraries.services'
+import styled from "styled-components";
+import { colors, space } from "../../../../styles/const";
+import { Button } from "../../../../components/atoms/button";
+import { CreateItineraryModal } from "../createItineraryModal";
+import { Itinerary } from "../../../../services/types/itineraries.type";
+import { useMutation, useQueryClient } from "react-query";
+import { deleteItinerary } from "../../../../services/routes/intineraries/itineraries.services";
 
 interface Props {
-  itinerary: Itinerary
-  setSelectedItineraryUid: (uid: string | undefined) => void
-  selectedItineraryUid: string | undefined
+  itinerary: Itinerary;
+  setSelectedItineraryUid: (uid: string | undefined) => void;
+  selectedItineraryUid: string | undefined;
 }
 
 export const ItineraryCard = ({
@@ -21,34 +21,34 @@ export const ItineraryCard = ({
   setSelectedItineraryUid,
   selectedItineraryUid,
 }: Props) => {
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const onCloseDialog = () => setIsDialogOpen(false)
-  const queryClient = useQueryClient()
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const onCloseDialog = () => setIsDialogOpen(false);
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: (uid: string | undefined) => {
-      return deleteItinerary(uid)
+      return deleteItinerary(uid);
     },
     onSuccess: () => {
-      setIsDialogOpen(false)
+      setIsDialogOpen(false);
       queryClient.invalidateQueries({
-        queryKey: ['itineraries'],
-      })
+        queryKey: ["itineraries"],
+      });
     },
-  })
+  });
 
   const onOpenDialog = () => {
-    setSelectedItineraryUid(itinerary.uid)
+    setSelectedItineraryUid(itinerary.uid);
     queryClient.invalidateQueries({
-      queryKey: ['itineraryByUid'],
-    })
-    setIsDialogOpen(true)
-  }
+      queryKey: ["itineraryByUid"],
+    });
+    setIsDialogOpen(true);
+  };
 
   const onDeleteItinerary = (uid: string) => {
-    mutate(uid)
-  }
+    mutate(uid);
+  };
 
   return (
     <Dialog.Root open={isDialogOpen}>
@@ -68,8 +68,8 @@ export const ItineraryCard = ({
               color="red"
               variant="outline"
               onClick={() => {
-                setIsDeleting(true)
-                setIsDialogOpen(true)
+                setIsDeleting(true);
+                setIsDialogOpen(true);
               }}
             >
               <Text weight="bold">Delete</Text>
@@ -145,8 +145,8 @@ export const ItineraryCard = ({
               color="orange"
               variant="outline"
               onClick={() => {
-                setIsDeleting(false)
-                onCloseDialog()
+                setIsDeleting(false);
+                onCloseDialog();
               }}
             >
               Cancel
@@ -162,8 +162,8 @@ export const ItineraryCard = ({
         />
       )}
     </Dialog.Root>
-  )
-}
+  );
+};
 
 const ScrollableFlex = styled(Flex)`
   margin-top: ${space[5]};
@@ -171,14 +171,14 @@ const ScrollableFlex = styled(Flex)`
   display: flex;
   overflow-x: auto;
   flex-wrap: nowrap;
-`
+`;
 
 const CustomCard = styled.div`
   min-width: 100px;
   padding: ${space[2]};
   border-radius: 4px;
   border: 1px solid ${colors.lightSmoke};
-`
+`;
 
 const StyledConnector = styled.div`
   display: flex;
@@ -186,8 +186,8 @@ const StyledConnector = styled.div`
   min-width: 150px;
 
   &:not(:last-child)::after {
-    content: '';
+    content: "";
     width: 100%;
     border-bottom: 1px dashed;
   }
-`
+`;

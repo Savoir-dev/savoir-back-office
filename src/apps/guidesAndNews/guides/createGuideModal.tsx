@@ -1,72 +1,74 @@
-import { FC } from 'react'
+import { FC } from "react";
 
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from "react-query";
 import {
   postGuide,
   putGuide,
-} from '../../../services/guidesAndNews/guidesAndNews.services'
+} from "../../../services/routes/guidesAndNews/guidesAndNews.services";
 
-import { Controller, useForm, SubmitHandler } from 'react-hook-form'
+import { Controller, useForm, SubmitHandler } from "react-hook-form";
 
-import { FilePicker } from '../../../components/atoms/FilePicker'
-import { Button, Dialog, Flex, Text, TextArea } from '@radix-ui/themes'
-import { Image } from 'lucide-react'
+import { FilePicker } from "../../../components/atoms/FilePicker";
+import { Button, Dialog, Flex, Text, TextArea } from "@radix-ui/themes";
+import { Image } from "lucide-react";
 
-import { Guide } from '../../../services/guidesAndNews/guidesAndNews.type'
+import { Guide } from "../../../services/routes/guidesAndNews/guidesAndNews.type";
 interface Props {
-  close: () => void
-  isEditing?: boolean
-  guide?: Guide
+  close: () => void;
+  isEditing?: boolean;
+  guide?: Guide;
 }
 
 export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: (newGuide: Guide) => {
-      return guide ? putGuide(newGuide) : postGuide(newGuide)
+      return guide ? putGuide(newGuide) : postGuide(newGuide);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['guides'],
-      })
-      close()
+        queryKey: ["guides"],
+      });
+      close();
     },
-  })
+  });
 
   const { control, handleSubmit } = useForm<Guide>({
     defaultValues: {
-      image: '',
-      shortDesc: guide?.shortDesc || '',
-      longDesc: guide?.longDesc || '',
+      image: "",
+      shortDesc: guide?.shortDesc || "",
+      longDesc: guide?.longDesc || "",
     },
-  })
+  });
 
   const validation = {
     image: {
-      required: 'Image is required',
+      required: "Image is required",
     },
     shortDesc: {
-      required: 'Short Description is required',
+      required: "Short Description is required",
     },
     longDesc: {
-      required: 'Long Description is required',
+      required: "Long Description is required",
     },
-  }
+  };
 
   const onSubmit: SubmitHandler<Guide> = (data) => {
     const adjustedData = {
       ...data,
-      uid: guide?.uid || '',
-    }
+      uid: guide?.uid || "",
+    };
 
-    mutate(adjustedData)
-  }
+    mutate(adjustedData);
+  };
 
   const truncateName = (name: string, length = 10) => {
-    const maxLength = length
-    return name.length > maxLength ? `${name.substring(0, maxLength)}...` : name
-  }
+    const maxLength = length;
+    return name.length > maxLength
+      ? `${name.substring(0, maxLength)}...`
+      : name;
+  };
 
   return (
     <Dialog.Content onPointerDownOutside={close}>
@@ -77,7 +79,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
             <Controller
               control={control}
               name="image"
-              rules={validation['image']}
+              rules={validation["image"]}
               render={({ field: { onChange, value } }) => (
                 <FilePicker as="label">
                   {value ? (
@@ -99,7 +101,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
                       <Image color="orange" size={30} />
                       <input
                         type="file"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                         accept="image/*"
                         onChange={(e) =>
                           e.target.files && onChange(e.target.files[0])
@@ -115,7 +117,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
                 <Text>Short Description</Text>
                 <Controller
                   control={control}
-                  rules={validation['shortDesc']}
+                  rules={validation["shortDesc"]}
                   name="shortDesc"
                   render={({ field: { onChange, value } }) => (
                     <TextArea value={value} onChange={onChange} />
@@ -147,5 +149,5 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
         </form>
       </Flex>
     </Dialog.Content>
-  )
-}
+  );
+};
