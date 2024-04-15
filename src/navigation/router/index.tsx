@@ -30,7 +30,7 @@ export const AppRouter = () => {
         element={<ForgetPasswordApp />}
       />
       <Route
-        path={authAppRoutes.forgetPassword()}
+        path={authAppRoutes.changePassword()}
         element={<ChangePasswordApp />}
       />
       <Route

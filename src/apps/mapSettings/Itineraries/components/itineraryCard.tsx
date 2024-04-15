@@ -145,7 +145,6 @@ export const ItineraryCard = ({ itinerary }: Props) => {
         </Dialog.Content>
       ) : (
         <CreateItineraryModal
-          isTitleField
           close={onCloseDialog}
           itinerary={itinerary}
           preSelectedInterestPoints={itinerary.interestPoints}

@@ -154,7 +154,6 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
       longitude: location.lng.toString(),
       interestPointTranslation: translatedInterestPoints,
     }
-    console.log('adjustedData-->', adjustedData)
 
     mutate(adjustedData)
   }

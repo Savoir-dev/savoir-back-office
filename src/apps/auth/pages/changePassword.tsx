@@ -25,6 +25,18 @@ export const ChangePasswordApp: FC = () => {
         message: 'Invalid email',
       },
     },
+    password: {
+      required: 'This field is required',
+      minLength: {
+        value: 8,
+        message: 'Password must be at least 8 characters long',
+      },
+    },
+    confirmPassword: {
+      required: 'This field is required',
+      validate: (value: string) =>
+        value === control.getValues('password') || 'Passwords do not match',
+    },
   }
 
   const { mutate, isLoading } = useMutation({
@@ -68,10 +80,11 @@ export const ChangePasswordApp: FC = () => {
                 control={control}
                 name="password"
                 render={({ field: { onChange, value } }) => (
-                  <TextField.Root
-                    placeholder=""
+                  <PasswordTextField
                     value={value}
                     onChange={onChange}
+                    isPasswordVisible={isPasswordVisible}
+                    setIsPasswordVisible={setIsPasswordVisible}
                   />
                 )}
               />
@@ -81,9 +94,9 @@ export const ChangePasswordApp: FC = () => {
                 Confirm Password
               </Text>
               <Controller
-                rules={validation['password']}
+                rules={validation['confirmPassword']}
                 control={control}
-                name="password"
+                name="confirmPassword"
                 render={({ field: { onChange, value } }) => (
                   <PasswordTextField
                     value={value}
@@ -102,7 +115,7 @@ export const ChangePasswordApp: FC = () => {
                 loading={isLoading}
                 disabled={isLoading}
               >
-                Send mail
+                Validate
               </Button>
             </Flex>
           </Flex>

@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { Dialog, Flex, Grid, Tabs, Text, TextField } from '@radix-ui/themes'
+import { Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { AxiosResponse } from 'axios'
 
-import { InterestPointSelectableCard } from '../components/interestPointSelectableCard'
 import { space } from '../../../styles/const'
 import { InterestPointFromApi } from '../../../services/types/interestPoints.type'
 import {
@@ -14,6 +13,7 @@ import {
 import { Button } from '../../../components/atoms/button'
 import { getInterestPointsByWalkingTour } from '../../../services/interestPoints/interestPoints.services'
 import {
+  getItineraryByUid,
   postItinerary,
   putItinerary,
 } from '../../../services/intineraries/itineraries.services'
@@ -34,23 +34,34 @@ export const CreateItineraryModal = ({
     guide: itinerary?.guide || '',
     color: itinerary?.color || '',
   })
+
+  console.log('itinerary', itinerary)
+
+  const { itineraryData } = useQuery({
+    queryKey: 'itineraryByUid',
+    queryFn: () => getItineraryByUid(itinerary?.uid),
+    select: (data): AxiosResponse<Itinerary[]> => data.data,
+  })
+
+  const editableItinerary = itineraryData?.data
+
   const [translatedItineraries, setTranslatedItineraries] = useState<
     ItineraryTranslations[]
   >([
     {
       language: 'en',
-      title: itinerary?.translations[0].title || '',
-      subtitle: itinerary?.translations[0].subtitle || '',
+      title: editableItinerary?.translations[0].title || '',
+      subtitle: editableItinerary?.translations[0].subtitle || '',
     },
     {
       language: 'fr',
-      title: itinerary?.translations[2]?.title || '',
-      subtitle: itinerary?.translations[2]?.subtitle || '',
+      title: editableItinerary?.translations[2]?.title || '',
+      subtitle: editableItinerary?.translations[2]?.subtitle || '',
     },
     {
       language: 'es',
-      title: itinerary?.translations[1]?.title || '',
-      subtitle: itinerary?.translations[1]?.subtitle || '',
+      title: editableItinerary?.translations[1]?.title || '',
+      subtitle: editableItinerary?.translations[1]?.subtitle || '',
     },
   ])
 

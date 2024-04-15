@@ -63,7 +63,6 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
               <Trash size={16} />
             </Button>
           )} */}
-
           <Button
             size="1"
             color="orange"

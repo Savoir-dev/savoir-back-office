@@ -72,6 +72,10 @@ class AuthAppRoutes extends AppRoute {
   forgetPassword(): UriType {
     return this.generatePath('forget-password')
   }
+
+  changePassword(): UriType {
+    return this.generatePath('change-password')
+  }
 }
 
 export const usersAppRoutes = new UsersAppRoutes()
