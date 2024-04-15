@@ -1,7 +1,7 @@
 import { Button, Dialog, Flex, Tabs, Text, TextField } from '@radix-ui/themes'
 import { useEffect, useState, FC } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { useForm } from 'react-hook-form'
+import { set, useForm } from 'react-hook-form'
 
 import { space } from '../../../styles/const'
 import {
@@ -32,68 +32,125 @@ const convertToFormInterestPoint = (
 interface InterestPointForm {
   isEditing?: boolean
   interestPoint?: InterestPointFromApi
+  selectedInterestPointUid?: string
   close: () => void
 }
 
 export const CreateInterestPointModal: FC<InterestPointForm> = ({
   isEditing,
   interestPoint,
+  selectedInterestPointUid,
   close,
 }) => {
-  const { data: interestPointData } = useQuery({
-    queryKey: 'interestPoints',
+  const { data: interestPointData, refetch: refetchInterestPoint } = useQuery({
+    queryKey: 'interestPointByUid',
     queryFn: () => getInterestPointByInterestPointId(interestPoint?.uid),
     select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
+    enabled: !!selectedInterestPointUid,
   })
 
-  const EditableInterestPoint = interestPointData?.data || []
-  console.log('EditableInterestPoint', EditableInterestPoint)
+  const editableInterestPoint = interestPointData?.data
+
+  const enEditableInterestPoint = editableInterestPoint?.find((i) => {
+    return i.language === 'en'
+  })
+
+  const frEditableInterestPoint = editableInterestPoint?.find((i) => {
+    return i.language === 'fr'
+  })
+
+  const esEditableInterestPoint = editableInterestPoint?.find((i) => {
+    return i.language === 'es'
+  })
 
   const [translatedInterestPoints, setTranslatedInterestPoints] = useState<
     InterestPointTranslation[]
   >([
     {
-      uid: EditableInterestPoint[0]?.uid || '',
+      uid: '',
       language: 'en',
-      title: EditableInterestPoint[0]?.translations[0]?.title || '',
-      subtitle: EditableInterestPoint[0]?.translations[0]?.subtitle || '',
-      shortDesc: EditableInterestPoint[0]?.translations[0]?.shortDesc || '',
-      longDesc: EditableInterestPoint[0]?.translations[0]?.longDesc || '',
-      audioDesc: EditableInterestPoint[0]?.translations[0]?.audioDesc || '',
-      tags: EditableInterestPoint[0]?.translations[0]?.tags || [],
-      information: EditableInterestPoint[0]?.translations[0]?.information || '',
-      audio_en: EditableInterestPoint[0]?.translations[0]?.audio || '',
+      title: '',
+      subtitle: '',
+      shortDesc: '',
+      longDesc: '',
+      audioDesc: '',
+      tags: [],
+      information: '',
+      audio_en: '',
       interestPointId: '',
     },
     {
-      uid: EditableInterestPoint[1]?.uid || '',
+      uid: '',
       language: 'fr',
-      title: EditableInterestPoint[1]?.translations[0]?.title || '',
-      subtitle: EditableInterestPoint[1]?.translations[0]?.subtitle || '',
-      shortDesc: EditableInterestPoint[1]?.translations[0]?.shortDesc || '',
-      longDesc: EditableInterestPoint[1]?.translations[0]?.longDesc || '',
-      audioDesc: EditableInterestPoint[1]?.translations[0]?.audioDesc || '',
-      tags: EditableInterestPoint[1]?.translations[0]?.tags || [],
-      information: EditableInterestPoint[1]?.translations[0]?.information || '',
-      audio_fr: EditableInterestPoint[1]?.translations[0]?.audio || '',
+      title: '',
+      subtitle: '',
+      shortDesc: '',
+      longDesc: '',
+      audioDesc: '',
+      tags: [],
+      information: '',
+      audio_fr: '',
       interestPointId: '',
     },
     {
-      uid: EditableInterestPoint[2]?.uid || '',
+      uid: '',
       language: 'es',
-      title: EditableInterestPoint[2]?.translations[0]?.title || '',
-      subtitle: EditableInterestPoint[2]?.translations[0]?.subtitle || '',
-      shortDesc: EditableInterestPoint[2]?.translations[0]?.shortDesc || '',
-      longDesc: EditableInterestPoint[2]?.translations[0]?.longDesc || '',
-      audioDesc: EditableInterestPoint[2]?.translations[0]?.audioDesc || '',
-      tags: EditableInterestPoint[2]?.translations[0]?.tags || [],
-      information: EditableInterestPoint[2]?.translations[0]?.information || '',
-      audio_es: EditableInterestPoint[2]?.translations[0]?.audio || '',
+      title: '',
+      subtitle: '',
+      shortDesc: '',
+      longDesc: '',
+      audioDesc: '',
+      tags: [],
+      information: '',
+      audio_es: '',
       interestPointId: '',
     },
   ])
 
-  console.log('test', translatedInterestPoints)
+  useEffect(() => {
+    refetchInterestPoint()
+    setTranslatedInterestPoints([
+      {
+        uid: enEditableInterestPoint?.interestPointId || '',
+        language: 'en',
+        title: enEditableInterestPoint?.title || '',
+        subtitle: enEditableInterestPoint?.subtitle || '',
+        shortDesc: enEditableInterestPoint?.shortDesc || '',
+        longDesc: enEditableInterestPoint?.longDesc || '',
+        audioDesc: enEditableInterestPoint?.audioDesc || '',
+        tags: enEditableInterestPoint?.tags || [],
+        information: enEditableInterestPoint?.information || '',
+        audio_en: enEditableInterestPoint?.audio || '',
+        interestPointId: '',
+      },
+      {
+        uid: frEditableInterestPoint?.interestPointId || '',
+        language: 'fr',
+        title: frEditableInterestPoint?.title || '',
+        subtitle: frEditableInterestPoint?.subtitle || '',
+        shortDesc: frEditableInterestPoint?.shortDesc || '',
+        longDesc: frEditableInterestPoint?.longDesc || '',
+        audioDesc: frEditableInterestPoint?.audioDesc || '',
+        tags: frEditableInterestPoint?.tags || [],
+        information: frEditableInterestPoint?.information || '',
+        audio_fr: frEditableInterestPoint?.audio || '',
+        interestPointId: '',
+      },
+      {
+        uid: esEditableInterestPoint?.interestPointId || '',
+        language: 'es',
+        title: esEditableInterestPoint?.title || '',
+        subtitle: esEditableInterestPoint?.subtitle || '',
+        shortDesc: esEditableInterestPoint?.shortDesc || '',
+        longDesc: esEditableInterestPoint?.longDesc || '',
+        audioDesc: esEditableInterestPoint?.audioDesc || '',
+        tags: esEditableInterestPoint?.tags || [],
+        information: esEditableInterestPoint?.information || '',
+        audio_es: esEditableInterestPoint?.audio || '',
+        interestPointId: '',
+      },
+    ])
+  }, [selectedInterestPointUid])
 
   const [location, setLocation] = useState<{ lat: number; lng: number }>({
     lat: 41.38879,
@@ -147,7 +204,6 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
   }
 
   const onSubmit = (data: InterestPoint) => {
-    console.log('data-->', data)
     const adjustedData = {
       ...data,
       latitude: location.lat.toString(),

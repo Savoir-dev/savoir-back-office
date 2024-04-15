@@ -20,9 +20,13 @@ import { deleteInterestPointByInterestPointId } from '../../../../services/inter
 
 interface InterestPointCardProps {
   interestPoint: InterestPointFromApi
+  selectedInterestPointUid: string | null
+  setSelectedInterestPointUid: (uid: string | null) => void
 }
 export const InterestPointCard: FC<InterestPointCardProps> = ({
   interestPoint,
+  selectedInterestPointUid,
+  setSelectedInterestPointUid,
 }) => {
   const queryClient = useQueryClient()
 
@@ -50,6 +54,11 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
     mutate(uid)
   }
 
+  const onOpenDialog = () => {
+    setIsDialogOpen(true)
+    setSelectedInterestPointUid(interestPoint.uid)
+  }
+
   return (
     <Dialog.Root open={isDialogOpen}>
       <Card key={interestPoint.translations[0].title}>
@@ -68,7 +77,7 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
             color="orange"
             onClick={() => {
               setIsEditing(true)
-              setIsDialogOpen(true)
+              onOpenDialog()
             }}
           >
             Edit
@@ -116,6 +125,7 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
       </Card>
       {isDialogOpen && isEditing ? (
         <CreateInterestPointModal
+          selectedInterestPointUid={selectedInterestPointUid}
           isEditing={isEditing}
           interestPoint={interestPoint}
           close={onCloseDialog}

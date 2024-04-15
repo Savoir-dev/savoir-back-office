@@ -7,13 +7,10 @@ export const getNews = async () => await api.get(`/news`);
 
 // POST
 export const postGuide = async (newGuide: GuidePost) => {
-  console.log("newGuide", newGuide);
   const formData = new FormData();
   formData.append("image", newGuide.image);
   formData.append("shortDesc", newGuide.shortDesc);
   formData.append("longDesc", newGuide.longDesc);
-
-  console.log("formData", formData);
 
   return await api.post("/guide", formData, {
     headers: {

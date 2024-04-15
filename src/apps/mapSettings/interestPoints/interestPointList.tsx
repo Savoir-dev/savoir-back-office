@@ -6,8 +6,13 @@ import { getInterestPoints } from '../../../services/interestPoints/interestPoin
 import { InterestPointFromApi } from '../../../services/types/interestPoints.type'
 
 import { InterestPointCard } from './components/interestPointCard'
+import { useState } from 'react'
 
 export const InterestPointList = () => {
+  const [selectedInterestPointUid, setSelectedInterestPointUid] = useState<
+    string | null
+  >(null)
+
   const { data: interestPointsData } = useQuery({
     queryKey: 'interestPoints',
     queryFn: () => getInterestPoints(),
@@ -19,7 +24,12 @@ export const InterestPointList = () => {
   return (
     <Grid columns="3" gap="3" width="auto">
       {interestPoints.map((item, index) => (
-        <InterestPointCard interestPoint={item} key={index} />
+        <InterestPointCard
+          interestPoint={item}
+          key={index}
+          selectedInterestPointUid={selectedInterestPointUid}
+          setSelectedInterestPointUid={setSelectedInterestPointUid}
+        />
       ))}
     </Grid>
   )

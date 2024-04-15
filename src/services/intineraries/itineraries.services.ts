@@ -5,12 +5,12 @@ import { Itinerary, PostItinerary } from "../types/itineraries.type";
 // GET
 export const getItineraries = async () => await api.get(`/itinerary`);
 
-export const getItineraryByUid = async (uid: string | undefined) =>
-  await api.get(`/itinerary/${uid}`);
-
+export const getItineraryByUid = async (uid: string | undefined) => {
+  console.log("uid", uid);
+  return await api.get(`/itinerary/${uid}`);
+};
 // POST
 export const postItinerary = async (newItinerary: PostItinerary) => {
-  console.log("ici-->", newItinerary);
   const itineraryToInterestPoints = newItinerary.interestPoints.map(
     (interestPoint: InterestPointFromApi, index: number) => ({
       uid: interestPoint.uid,

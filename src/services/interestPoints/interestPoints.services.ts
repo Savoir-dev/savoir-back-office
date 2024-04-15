@@ -13,7 +13,6 @@ export const getInterestPointsByWalkingTour = async () =>
 
 // POST
 export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
-  console.log("newInterestPoint---->>>", newInterestPoint);
   const formData = new FormData();
 
   if (newInterestPoint.image) {
@@ -58,17 +57,10 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
     )?.audio || ""
   );
 
-  console.log(
-    "updatedTranslatedInterestPoints",
-    updatedTranslatedInterestPoints
-  );
-
   formData.append(
     "translations",
     JSON.stringify(updatedTranslatedInterestPoints)
   );
-
-  console.log("formData", formData);
 
   return await api.post("/interestPoint", formData, {
     headers: {
@@ -123,17 +115,10 @@ export const putInterestPoint = async (updatedInterestPoint: InterestPoint) => {
     )?.audio || ""
   );
 
-  console.log(
-    "updatedTranslatedInterestPoints",
-    updatedTranslatedInterestPoints
-  );
-
   formData.append(
     "translations",
     JSON.stringify(updatedTranslatedInterestPoints)
   );
-
-  console.log("formData", formData);
 
   return await api.put(`/interestPoint/${updatedInterestPoint.uid}`, formData, {
     headers: {

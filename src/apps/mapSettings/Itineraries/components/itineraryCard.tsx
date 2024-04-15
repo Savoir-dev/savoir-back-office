@@ -12,9 +12,15 @@ import { deleteItinerary } from '../../../../services/intineraries/itineraries.s
 
 interface Props {
   itinerary: Itinerary
+  setSelectedItineraryUid: (uid: string | undefined) => void
+  selectedItineraryUid: string | undefined
 }
 
-export const ItineraryCard = ({ itinerary }: Props) => {
+export const ItineraryCard = ({
+  itinerary,
+  setSelectedItineraryUid,
+  selectedItineraryUid,
+}: Props) => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const onCloseDialog = () => setIsDialogOpen(false)
@@ -32,6 +38,14 @@ export const ItineraryCard = ({ itinerary }: Props) => {
     },
   })
 
+  const onOpenDialog = () => {
+    setSelectedItineraryUid(itinerary.uid)
+    queryClient.invalidateQueries({
+      queryKey: ['itineraryByUid'],
+    })
+    setIsDialogOpen(true)
+  }
+
   const onDeleteItinerary = (uid: string) => {
     mutate(uid)
   }
@@ -45,7 +59,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
               size="1"
               color="orange"
               variant="outline"
-              onClick={() => setIsDialogOpen(true)}
+              onClick={onOpenDialog}
             >
               <Text weight="bold">Edit</Text>
             </Button>
@@ -96,11 +110,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
             ))}
             <StyledConnector>
               <Flex direction="column" align="center" gap="2">
-                <Button
-                  size="1"
-                  color="orange"
-                  onClick={() => setIsDialogOpen(true)}
-                >
+                <Button size="1" color="orange" onClick={onOpenDialog}>
                   <Plus size={20} />
                 </Button>
               </Flex>
@@ -147,6 +157,7 @@ export const ItineraryCard = ({ itinerary }: Props) => {
         <CreateItineraryModal
           close={onCloseDialog}
           itinerary={itinerary}
+          selectedItineraryUid={selectedItineraryUid}
           preSelectedInterestPoints={itinerary.interestPoints}
         />
       )}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { AxiosResponse } from 'axios'
@@ -22,48 +22,79 @@ interface Props {
   close: () => void
   preSelectedInterestPoints?: InterestPointFromApi[]
   itinerary?: Itinerary
+  selectedItineraryUid?: string
 }
 
 export const CreateItineraryModal = ({
   close,
   preSelectedInterestPoints = [],
   itinerary,
+  selectedItineraryUid,
 }: Props) => {
+  const { data: itineraryData, refetch: refetchItinerary } = useQuery({
+    queryKey: ['itineraryByUid', selectedItineraryUid],
+    queryFn: () => getItineraryByUid(selectedItineraryUid),
+    select: (data): AxiosResponse<Itinerary[]> => data.data,
+    enabled: !!selectedItineraryUid,
+  })
+
+  const editableItinerary = itineraryData?.data
+  const enEditableItinerary = editableItinerary?.find((i) => {
+    return i.language === 'en'
+  })
+  const frEditableItinerary = editableItinerary?.find((i) => {
+    return i.language === 'fr'
+  })
+  const esEditableItinerary = editableItinerary?.find((i) => {
+    return i.language === 'es'
+  })
+
   const [generalValues, setGeneralValues] = useState({
     duration: itinerary?.duration || '',
     guide: itinerary?.guide || '',
     color: itinerary?.color || '',
   })
 
-  console.log('itinerary', itinerary)
-
-  const { itineraryData } = useQuery({
-    queryKey: 'itineraryByUid',
-    queryFn: () => getItineraryByUid(itinerary?.uid),
-    select: (data): AxiosResponse<Itinerary[]> => data.data,
-  })
-
-  const editableItinerary = itineraryData?.data
-
   const [translatedItineraries, setTranslatedItineraries] = useState<
     ItineraryTranslations[]
   >([
     {
       language: 'en',
-      title: editableItinerary?.translations[0].title || '',
-      subtitle: editableItinerary?.translations[0].subtitle || '',
+      title: '',
+      subtitle: '',
     },
     {
       language: 'fr',
-      title: editableItinerary?.translations[2]?.title || '',
-      subtitle: editableItinerary?.translations[2]?.subtitle || '',
+      title: '',
+      subtitle: '',
     },
     {
       language: 'es',
-      title: editableItinerary?.translations[1]?.title || '',
-      subtitle: editableItinerary?.translations[1]?.subtitle || '',
+      title: '',
+      subtitle: '',
     },
   ])
+
+  useEffect(() => {
+    refetchItinerary()
+    setTranslatedItineraries([
+      {
+        language: 'en',
+        title: enEditableItinerary?.title || '',
+        subtitle: enEditableItinerary?.subtitle || '',
+      },
+      {
+        language: 'fr',
+        title: frEditableItinerary?.title || '',
+        subtitle: frEditableItinerary?.subtitle || '',
+      },
+      {
+        language: 'es',
+        title: esEditableItinerary?.title || '',
+        subtitle: esEditableItinerary?.subtitle || '',
+      },
+    ])
+  }, [selectedItineraryUid])
 
   const [selectedInterestPoints, setSelectedInterestPoints] = useState<
     InterestPointFromApi[]
@@ -73,7 +104,6 @@ export const CreateItineraryModal = ({
 
   const { mutate } = useMutation({
     mutationFn: (data: PostItinerary | Itinerary) => {
-      console.log('foo')
       return itinerary
         ? putItinerary(itinerary.uid, data as Itinerary)
         : postItinerary(data as PostItinerary)
@@ -93,7 +123,6 @@ export const CreateItineraryModal = ({
   })
 
   const handleSubmit = () => {
-    console.log('generalValues', generalValues)
     mutate({
       duration: generalValues.duration,
       color: generalValues.color,
