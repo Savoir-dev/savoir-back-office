@@ -35,7 +35,6 @@ export interface InterestPointTranslation {
   information: string;
   audio: File | null;
   audioUrl: string;
-  interestPointId: string;
 }
 
 export interface InterestPointTranslationFromApi {
@@ -49,5 +48,4 @@ export interface InterestPointTranslationFromApi {
   tags: string[];
   information: string;
   audio: string;
-  interestPointId: string;
 }

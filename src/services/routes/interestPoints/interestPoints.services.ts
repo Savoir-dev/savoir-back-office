@@ -54,6 +54,8 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
   const updatedTranslatedInterestPoints = newInterestPoint.translations.map(
     (interestPoint) => {
       const copyOfInterestPoint = JSON.parse(JSON.stringify(interestPoint));
+      delete copyOfInterestPoint.uid;
+      delete copyOfInterestPoint.interestPointId;
       delete copyOfInterestPoint.audio;
       delete copyOfInterestPoint.audioUrl;
       delete copyOfInterestPoint.audio_es;
