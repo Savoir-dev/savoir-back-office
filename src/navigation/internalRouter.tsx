@@ -74,7 +74,7 @@ class AuthAppRoutes extends AppRoute {
   }
 
   changePassword(): UriType {
-    return this.generatePath('change-password')
+    return this.generatePath('resetPassword')
   }
 }
 

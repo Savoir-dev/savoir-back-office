@@ -73,8 +73,6 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
     },
   })
 
-  console.log('guideById', guideById)
-
   useEffect(() => {
     if (guideData) {
       reset({

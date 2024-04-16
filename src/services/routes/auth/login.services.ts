@@ -15,3 +15,14 @@ export const forgetPassword = async (email: string) => {
   });
   return response.data;
 };
+
+export const resetPassword = async (data: {
+  email: string;
+  token: string;
+  newPassword: string;
+}) => {
+  const response = await baseApi.post("/auth/resetPassword", {
+    ...data,
+  });
+  return response.data;
+};
