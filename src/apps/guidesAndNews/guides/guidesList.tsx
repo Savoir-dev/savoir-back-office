@@ -1,30 +1,32 @@
-import { Button, Card, Dialog, Flex, Grid, Text } from "@radix-ui/themes";
-import { space } from "../../../styles/const";
-import { useQuery } from "react-query";
-import { getGuides } from "../../../services/routes/guidesAndNews/guidesAndNews.services";
-import { Guide } from "../../../services/routes/guidesAndNews/guidesAndNews.type";
-import { AxiosResponse } from "axios";
-import { Trash } from "lucide-react";
-import { useState } from "react";
-import { CreateGuideModal } from "./createGuideModal";
+import { Button, Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
+import { space } from '../../../styles/const'
+import { useQuery } from 'react-query'
+import { getGuides } from '../../../services/routes/guidesAndNews/guidesAndNews.services'
+import { Guide } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
+import { AxiosResponse } from 'axios'
+import { Trash } from 'lucide-react'
+import { useState } from 'react'
+import { CreateGuideModal } from './createGuideModal'
 
 export const GuidesList = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
 
   const { data: guidesData } = useQuery({
-    queryKey: ["guides"],
+    queryKey: ['guides'],
     queryFn: () => {
-      return getGuides();
+      return getGuides()
     },
     select: (data): AxiosResponse<Guide[]> => data.data,
-  });
+  })
 
-  const guides = guidesData?.data || [];
+  const guides = guidesData?.data || []
 
   const onCloseModal = () => {
-    setIsDialogOpen(false);
-  };
+    setIsDialogOpen(false)
+  }
+
+  console.log(guides)
 
   return (
     <Dialog.Root open={isDialogOpen}>
@@ -38,7 +40,7 @@ export const GuidesList = () => {
       >
         {guides.map((guide, index) => (
           <Card key={index}>
-            {/* <Flex
+            <Flex
               gap="2"
               position="absolute"
               style={{ zIndex: 1, top: space[5], left: space[5] }}
@@ -61,14 +63,14 @@ export const GuidesList = () => {
               >
                 Edit
               </Button>
-            </Flex> */}
+            </Flex>
             <Flex direction="column" gap="2">
               <img
                 src={guide.image}
                 alt="interest point image"
                 style={{
-                  objectFit: "cover",
-                  width: "200px",
+                  objectFit: 'cover',
+                  width: '200px',
                   borderRadius: space[1],
                 }}
               />
@@ -77,17 +79,17 @@ export const GuidesList = () => {
                   <Text size="3" weight="bold">
                     Short description
                   </Text>
-                  <Text>{guide.shortDesc}</Text>
+                  <Text>test</Text>
                 </Flex>
                 <Flex direction="column">
                   <Text size="3" weight="bold">
                     Long description
                   </Text>
-                  <Text>{guide.longDesc}</Text>
+                  <Text>test</Text>
                 </Flex>
               </Flex>
             </Flex>
-            {isEditing ? (
+            {isDialogOpen && isEditing ? (
               <CreateGuideModal
                 close={onCloseModal}
                 guide={guide}
@@ -100,5 +102,5 @@ export const GuidesList = () => {
         ))}
       </Grid>
     </Dialog.Root>
-  );
-};
+  )
+}

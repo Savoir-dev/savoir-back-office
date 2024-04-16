@@ -1,153 +1,151 @@
-import { FC } from "react";
+import { FC, useEffect } from 'react'
 
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import {
+  getGuideByUid,
   postGuide,
   putGuide,
-} from "../../../services/routes/guidesAndNews/guidesAndNews.services";
+} from '../../../services/routes/guidesAndNews/guidesAndNews.services'
 
-import { Controller, useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form'
 
-import { FilePicker } from "../../../components/atoms/FilePicker";
-import { Button, Dialog, Flex, Text, TextArea } from "@radix-ui/themes";
-import { Image } from "lucide-react";
+import { Button, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 
-import { Guide } from "../../../services/routes/guidesAndNews/guidesAndNews.type";
+import { Guide } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
+import { space } from '../../../styles/const'
+import { CreateGuideForm } from './components/createGuideForm'
 interface Props {
-  close: () => void;
-  isEditing?: boolean;
-  guide?: Guide;
+  close: () => void
+  isEditing?: boolean
+  guide?: Guide
 }
 
 export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
     mutationFn: (newGuide: Guide) => {
-      return guide ? putGuide(newGuide) : postGuide(newGuide);
+      return guide ? putGuide(newGuide) : postGuide(newGuide)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["guides"],
-      });
-      close();
+        queryKey: ['guides'],
+      })
+      close()
     },
-  });
+  })
 
-  const { control, handleSubmit } = useForm<Guide>({
+  const { data: guideData, isLoading: isGuideDataLoading } = useQuery({
+    queryKey: 'guideByUid',
+    queryFn: () => getGuideByUid(guide?.uid),
+    select: (data) => data.data,
+    enabled: !!guide?.uid,
+  })
+
+  const guideById = guideData?.data
+
+  const { control, handleSubmit, reset } = useForm<Guide>({
     defaultValues: {
-      image: "",
-      shortDesc: guide?.shortDesc || "",
-      longDesc: guide?.longDesc || "",
+      image: '',
+      translations: [
+        {
+          language: 'en',
+          title: '',
+          subtitle: '',
+          shortDesc: '',
+          longDesc: '',
+        },
+        {
+          language: 'fr',
+          title: '',
+          subtitle: '',
+          shortDesc: '',
+          longDesc: '',
+        },
+        {
+          language: 'es',
+          title: '',
+          subtitle: '',
+          shortDesc: '',
+          longDesc: '',
+        },
+      ],
     },
-  });
+  })
 
-  const validation = {
-    image: {
-      required: "Image is required",
-    },
-    shortDesc: {
-      required: "Short Description is required",
-    },
-    longDesc: {
-      required: "Long Description is required",
-    },
-  };
+  console.log('guideById', guideById)
+
+  useEffect(() => {
+    if (guideData) {
+      reset({
+        image: guideData.image ? new File([], guideData.image) : undefined,
+        translations: guideData.translations.map((t) => ({
+          ...t,
+        })),
+      })
+    }
+  }, [guideData, reset])
+
+  const { fields } = useFieldArray({
+    control,
+    name: 'translations',
+  })
 
   const onSubmit: SubmitHandler<Guide> = (data) => {
     const adjustedData = {
       ...data,
-      uid: guide?.uid || "",
-    };
+      uid: guide?.uid || '',
+    }
 
-    mutate(adjustedData);
-  };
-
-  const truncateName = (name: string, length = 10) => {
-    const maxLength = length;
-    return name.length > maxLength
-      ? `${name.substring(0, maxLength)}...`
-      : name;
-  };
+    mutate(adjustedData)
+  }
 
   return (
     <Dialog.Content onPointerDownOutside={close}>
       <Flex direction="column" gap="2">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex direction="column" gap="4">
-            <Dialog.Title>Create new Guide</Dialog.Title>
-            <Controller
-              control={control}
-              name="image"
-              rules={validation["image"]}
-              render={({ field: { onChange, value } }) => (
-                <FilePicker as="label">
-                  {value ? (
-                    <Flex
-                      gap="2"
-                      direction="column"
-                      justify="center"
-                      align="center"
+        <Flex direction="column" gap="4">
+          <Dialog.Title>Create new Guide</Dialog.Title>
+          <Tabs.Root defaultValue="en">
+            <Tabs.List color="orange" style={{ marginBottom: space[2] }}>
+              <Flex align="center">
+                {['en', 'fr', 'es']?.map((language) => {
+                  return (
+                    <Tabs.Trigger
+                      value={language}
+                      key={language}
+                      style={{ marginRight: space[2] }}
                     >
-                      <Text size="2" weight="bold">
-                        {truncateName(value.name)}
-                      </Text>
-                      <Button color="orange" onClick={() => onChange(null)}>
-                        Remove
-                      </Button>
-                    </Flex>
-                  ) : (
-                    <>
-                      <Image color="orange" size={30} />
-                      <input
-                        type="file"
-                        style={{ display: "none" }}
-                        accept="image/*"
-                        onChange={(e) =>
-                          e.target.files && onChange(e.target.files[0])
-                        }
-                      />
-                    </>
-                  )}
-                </FilePicker>
-              )}
-            />
-            <Flex direction="column" gap="2">
-              <Flex direction="column">
-                <Text>Short Description</Text>
-                <Controller
-                  control={control}
-                  rules={validation["shortDesc"]}
-                  name="shortDesc"
-                  render={({ field: { onChange, value } }) => (
-                    <TextArea value={value} onChange={onChange} />
-                  )}
-                />
+                      <Text>{language}</Text>
+                    </Tabs.Trigger>
+                  )
+                })}
               </Flex>
-              <Flex direction="column">
-                <Text>Long Description</Text>
-                <Controller
-                  control={control}
-                  name="longDesc"
-                  render={({ field: { onChange, value } }) => (
-                    <TextArea value={value} onChange={onChange} />
-                  )}
-                />
-              </Flex>
-            </Flex>
-            <Flex justify="end" gap="2">
-              <Dialog.Close>
-                <Button variant="outline" onClick={close}>
-                  Cancel
+            </Tabs.List>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {fields.map((field, index) => (
+                <Tabs.Content key={field.id} value={field.language}>
+                  <CreateGuideForm
+                    index={index}
+                    control={control}
+                    guideTranslation={field}
+                    isOriginal={index === 0}
+                  />
+                </Tabs.Content>
+              ))}
+              <Flex justify="end" gap="2">
+                <Dialog.Close>
+                  <Button variant="outline" onClick={close}>
+                    Cancel
+                  </Button>
+                </Dialog.Close>
+                <Button type="submit" color="orange">
+                  Submit
                 </Button>
-              </Dialog.Close>
-              <Button type="submit" color="orange">
-                Submit
-              </Button>
-            </Flex>
-          </Flex>
-        </form>
+              </Flex>
+            </form>
+          </Tabs.Root>
+        </Flex>
       </Flex>
     </Dialog.Content>
-  );
-};
+  )
+}

@@ -5,12 +5,25 @@ import { Guide, GuidePost, NewsPost } from "./guidesAndNews.type";
 export const getGuides = async () => await api.get(`/guide`);
 export const getNews = async () => await api.get(`/news`);
 
+export const getGuideByUid = async (uid: string | undefined) =>
+  await api.get(`/guide/${uid}`);
+
+export const getNewsByUid = async (uid: string | undefined) =>
+  await api.get(`/news/${uid}`);
+
 // POST
 export const postGuide = async (newGuide: GuidePost) => {
   const formData = new FormData();
-  formData.append("image", newGuide.image);
-  formData.append("shortDesc", newGuide.shortDesc);
-  formData.append("longDesc", newGuide.longDesc);
+  if (newGuide?.image) {
+    formData.append("image", newGuide?.image);
+  }
+
+  const updatedTranslatedGuides = newGuide.translations.map((guide) => {
+    const copyOfGuide = JSON.parse(JSON.stringify(guide));
+    return copyOfGuide;
+  });
+
+  formData.append("translations", JSON.stringify(updatedTranslatedGuides));
 
   return await api.post("/guide", formData, {
     headers: {
@@ -21,9 +34,14 @@ export const postGuide = async (newGuide: GuidePost) => {
 
 export const postNews = async (newNews: NewsPost) => {
   const formData = new FormData();
+
+  const updatedTranslatedNews = newNews.translations.map((news) => {
+    const copyOfNews = JSON.parse(JSON.stringify(news));
+    return copyOfNews;
+  });
+
+  formData.append("translations", JSON.stringify(updatedTranslatedNews));
   formData.append("image", newNews.image);
-  formData.append("shortDesc", newNews.shortDesc);
-  formData.append("longDesc", newNews.longDesc);
 
   return await api.post("/news", formData, {
     headers: {
@@ -35,9 +53,16 @@ export const postNews = async (newNews: NewsPost) => {
 // PUT
 export const putGuide = async (guide: Guide) => {
   const formData = new FormData();
-  formData.append("image", guide.image);
-  formData.append("shortDesc", guide.shortDesc);
-  formData.append("longDesc", guide.longDesc);
+
+  const updatedTranslatedGuides = guide.translations.map((guide) => {
+    const copyOfGuide = JSON.parse(JSON.stringify(guide));
+    return copyOfGuide;
+  });
+
+  formData.append("translations", JSON.stringify(updatedTranslatedGuides));
+  if (guide.image) {
+    formData.append("image", guide.image);
+  }
 
   return await api.put(`/guide/${guide.uid}`, formData, {
     headers: {
@@ -48,9 +73,17 @@ export const putGuide = async (guide: Guide) => {
 
 export const putNews = async (news: Guide) => {
   const formData = new FormData();
-  formData.append("image", news.image);
-  formData.append("shortDesc", news.shortDesc);
-  formData.append("longDesc", news.longDesc);
+
+  const updatedTranslatedNews = news.translations.map((news) => {
+    const copyOfNews = JSON.parse(JSON.stringify(news));
+    return copyOfNews;
+  });
+
+  formData.append("translations", JSON.stringify(updatedTranslatedNews));
+
+  if (news.image) {
+    formData.append("image", news.image);
+  }
 
   return await api.put(`/news/${news.uid}`, formData, {
     headers: {
