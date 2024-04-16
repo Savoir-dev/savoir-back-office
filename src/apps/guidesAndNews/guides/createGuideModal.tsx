@@ -76,8 +76,8 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
   useEffect(() => {
     if (guideData) {
       reset({
-        image: guideData.image ? new File([], guideData.image) : undefined,
-        translations: guideData.translations.map((t) => ({
+        image: guideById.image ? new File([], guideById.image) : undefined,
+        translations: guideById.translations.map((t) => ({
           ...t,
         })),
       })

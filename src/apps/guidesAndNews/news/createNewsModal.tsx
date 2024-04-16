@@ -6,16 +6,9 @@ import {
   postNews,
 } from '../../../services/routes/guidesAndNews/guidesAndNews.services'
 
-import {
-  Controller,
-  useForm,
-  SubmitHandler,
-  useFieldArray,
-} from 'react-hook-form'
+import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form'
 
-import { FilePicker } from '../../../components/atoms/FilePicker'
-import { Button, Dialog, Flex, Tabs, Text, TextArea } from '@radix-ui/themes'
-import { Image } from 'lucide-react'
+import { Button, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 
 import {
   Guide,
@@ -104,7 +97,7 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
   }
 
   return (
-    <Dialog.Content>
+    <Dialog.Content onPointerDownOutside={close}>
       <Flex direction="column" gap="2">
         <Tabs.Root defaultValue="en">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -137,7 +130,14 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
               ))}
               <Flex justify="end" gap="2">
                 <Dialog.Close>
-                  <Button variant="outline">Cancel</Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      close()
+                    }}
+                  >
+                    Cancel
+                  </Button>
                 </Dialog.Close>
                 <Button type="submit" color="orange">
                   Submit
