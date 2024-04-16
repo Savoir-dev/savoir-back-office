@@ -121,11 +121,13 @@ export const CreateItineraryModal = ({
   const onSubmit: SubmitHandler<Itinerary> = (data) => {
     const adjustedData = {
       ...data,
-      uid: itinerary?.uid || '',
+      translations: data.translations.map((t) => ({
+        language: t.language,
+        title: t.title,
+        subtitle: t.subtitle,
+      })),
       interestPoints: selectedInterestPoints,
     }
-
-    console.log('adjustedData', adjustedData)
 
     mutate(adjustedData)
   }
