@@ -1,31 +1,31 @@
-import { Button, Card, Dialog, Flex, Grid, Text } from "@radix-ui/themes";
-import { AxiosResponse } from "axios";
-import { useState } from "react";
-import { Trash } from "lucide-react";
-import { useQuery } from "react-query";
+import { Button, Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
+import { AxiosResponse } from 'axios'
+import { useState } from 'react'
+import { Trash } from 'lucide-react'
+import { useQuery } from 'react-query'
 
-import { space } from "../../../styles/const";
-import { getNews } from "../../../services/routes/guidesAndNews/guidesAndNews.services";
-import { News } from "../../../services/routes/guidesAndNews/guidesAndNews.type";
-import { CreateNewsModal } from "./createNewsModal";
+import { space } from '../../../styles/const'
+import { getNews } from '../../../services/routes/guidesAndNews/guidesAndNews.services'
+import { News } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
+import { CreateNewsModal } from './createNewsModal'
 
 export const NewsList = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
 
   const { data: newsData } = useQuery({
-    queryKey: ["news"],
+    queryKey: ['news'],
     queryFn: () => {
-      return getNews();
+      return getNews()
     },
     select: (data): AxiosResponse<News[]> => data.data,
-  });
+  })
 
-  const news = newsData?.data || [];
+  const news = newsData?.data || []
 
   const onCloseModal = () => {
-    setIsDialogOpen(false);
-  };
+    setIsDialogOpen(false)
+  }
 
   return (
     <Dialog.Root open={isDialogOpen}>
@@ -56,8 +56,8 @@ export const NewsList = () => {
                 size="1"
                 color="orange"
                 onClick={() => {
-                  setIsEditing(true);
-                  setIsDialogOpen(true);
+                  setIsEditing(true)
+                  setIsDialogOpen(true)
                 }}
               >
                 Edit
@@ -65,26 +65,30 @@ export const NewsList = () => {
             </Flex>
             <Flex direction="column" gap="2">
               <img
-                src={item.image}
-                alt="interest point image"
+                src={
+                  item.image instanceof File
+                    ? URL.createObjectURL(item.image)
+                    : item.image
+                }
+                alt="news image"
                 style={{
-                  objectFit: "cover",
-                  width: "200px",
+                  objectFit: 'cover',
+                  width: '200px',
                   borderRadius: space[1],
                 }}
               />
               <Flex direction="column">
                 <Flex direction="column">
                   <Text size="3" weight="bold">
-                    Short description
+                    Title
                   </Text>
-                  <Text>{item.shortDesc}</Text>
+                  <Text>{item.translations[0].title}</Text>
                 </Flex>
                 <Flex direction="column">
                   <Text size="3" weight="bold">
-                    Long description
+                    Subtitle
                   </Text>
-                  <Text>{item.longDesc}</Text>
+                  <Text>{item.translations[0].subtitle}</Text>
                 </Flex>
               </Flex>
             </Flex>
@@ -97,5 +101,5 @@ export const NewsList = () => {
         ))}
       </Grid>
     </Dialog.Root>
-  );
-};
+  )
+}

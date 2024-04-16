@@ -1,22 +1,22 @@
-import { Button, Dialog, Flex, Tabs, Text } from "@radix-ui/themes";
-import { useEffect, useState, FC } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Button, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
+import { useEffect, useState, FC } from 'react'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useFieldArray, useForm } from 'react-hook-form'
 
-import { space } from "../../../styles/const";
+import { space } from '../../../styles/const'
 import {
   getInterestPointByInterestPointId,
   postInterestPoint,
   putInterestPoint,
-} from "../../../services/routes/interestPoints/interestPoints.services";
-import { InterestPoint } from "../../../services/types/interestPoints.type";
+} from '../../../services/routes/interestPoints/interestPoints.services'
+import { InterestPoint } from '../../../services/types/interestPoints.type'
 
-import { CreateInterestPointForm } from "./components/createInterestPointForm";
+import { CreateInterestPointForm } from './components/createInterestPointForm'
 
 interface InterestPointForm {
-  isEditing?: boolean;
-  interestPoint?: InterestPoint;
-  close: () => void;
+  isEditing?: boolean
+  interestPoint?: InterestPoint
+  close: () => void
 }
 
 export const CreateInterestPointModal: FC<InterestPointForm> = ({
@@ -24,54 +24,61 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
   interestPoint,
   close,
 }) => {
-  const queryClient = useQueryClient();
-  const { data: interestPointData, isLoading: interestPointDataLoading } =
-    useQuery({
-      queryKey: ["interestPointByUid", interestPoint?.uid],
-      queryFn: () => getInterestPointByInterestPointId(interestPoint?.uid),
-      enabled: !!interestPoint?.uid,
-    });
+  const queryClient = useQueryClient()
+  const {
+    data: interestPointData,
+    isLoading: interestPointDataLoading,
+  } = useQuery({
+    queryKey: 'interestPointByUid',
+    queryFn: () => getInterestPointByInterestPointId(interestPoint?.uid),
+    enabled: !!interestPoint?.uid,
+  })
 
-  const [location, setLocation] = useState<{ lat: number; lng: number }>({
-    lat: 41.38879,
-    lng: 2.15899,
-  });
+  const [location, setLocation] = useState<{ lat: string; lng: string }>({
+    lat: '41.38879',
+    lng: '2.15899',
+  })
 
-  const { control, handleSubmit, reset, watch, setValue, getValues } =
-    useForm<InterestPoint>({
-      defaultValues: {
-        duration: "",
-        type: "",
-        color: "",
-        guide: "",
-        latitude: "",
-        longitude: "",
-        image: null,
-        translations: ["en", "fr", "es"].map((lang) => ({
-          uid: "",
-          language: lang,
-          title: "",
-          subtitle: "",
-          shortDesc: "",
-          longDesc: "",
-          audioDesc: "",
-          tags: [],
-          information: "",
-          audio: null,
-          audioUrl: "",
-          interestPointId: "",
-        })),
-      },
-    });
+  const { control, handleSubmit, reset, watch, setValue, getValues } = useForm<
+    InterestPoint
+  >({
+    defaultValues: {
+      duration: '',
+      type: '',
+      color: '',
+      guide: '',
+      latitude: '',
+      longitude: '',
+      image: null,
+      translations: ['en', 'fr', 'es'].map((lang) => ({
+        uid: '',
+        language: lang,
+        title: '',
+        subtitle: '',
+        shortDesc: '',
+        longDesc: '',
+        audioDesc: '',
+        tags: [],
+        information: '',
+        audio: null,
+        audioUrl: '',
+        interestPointId: '',
+      })),
+    },
+  })
 
   const { fields, append } = useFieldArray({
     control,
-    name: "translations",
-  });
+    name: 'translations',
+  })
 
   useEffect(() => {
     if (interestPointData && isEditing) {
-      console.log(interestPointData);
+      setLocation({
+        lat: interestPointData.latitude.toString(),
+        lng: interestPointData.longitude.toString(),
+      })
+
       reset({
         duration: interestPointData.duration,
         type: interestPointData.type,
@@ -82,7 +89,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
         image: null,
         imageUrl: interestPointData.imageUrl,
         translations: [],
-      });
+      })
 
       interestPointData.translations.forEach((t) => {
         append({
@@ -97,50 +104,50 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
           information: t.information,
           audio: null,
           audioUrl: t.audioUrl,
-        });
-      });
+        })
+      })
     }
-  }, [interestPointData, reset]);
+  }, [interestPointData, reset])
 
   const { mutate, isLoading } = useMutation({
     mutationFn: (data: InterestPoint) => {
       return isEditing
         ? putInterestPoint(data, interestPoint?.uid)
-        : postInterestPoint(data);
+        : postInterestPoint(data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         predicate: (query) =>
-          query.queryKey.includes("interestPoints") ||
-          query.queryKey.includes("interestPointByUid") ||
-          query.queryKey.includes("interestPointsByWalkingTour"),
-      });
+          query.queryKey.includes('interestPoints') ||
+          query.queryKey.includes('interestPointByUid') ||
+          query.queryKey.includes('interestPointsByWalkingTour'),
+      })
 
-      close();
+      close()
     },
-  });
+  })
 
   const onSubmit = (data: InterestPoint) => {
     const adjustedData = {
       ...data,
       latitude: location.lat.toString(),
       longitude: location.lng.toString(),
-    };
+    }
 
-    mutate(adjustedData);
-  };
+    mutate(adjustedData)
+  }
 
-  if (interestPointDataLoading) return <div>Loading...</div>;
+  if (interestPointDataLoading) return <div>Loading...</div>
 
   return (
-    <Dialog.Content onPointerDownOutside={close} maxWidth={"1200px"}>
+    <Dialog.Content onPointerDownOutside={close} maxWidth={'1200px'}>
       <Dialog.Title>
-        {isEditing ? "Edit" : "Create"} a new interest point
+        {isEditing ? 'Edit' : 'Create'} a new interest point
       </Dialog.Title>
       <Tabs.Root defaultValue="en">
         <Tabs.List color="orange" style={{ marginBottom: space[2] }}>
           <Flex align="center">
-            {["en", "fr", "es"].map((language) => {
+            {['en', 'fr', 'es'].map((language) => {
               return (
                 <Tabs.Trigger
                   value={language}
@@ -149,7 +156,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                 >
                   <Text>{language}</Text>
                 </Tabs.Trigger>
-              );
+              )
             })}
           </Flex>
         </Tabs.List>
@@ -161,7 +168,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
                 index={index}
                 control={control}
                 interestPointTranslation={field}
-                isOriginal={field.language === "en"}
+                isOriginal={field.language === 'en'}
                 setLocation={setLocation}
                 getValues={getValues}
                 setValue={setValue}
@@ -180,11 +187,11 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
               loading={isLoading}
               disabled={isLoading}
             >
-              {isEditing ? "Edit" : "Create"}
+              {isEditing ? 'Edit' : 'Create'}
             </Button>
           </Flex>
         </form>
       </Tabs.Root>
     </Dialog.Content>
-  );
-};
+  )
+}

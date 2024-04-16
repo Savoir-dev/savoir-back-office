@@ -12,15 +12,16 @@ export interface InterestPoint {
 }
 
 export interface InterestPointFromApi {
-  uid: string;
-  duration: string;
-  type: string;
-  image: string;
   color: string;
+  duration: string;
+  guide: string;
+  image: string;
+  imageUrl: string;
   latitude: string;
   longitude: string;
-  guide: string;
   translations: InterestPointTranslationFromApi[];
+  type: string;
+  uid: string;
 }
 
 export interface InterestPointTranslation {

@@ -1,9 +1,9 @@
-import { Controller, useForm } from 'react-hook-form'
-import { CustomCard, Wrapper } from '../style'
-import { useNavigate } from 'react-router-dom'
-import { authAppRoutes } from '../../../navigation/internalRouter'
 import { Flex, Text, TextField } from '@radix-ui/themes'
+import { Controller, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../../../components/atoms/button'
+import { authAppRoutes } from '../../../navigation/internalRouter'
+import { CustomCard, Wrapper } from '../style'
 
 export const RegisterPage = () => {
   const { control } = useForm({

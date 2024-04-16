@@ -1,6 +1,6 @@
 export interface Guide {
   uid: string;
-  image?: string;
+  image: string | File;
   translations: GuideTranslation[];
 }
 
@@ -16,7 +16,7 @@ export type GuidePost = Omit<Guide, "uid">;
 
 export interface News {
   uid: string;
-  image: string;
+  image: string | File;
   translations: NewsTranslation[];
 }
 

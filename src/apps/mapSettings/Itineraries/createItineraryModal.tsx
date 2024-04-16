@@ -7,7 +7,6 @@ import { space } from '../../../styles/const'
 import { InterestPointFromApi } from '../../../services/types/interestPoints.type'
 import {
   Itinerary,
-  ItineraryTranslations,
   PostItinerary,
 } from '../../../services/types/itineraries.type'
 import { Button } from '../../../components/atoms/button'
@@ -31,7 +30,7 @@ export const CreateItineraryModal = ({
   preSelectedInterestPoints = [],
   itinerary,
 }: Props) => {
-  const { data: itineraryData, refetch: refetchItinerary } = useQuery({
+  const { data: itineraryData, isLoading: itineraryIsLoading } = useQuery({
     queryKey: ['itineraryByUid', itinerary?.uid],
     queryFn: () => getItineraryByUid(itinerary?.uid),
     select: (data): AxiosResponse<Itinerary> => data.data,
@@ -171,7 +170,9 @@ export const CreateItineraryModal = ({
             <Button variant="outline" onClick={close}>
               Close
             </Button>
-            <Button color="orange">{itinerary ? 'Edit' : 'Create'}</Button>
+            <Button disabled={itineraryIsLoading} color="orange">
+              {itinerary ? 'Edit' : 'Create'}
+            </Button>
           </Flex>
         </form>
       </Tabs.Root>

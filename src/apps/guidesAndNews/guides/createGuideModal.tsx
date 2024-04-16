@@ -77,7 +77,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
     if (guideData) {
       reset({
         image: guideById.image ? new File([], guideById.image) : undefined,
-        translations: guideById.translations.map((t) => ({
+        translations: guideById.translations.map((t: Guide) => ({
           ...t,
         })),
       })
@@ -126,7 +126,6 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
                     index={index}
                     control={control}
                     guideTranslation={field}
-                    isOriginal={index === 0}
                   />
                 </Tabs.Content>
               ))}
@@ -136,7 +135,11 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
                     Cancel
                   </Button>
                 </Dialog.Close>
-                <Button type="submit" color="orange">
+                <Button
+                  disabled={!!isGuideDataLoading}
+                  type="submit"
+                  color="orange"
+                >
                   Submit
                 </Button>
               </Flex>

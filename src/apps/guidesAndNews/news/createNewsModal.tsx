@@ -12,25 +12,22 @@ import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form'
 import { Button, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 
 import {
-  Guide,
   News,
+  NewsTranslation,
 } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
 import { CreateNewsForm } from './components/createNewsForm'
 import { space } from '../../../styles/const'
 interface Props {
-  newsUid: News['uid']
+  newsUid?: News['uid']
   close: () => void
 }
 
 export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
-  console.log(newsUid)
-
   const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
     mutationFn: (news: News) => {
-      console.log(newsUid)
-      return news ? putNews(newsUid, news) : postNews(news)
+      return newsUid ? putNews(newsUid, news) : postNews(news)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -82,7 +79,7 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
     if (newsData) {
       reset({
         image: newsById.image ? new File([], newsById.image) : undefined,
-        translations: newsById.translations.map((t) => ({
+        translations: newsById.translations.map((t: NewsTranslation) => ({
           ...t,
         })),
       })
@@ -94,7 +91,7 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
     name: 'translations',
   })
 
-  const onSubmit: SubmitHandler<Guide> = (data) => {
+  const onSubmit: SubmitHandler<News> = (data) => {
     mutate(data)
   }
 
@@ -126,7 +123,6 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
                     index={index}
                     control={control}
                     newsTranslation={field}
-                    isOriginal={index === 0}
                   />
                 </Tabs.Content>
               ))}
@@ -141,7 +137,11 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
                     Cancel
                   </Button>
                 </Dialog.Close>
-                <Button type="submit" color="orange">
+                <Button
+                  disabled={!!isNewsDataLoading}
+                  type="submit"
+                  color="orange"
+                >
                   Submit
                 </Button>
               </Flex>

@@ -1,12 +1,11 @@
+import { InterestPointFromApi } from "./interestPoints.type";
+
 export interface Itinerary {
   uid: string;
   guide: string;
   duration: string;
   color: string;
-  interestPoints: {
-    uid: string;
-    order: number;
-  }[];
+  interestPoints: InterestPointFromApi[];
   translations: ItineraryTranslations[];
 }
 

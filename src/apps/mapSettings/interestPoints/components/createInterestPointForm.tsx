@@ -25,12 +25,12 @@ import {
 } from '../../../../services/types/interestPoints.type'
 
 interface Props {
-  location: { lat: number; lng: number }
+  location: { lat: string; lng: string }
   control: Control<InterestPoint>
   index: number
   interestPointTranslation: InterestPointTranslation
   isOriginal?: boolean
-  setLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>
+  setLocation: Dispatch<SetStateAction<{ lat: string; lng: string }>>
   getValues: UseFormGetValues<InterestPoint>
   setValue: UseFormSetValue<InterestPoint>
   watch: UseFormWatch<InterestPoint>
@@ -86,7 +86,7 @@ export const CreateInterestPointForm: FC<Props> = ({
     },
   }
 
-  const handleAddTag = (e) => {
+  const handleAddTag = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     if (newTag === '') return
 
@@ -108,7 +108,7 @@ export const CreateInterestPointForm: FC<Props> = ({
     const subscription = watch((value) => {
       setImagePreviewUrl(value.imageUrl || '')
       if (value.translations && value.translations[index])
-        setAudioPreviewUrl(value.translations[index].audioUrl || '')
+        setAudioPreviewUrl(value.translations[index]?.audioUrl || '')
     })
     return () => subscription.unsubscribe()
   }, [watch, setImagePreviewUrl])
@@ -485,49 +485,17 @@ export const CreateInterestPointForm: FC<Props> = ({
       </Flex>
       <Flex direction="column" width="45%">
         <MapSelector
+          isInputs
           size={400}
           location={{
-            lat: location.lat || 41.38879,
-            lng: location.lng || 2.15899,
+            lat: location.lat || '',
+            lng: location.lng || '',
           }}
           setLocation={({ lat, lng }) => {
             setLocation({ lat: lat, lng: lng })
           }}
+          control={control}
         />
-        <Flex direction="row" gap="2">
-          <Flex direction="column">
-            <Text size="2" weight="bold">
-              Latitude
-            </Text>
-            <Controller
-              control={control}
-              name="latitude"
-              render={({ field }) => (
-                <TextField.Root
-                  placeholder="Latitude"
-                  value={location.lat}
-                  onChange={(e) => field.onChange(e.target.value)}
-                />
-              )}
-            />
-          </Flex>
-          <Flex direction="column">
-            <Text size="2" weight="bold">
-              Longitude
-            </Text>
-            <Controller
-              control={control}
-              name="longitude"
-              render={({ field }) => (
-                <TextField.Root
-                  placeholder="Longitude"
-                  value={location.lng}
-                  onChange={(e) => field.onChange(e.target.value)}
-                />
-              )}
-            />
-          </Flex>
-        </Flex>
       </Flex>
     </Flex>
   )

@@ -1,17 +1,19 @@
-import { Grid } from "@radix-ui/themes";
-import { useQuery } from "react-query";
+import { Grid } from '@radix-ui/themes'
+import { useQuery } from 'react-query'
 
-import { getInterestPoints } from "../../../services/routes/interestPoints/interestPoints.services";
+import { getInterestPoints } from '../../../services/routes/interestPoints/interestPoints.services'
 
-import { InterestPointCard } from "./components/interestPointCard";
+import { InterestPointCard } from './components/interestPointCard'
 
 export const InterestPointList = () => {
   const { data: interestPointsData } = useQuery({
-    queryKey: "interestPoints",
+    queryKey: 'interestPoints',
     queryFn: () => getInterestPoints(),
-  });
+  })
 
-  const interestPoints = interestPointsData || [];
+  const interestPoints = interestPointsData || []
+
+  console.log('interestPoints', interestPoints)
 
   return (
     <Grid columns="3" gap="3" width="auto">
@@ -19,5 +21,5 @@ export const InterestPointList = () => {
         <InterestPointCard interestPoint={item} key={index} />
       ))}
     </Grid>
-  );
-};
+  )
+}

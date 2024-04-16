@@ -1,21 +1,23 @@
-import { Controller } from 'react-hook-form'
+import { Control, Controller } from 'react-hook-form'
 import { FilePicker } from '../../../../components/atoms/FilePicker'
 import { Button, Flex, Text, TextArea } from '@radix-ui/themes'
 import { Image } from 'lucide-react'
 import { FC } from 'react'
+import {
+  News,
+  NewsTranslation,
+} from '../../../../services/routes/guidesAndNews/guidesAndNews.type'
 
 interface Props {
   index: number
-  control: any
-  newsTranslation: any
-  isOriginal: boolean
+  control: Control<News>
+  newsTranslation: NewsTranslation
 }
 
 export const CreateNewsForm: FC<Props> = ({
   index,
   control,
   newsTranslation,
-  isOriginal,
 }) => {
   const validation = {
     image: {
@@ -48,7 +50,7 @@ export const CreateNewsForm: FC<Props> = ({
         rules={validation['image']}
         render={({ field: { onChange, value } }) => (
           <FilePicker as="label">
-            {value ? (
+            {value && value instanceof File ? (
               <Flex gap="2" direction="column" justify="center" align="center">
                 <Text size="2" weight="bold">
                   {truncateName(value.name)}

@@ -26,8 +26,6 @@ export const GuidesList = () => {
     setIsDialogOpen(false)
   }
 
-  console.log(guides)
-
   return (
     <Dialog.Root open={isDialogOpen}>
       <Grid
@@ -66,8 +64,12 @@ export const GuidesList = () => {
             </Flex>
             <Flex direction="column" gap="2">
               <img
-                src={guide.image}
-                alt="interest point image"
+                src={
+                  guide.image instanceof File
+                    ? URL.createObjectURL(guide.image)
+                    : guide.image
+                }
+                alt="guide image"
                 style={{
                   objectFit: 'cover',
                   width: '200px',

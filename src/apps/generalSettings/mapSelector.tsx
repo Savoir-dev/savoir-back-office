@@ -1,15 +1,17 @@
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { Flex, Text, TextField } from "@radix-ui/themes";
-import styled from "styled-components";
-import "leaflet/dist/leaflet.css";
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
+import { Flex, Text, TextField } from '@radix-ui/themes'
+import styled from 'styled-components'
+import 'leaflet/dist/leaflet.css'
 
-import { colors, space } from "../../styles/const";
+import { colors, space } from '../../styles/const'
+import { Control } from 'react-hook-form'
 
 interface Props {
-  size: number;
-  location: { lat: number; lng: number };
-  setLocation: (location: { lat: number; lng: number }) => void;
-  isInputs?: boolean;
+  size: number
+  location: { lat: string; lng: string }
+  setLocation: (location: { lat: string; lng: string }) => void
+  isInputs?: boolean
+  control?: Control<any>
 }
 
 export const MapSelector = ({
@@ -20,13 +22,13 @@ export const MapSelector = ({
 }: Props) => {
   const LocationMarker = () => {
     useMapEvents({
-      click(e) {
-        setLocation(e.latlng);
+      click(e: any) {
+        setLocation(e.latlng)
       },
-    });
+    })
 
-    return location === null ? null : <Marker position={location}></Marker>;
-  };
+    return location === null ? null : <Marker position={location}></Marker>
+  }
 
   return (
     <Wrapper size={size}>
@@ -40,9 +42,13 @@ export const MapSelector = ({
             <Text>Latitude:</Text>
             <TextField.Root
               type="number"
+              placeholder="Latitude"
               value={location.lat}
               onChange={(e) =>
-                setLocation({ ...location, lat: parseFloat(e.target.value) })
+                setLocation({
+                  ...location,
+                  lat: e.target.value,
+                })
               }
             />
           </Flex>
@@ -50,17 +56,21 @@ export const MapSelector = ({
             <Text>Longitude:</Text>
             <TextField.Root
               type="number"
+              placeholder="Longitude"
               value={location.lng}
               onChange={(e) =>
-                setLocation({ ...location, lng: parseFloat(e.target.value) })
+                setLocation({
+                  ...location,
+                  lng: e.target.value,
+                })
               }
             />
           </Flex>
         </Flex>
       )}
     </Wrapper>
-  );
-};
+  )
+}
 
 const MapStyled = styled(MapContainer)`
   height: 400px;
@@ -68,8 +78,8 @@ const MapStyled = styled(MapContainer)`
   border-radius: ${space[2]};
   overflow: hidden;
   border: 1px solid ${colors.deepBlack};
-`;
+`
 
 const Wrapper = styled.div<{ size: number }>`
   min-width: ${`${(props: { size: number }) => props.size}px`};
-`;
+`

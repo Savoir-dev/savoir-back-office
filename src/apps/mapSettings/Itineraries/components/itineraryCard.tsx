@@ -1,4 +1,4 @@
-import { Card, DataList, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
+import { Card, DataList, Dialog, Flex, Text } from '@radix-ui/themes'
 import { MapPin, Plus } from 'lucide-react'
 import { useState } from 'react'
 

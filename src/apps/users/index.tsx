@@ -1,68 +1,70 @@
-import { FC, useState } from "react";
-import { Card, Dialog, Flex, Spinner, Table, Text } from "@radix-ui/themes";
-import { useMutation, useQuery } from "react-query";
-import { AxiosResponse } from "axios";
+import { FC, useState } from 'react'
+import { Card, Dialog, Flex, Spinner, Table, Text } from '@radix-ui/themes'
+import { useMutation, useQuery } from 'react-query'
+import { AxiosResponse } from 'axios'
 
-import { PageHeader } from "../../components/molecules/pageHeader";
-import { User } from "../../services/types/users.type";
-import { space } from "../../styles/const";
+import { PageHeader } from '../../components/molecules/pageHeader'
+import { User } from '../../services/types/users.type'
+import { space } from '../../styles/const'
 import {
   deleteUserById,
   getAllUsers,
-} from "../../services/routes/users/users.services";
-import { Button } from "../../components/atoms/button";
+} from '../../services/routes/users/users.services'
+import { Button } from '../../components/atoms/button'
 
 const users = [
   {
-    id: "1",
-    firstName: "John",
-    lastName: "Doe",
-    phoneNumber: "123456789",
-    city: "New York",
+    id: '1',
+    firstName: 'John',
+    lastName: 'Doe',
+    phoneNumber: '123456789',
+    city: 'New York',
   },
   {
-    id: "2",
-    firstName: "Jane",
-    lastName: "Doe",
-    phoneNumber: "987654321",
-    city: "Los Angeles",
+    id: '2',
+    firstName: 'Jane',
+    lastName: 'Doe',
+    phoneNumber: '987654321',
+    city: 'Los Angeles',
   },
-];
+]
 
 export const UsersApp: FC = () => {
-  const [selectedUser, setSelectedUser] = useState<User | undefined>();
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [isDeleteLoading, setIsDeleteLoading] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<User | undefined>()
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+  const [isDeleteLoading, setIsDeleteLoading] = useState<boolean>(false)
 
   const closeDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedUser(undefined);
-  };
+    setIsDialogOpen(false)
+    setSelectedUser(undefined)
+  }
 
   const { data } = useQuery({
-    queryKey: ["users"],
+    queryKey: ['users'],
     queryFn: () => getAllUsers(),
     select: (data: AxiosResponse<User[]>) => data,
-  });
+  })
+
+  console.log(data)
 
   const deleteUser = useMutation({
     mutationFn: (id: string | undefined) => {
-      return deleteUserById(id);
+      return deleteUserById(id)
     },
     onSuccess: () => {
-      setSelectedUser(undefined);
-      setIsDialogOpen(false);
-      setIsDeleteLoading(false);
+      setSelectedUser(undefined)
+      setIsDialogOpen(false)
+      setIsDeleteLoading(false)
     },
     onError: () => {
-      setIsDeleteLoading(false);
+      setIsDeleteLoading(false)
     },
-  });
+  })
 
   const onDeleteUser = async (id: string | undefined) => {
-    setIsDeleteLoading(true);
-    deleteUser.mutate(id);
-  };
+    setIsDeleteLoading(true)
+    deleteUser.mutate(id)
+  }
 
   return (
     <Dialog.Root open={isDialogOpen}>
@@ -87,8 +89,8 @@ export const UsersApp: FC = () => {
               <Table.Cell>
                 <Button
                   onClick={() => {
-                    setSelectedUser(user);
-                    setIsDialogOpen(true);
+                    setSelectedUser(user)
+                    setIsDialogOpen(true)
                   }}
                   color="red"
                 >
@@ -144,5 +146,5 @@ export const UsersApp: FC = () => {
         </Flex>
       </Dialog.Content>
     </Dialog.Root>
-  );
-};
+  )
+}
