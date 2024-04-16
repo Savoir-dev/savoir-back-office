@@ -1,5 +1,5 @@
 import api from "../../api";
-import { Guide, GuidePost, NewsPost } from "./guidesAndNews.type";
+import { Guide, GuidePost, News, NewsPost } from "./guidesAndNews.type";
 
 // GET
 export const getGuides = async () => await api.get(`/guide`);
@@ -71,7 +71,7 @@ export const putGuide = async (guide: Guide) => {
   });
 };
 
-export const putNews = async (news: Guide) => {
+export const putNews = async (uid: string, news: News) => {
   const formData = new FormData();
 
   const updatedTranslatedNews = news.translations.map((news) => {
@@ -85,7 +85,7 @@ export const putNews = async (news: Guide) => {
     formData.append("image", news.image);
   }
 
-  return await api.put(`/news/${news.uid}`, formData, {
+  return await api.put(`/news/${uid}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

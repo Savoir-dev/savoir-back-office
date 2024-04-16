@@ -37,19 +37,29 @@ export const postItinerary = async (newItinerary: PostItinerary) => {
 
 // PUT
 export const putItinerary = async (uid: string, itinerary: Itinerary) => {
-  const itineraryToInterestPoints = itinerary.interestPoints.map(
-    (interestPoint: InterestPointFromApi, index: number) => ({
-      uid: interestPoint.uid,
-      order: index,
-    })
+  const formData = new FormData();
+
+  formData.append("guide", itinerary.guide);
+  formData.append("duration", itinerary.duration);
+  formData.append("color", itinerary.color);
+
+  const updatedTranslatedInterestPoints = itinerary.translations.map(
+    (itinerary) => {
+      const copyOfInterestPoint = JSON.parse(JSON.stringify(itinerary));
+      return copyOfInterestPoint;
+    }
   );
 
-  const updatedItinerary = {
-    ...itinerary,
-    interestPoints: itineraryToInterestPoints,
-  };
+  formData.append(
+    "translations",
+    JSON.stringify(updatedTranslatedInterestPoints)
+  );
 
-  return await api.put(`/itinerary/${uid}`, updatedItinerary);
+  return await api.put(`/itinerary/${uid}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 // DELETE

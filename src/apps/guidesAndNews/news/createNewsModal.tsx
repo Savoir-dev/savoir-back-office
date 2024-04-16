@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import {
   getNewsByUid,
   postNews,
+  putNews,
 } from '../../../services/routes/guidesAndNews/guidesAndNews.services'
 
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form'
@@ -13,22 +14,23 @@ import { Button, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 import {
   Guide,
   News,
-  NewsPost,
 } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
 import { CreateNewsForm } from './components/createNewsForm'
 import { space } from '../../../styles/const'
 interface Props {
+  newsUid: News['uid']
   close: () => void
-  news?: News
-  isEditing?: boolean
 }
 
-export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
+export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
+  console.log(newsUid)
+
   const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
-    mutationFn: (news: NewsPost) => {
-      return postNews(news)
+    mutationFn: (news: News) => {
+      console.log(newsUid)
+      return news ? putNews(newsUid, news) : postNews(news)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -40,9 +42,9 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
 
   const { data: newsData, isLoading: isNewsDataLoading } = useQuery({
     queryKey: 'newsPointByUid',
-    queryFn: () => getNewsByUid(news?.uid),
+    queryFn: () => getNewsByUid(newsUid),
     select: (data) => data.data,
-    enabled: !!news?.uid,
+    enabled: !!newsUid,
   })
 
   const newsById = newsData?.data
@@ -93,7 +95,6 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
   })
 
   const onSubmit: SubmitHandler<Guide> = (data) => {
-    console.log('data', data)
     mutate(data)
   }
 
