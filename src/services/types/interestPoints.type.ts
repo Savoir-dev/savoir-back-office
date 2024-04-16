@@ -2,7 +2,8 @@ export interface InterestPoint {
   uid: string;
   duration: string;
   type: string;
-  image?: File;
+  image: File | null;
+  imageUrl: string;
   color: string;
   latitude: string;
   longitude: string;
@@ -32,7 +33,8 @@ export interface InterestPointTranslation {
   audioDesc: string;
   tags: string[];
   information: string;
-  audio?: File;
+  audio: File | null;
+  audioUrl: string;
   interestPointId: string;
 }
 

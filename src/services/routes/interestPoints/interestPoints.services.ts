@@ -28,7 +28,9 @@ export const getInterestPointByInterestPointId = async (
 ) => {
   const response = await api.get(`/interestPoint/${uid}`);
 
-  return response.data.data;
+  if (response.data) {
+    return interestPointReader(response.data.data);
+  }
 };
 
 export const getInterestPointsByWalkingTour = async () =>
@@ -53,6 +55,7 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
     (interestPoint) => {
       const copyOfInterestPoint = JSON.parse(JSON.stringify(interestPoint));
       delete copyOfInterestPoint.audio;
+      delete copyOfInterestPoint.audioUrl;
       delete copyOfInterestPoint.audio_es;
       delete copyOfInterestPoint.audio_en;
       delete copyOfInterestPoint.audio_fr;
@@ -60,26 +63,15 @@ export const postInterestPoint = async (newInterestPoint: InterestPoint) => {
     }
   );
 
-  formData.append(
-    "audio_es",
-    newInterestPoint.translations.find(
-      (translation) => translation.language === "es"
-    )?.audio || ""
-  );
+  ["es", "en", "fr"].forEach((lang) => {
+    const audioFile = newInterestPoint.translations.find(
+      (translation) => translation.language === lang
+    )?.audio;
 
-  formData.append(
-    "audio_en",
-    newInterestPoint.translations.find(
-      (translation) => translation.language === "en"
-    )?.audio || ""
-  );
-
-  formData.append(
-    "audio_fr",
-    newInterestPoint.translations.find(
-      (translation) => translation.language === "fr"
-    )?.audio || ""
-  );
+    if (audioFile) {
+      formData.append(`audio_${lang}`, audioFile);
+    }
+  });
 
   formData.append(
     "translations",
@@ -115,6 +107,7 @@ export const putInterestPoint = async (
     (interestPoint) => {
       const copyOfInterestPoint = JSON.parse(JSON.stringify(interestPoint));
       delete copyOfInterestPoint.audio;
+      delete copyOfInterestPoint.audioUrl;
       delete copyOfInterestPoint.audio_es;
       delete copyOfInterestPoint.audio_en;
       delete copyOfInterestPoint.audio_fr;
@@ -122,27 +115,15 @@ export const putInterestPoint = async (
     }
   );
 
-  formData.append(
-    "audio_es",
-    updatedInterestPoint.translations.find(
-      (translation) => translation.language === "es"
-    )?.audio || ""
-  );
+  ["es", "en", "fr"].forEach((lang) => {
+    const audioFile = updatedInterestPoint.translations.find(
+      (translation) => translation.language === lang
+    )?.audio;
 
-  formData.append(
-    "audio_en",
-    updatedInterestPoint.translations.find(
-      (translation) => translation.language === "en"
-    )?.audio || ""
-  );
-
-  formData.append(
-    "audio_fr",
-    updatedInterestPoint.translations.find(
-      (translation) => translation.language === "fr"
-    )?.audio || ""
-  );
-
+    if (audioFile) {
+      formData.append(`audio_${lang}`, audioFile);
+    }
+  });
   formData.append(
     "translations",
     JSON.stringify(updatedTranslatedInterestPoints)

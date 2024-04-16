@@ -13,6 +13,7 @@ import {
   Controller,
   UseFormGetValues,
   UseFormSetValue,
+  UseFormWatch,
 } from "react-hook-form";
 import { FilePicker } from "../../../../components/atoms/FilePicker";
 import { Image, Mic, Plus, X } from "lucide-react";
@@ -32,6 +33,7 @@ interface Props {
   setLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>;
   getValues: UseFormGetValues<InterestPoint>;
   setValue: UseFormSetValue<InterestPoint>;
+  watch: UseFormWatch<InterestPoint>;
 }
 
 export const CreateInterestPointForm: FC<Props> = ({
@@ -43,9 +45,13 @@ export const CreateInterestPointForm: FC<Props> = ({
   setLocation,
   getValues,
   setValue,
+  watch,
 }) => {
   const [tags, setTags] = useState<string[]>([]);
-
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(getValues().imageUrl);
+  const [audioPreviewUrl, setAudioPreviewUrl] = useState(
+    getValues().translations[index].audioUrl
+  );
   const [newTag, setNewTag] = useState("");
 
   const truncateName = (name: string, length = 10) => {
@@ -64,12 +70,6 @@ export const CreateInterestPointForm: FC<Props> = ({
     },
     type: {
       required: "Type is required",
-    },
-    image: {
-      required: "Image is required",
-    },
-    audio: {
-      required: "Audio is required",
     },
     shortDesc: {
       required: "Short description is required",
@@ -104,6 +104,15 @@ export const CreateInterestPointForm: FC<Props> = ({
   };
 
   useEffect(() => {
+    const subscription = watch((value) => {
+      setImagePreviewUrl(value.imageUrl || "");
+      if (value.translations && value.translations[index])
+        setAudioPreviewUrl(value.translations[index].audioUrl || "");
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setImagePreviewUrl]);
+
+  useEffect(() => {
     const formData = getValues();
     if (formData && formData.translations && formData.translations[index]) {
       setTags(formData.translations[index].tags || []);
@@ -123,7 +132,6 @@ export const CreateInterestPointForm: FC<Props> = ({
               <Controller
                 control={control}
                 name="image"
-                rules={validation["image"]}
                 render={({ field: { onChange, value } }) => (
                   <FilePicker as="label">
                     {value ? (
@@ -136,21 +144,54 @@ export const CreateInterestPointForm: FC<Props> = ({
                         <Text size="2" weight="bold">
                           {truncateName(value.name)}
                         </Text>
-                        <Button color="orange" onClick={() => onChange(null)}>
+
+                        <Button
+                          color="orange"
+                          onClick={() => onChange(undefined)}
+                        >
                           Remove
                         </Button>
                       </Flex>
                     ) : (
                       <>
-                        <Image color="orange" size={30} />
-                        <input
-                          type="file"
-                          style={{ display: "none" }}
-                          accept="image/*"
-                          onChange={(e) =>
-                            e.target.files && onChange(e.target.files[0])
-                          }
-                        />
+                        {imagePreviewUrl ? (
+                          <Flex
+                            gap="2"
+                            direction="column"
+                            justify="center"
+                            align="center"
+                            position={"relative"}
+                          >
+                            <img
+                              src={imagePreviewUrl}
+                              alt="Current Upload"
+                              style={{ width: "100px", height: "100px" }}
+                            />
+                            <div style={{ position: "absolute" }}>
+                              <Button
+                                color="orange"
+                                onClick={() => {
+                                  setValue("imageUrl", "");
+                                  setImagePreviewUrl("");
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          </Flex>
+                        ) : (
+                          <>
+                            <Image color="orange" size={30} />
+                            <input
+                              type="file"
+                              style={{ display: "none" }}
+                              accept="image/*"
+                              onChange={(e) => {
+                                e.target.files && onChange(e.target.files[0]);
+                              }}
+                            />
+                          </>
+                        )}
                       </>
                     )}
                   </FilePicker>
@@ -160,7 +201,6 @@ export const CreateInterestPointForm: FC<Props> = ({
             <Controller
               control={control}
               name={`translations.${index}.audio`}
-              rules={{ required: "Audio file is required" }}
               render={({ field: { onChange, value, ref } }) => (
                 <FilePicker as="label">
                   {value?.name ? (
@@ -173,22 +213,63 @@ export const CreateInterestPointForm: FC<Props> = ({
                       <Text size="2" weight="bold">
                         {truncateName(value.name)}
                       </Text>
-                      <Button color="orange" onClick={() => onChange(null)}>
+
+                      <Button
+                        color="orange"
+                        onClick={() => {
+                          onChange(null);
+                          setAudioPreviewUrl("");
+                        }}
+                      >
                         Remove
                       </Button>
                     </Flex>
                   ) : (
                     <>
-                      <Mic color="orange" size={30} />
-                      <input
-                        type="file"
-                        style={{ display: "none" }}
-                        accept="audio/*"
-                        onChange={(e) =>
-                          e.target.files && onChange(e.target.files[0])
-                        }
-                        ref={ref}
-                      />
+                      {audioPreviewUrl ? (
+                        <Flex
+                          gap="2"
+                          direction="column"
+                          justify="center"
+                          align="center"
+                          position={"relative"}
+                        >
+                          <audio
+                            controls
+                            src={audioPreviewUrl}
+                            style={{ maxWidth: "200px" }}
+                          ></audio>
+                          <div style={{ position: "absolute" }}>
+                            <Button
+                              color="orange"
+                              onClick={() => {
+                                setValue(`translations.${index}.audioUrl`, "");
+                                setAudioPreviewUrl("");
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        </Flex>
+                      ) : (
+                        <>
+                          <Mic color="orange" size={30} />
+                          <input
+                            type="file"
+                            style={{ display: "none" }}
+                            accept="audio/*"
+                            onChange={(e) => {
+                              if (e.target.files) {
+                                onChange(e.target.files[0]);
+                                setAudioPreviewUrl(
+                                  URL.createObjectURL(e.target.files[0])
+                                );
+                              }
+                            }}
+                            ref={ref}
+                          />
+                        </>
+                      )}
                     </>
                   )}
                 </FilePicker>
