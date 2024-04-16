@@ -1,6 +1,6 @@
 import { FC, useState } from 'react'
 import { Card, Dialog, Flex, Spinner, Table, Text } from '@radix-ui/themes'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { AxiosResponse } from 'axios'
 
 import { PageHeader } from '../../components/molecules/pageHeader'
@@ -11,23 +11,6 @@ import {
   getAllUsers,
 } from '../../services/routes/users/users.services'
 import { Button } from '../../components/atoms/button'
-
-const users = [
-  {
-    id: '1',
-    firstName: 'John',
-    lastName: 'Doe',
-    phoneNumber: '123456789',
-    city: 'New York',
-  },
-  {
-    id: '2',
-    firstName: 'Jane',
-    lastName: 'Doe',
-    phoneNumber: '987654321',
-    city: 'Los Angeles',
-  },
-]
 
 export const UsersApp: FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | undefined>()
@@ -42,16 +25,19 @@ export const UsersApp: FC = () => {
   const { data } = useQuery({
     queryKey: ['users'],
     queryFn: () => getAllUsers(),
-    select: (data: AxiosResponse<User[]>) => data,
+    select: (data) => data.data,
   })
 
-  console.log(data)
+  const users = data?.data || []
 
-  const deleteUser = useMutation({
+  const queryClient = useQueryClient()
+  const { mutate } = useMutation({
     mutationFn: (id: string | undefined) => {
       return deleteUserById(id)
     },
     onSuccess: () => {
+      queryClient.invalidateQueries('users')
+
       setSelectedUser(undefined)
       setIsDialogOpen(false)
       setIsDeleteLoading(false)
@@ -63,7 +49,7 @@ export const UsersApp: FC = () => {
 
   const onDeleteUser = async (id: string | undefined) => {
     setIsDeleteLoading(true)
-    deleteUser.mutate(id)
+    mutate(id)
   }
 
   return (
@@ -74,18 +60,20 @@ export const UsersApp: FC = () => {
           <Table.Row>
             <Table.ColumnHeaderCell>First name</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Last name</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Phone number</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>City</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {users.map((user, index) => (
+          {users.map((user: User, index: number) => (
             <Table.Row key={index}>
               <Table.Cell>{user.firstName}</Table.Cell>
               <Table.Cell>{user.lastName}</Table.Cell>
-              <Table.Cell>{user.phoneNumber}</Table.Cell>
-              <Table.Cell>{user.city}</Table.Cell>
+              <Table.Cell>{user.email}</Table.Cell>
+              <Table.Cell>{user.phoneNumber || '❌'}</Table.Cell>
+              <Table.Cell>{user.city || '❌'}</Table.Cell>
               <Table.Cell>
                 <Button
                   onClick={() => {
@@ -119,9 +107,9 @@ export const UsersApp: FC = () => {
             </Flex>
             <Flex direction="column">
               <Text size="3" weight="bold">
-                Phone number
+                email
               </Text>
-              <Text size="3">{selectedUser?.phoneNumber}</Text>
+              <Text size="3">{selectedUser?.email}</Text>
             </Flex>
             <Flex direction="column">
               <Text size="3" weight="bold">
@@ -136,7 +124,7 @@ export const UsersApp: FC = () => {
           <Button
             disabled={isDeleteLoading}
             color="red"
-            onClick={() => onDeleteUser(selectedUser?.id)}
+            onClick={() => onDeleteUser(selectedUser?.uid)}
           >
             Delete
           </Button>

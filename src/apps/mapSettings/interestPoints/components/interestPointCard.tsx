@@ -50,6 +50,7 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
     mutate(uid)
   }
 
+  console.log(interestPoint)
   return (
     <Dialog.Root open={isDialogOpen}>
       <Card key={interestPoint.translations[0].title}>
@@ -58,9 +59,11 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
           position="absolute"
           style={{ zIndex: 1, top: space[5], left: space[5] }}
         >
-          <Button size="1" color="red" onClick={() => setIsDialogOpen(true)}>
-            <Trash size={16} />
-          </Button>
+          {interestPoint.isLinkedToItinerary && (
+            <Button size="1" color="red" onClick={() => setIsDialogOpen(true)}>
+              <Trash size={16} />
+            </Button>
+          )}
           <Button
             size="1"
             color="orange"
@@ -120,15 +123,15 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
         />
       ) : (
         <Dialog.Content onPointerDownOutside={onCloseDialog}>
-          <Dialog.Title>Delete user</Dialog.Title>
+          <Dialog.Title>Delete interest point</Dialog.Title>
           <Dialog.Description>
-            Are you sure you want to delete this user?
+            Are you sure you want to delete this interest point?
           </Dialog.Description>
           <Card style={{ margin: `${space[4]} 0` }}>
             <Flex justify="between">
               <Flex direction="column">
                 <Text size="3" weight="bold">
-                  Name
+                  Title
                 </Text>
                 <Text size="3">{interestPoint.translations[0].title}</Text>
               </Flex>

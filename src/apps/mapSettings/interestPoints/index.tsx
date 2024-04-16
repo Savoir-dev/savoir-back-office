@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { Box, Dialog, Flex } from "@radix-ui/themes";
+import { useState } from 'react'
+import { Box, Dialog, Flex } from '@radix-ui/themes'
 
-import { CreateInterestPointModal } from "./createInterestPointModal";
-import { Button } from "../../../components/atoms/button";
+import { CreateInterestPointModal } from './createInterestPointModal'
+import { Button } from '../../../components/atoms/button'
 
-import { InterestPointList } from "./interestPointList";
+import { InterestPointList } from './interestPointList'
 
 export const InterestPointsApp = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const onOpenDialog = () => setIsDialogOpen(true);
-  const onCloseDialog = () => setIsDialogOpen(false);
+  const onOpenDialog = () => setIsDialogOpen(true)
+  const onCloseDialog = () => setIsDialogOpen(false)
 
   return (
     <Dialog.Root open={isDialogOpen}>
@@ -24,5 +24,5 @@ export const InterestPointsApp = () => {
         {isDialogOpen && <CreateInterestPointModal close={onCloseDialog} />}
       </Flex>
     </Dialog.Root>
-  );
-};
+  )
+}

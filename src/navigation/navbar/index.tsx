@@ -96,9 +96,11 @@ export const Navbar: FC<NavbarProps> = ({ isCollapsed, toggleSidebar }) => {
         }}
       >
         <LogOut color={colors.deepBlack} />
-        <Text size="2" color="gray">
-          Logout
-        </Text>
+        {!isCollapsed && (
+          <Text size="2" color="gray">
+            Logout
+          </Text>
+        )}
       </NavbarItem>
     </NavbarStyled>
   )

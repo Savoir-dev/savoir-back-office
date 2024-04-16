@@ -8,6 +8,7 @@ export interface InterestPoint {
   latitude: string;
   longitude: string;
   guide: string;
+  isLinkedToItinerary: boolean;
   translations: InterestPointTranslation[];
 }
 
@@ -19,6 +20,7 @@ export interface InterestPointFromApi {
   imageUrl: string;
   latitude: string;
   longitude: string;
+  isLinkedToItinerary: boolean;
   translations: InterestPointTranslationFromApi[];
   type: string;
   uid: string;

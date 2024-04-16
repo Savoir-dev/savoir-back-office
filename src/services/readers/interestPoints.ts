@@ -15,6 +15,7 @@ export const interestPointReader = (
   latitude: json.latitude,
   longitude: json.longitude,
   guide: json.guide,
+  isLinkedToItinerary: json.isLinkedToItinerary,
   translations: json.translations.map((t) => ({
     uid: t.uid,
     language: t.language,

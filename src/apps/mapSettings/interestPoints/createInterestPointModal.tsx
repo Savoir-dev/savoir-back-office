@@ -29,7 +29,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
     data: interestPointData,
     isLoading: interestPointDataLoading,
   } = useQuery({
-    queryKey: 'interestPointByUid',
+    queryKey: ['interestPointByUid', interestPoint?.uid],
     queryFn: () => getInterestPointByInterestPointId(interestPoint?.uid),
     enabled: !!interestPoint?.uid,
   })
