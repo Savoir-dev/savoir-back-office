@@ -88,7 +88,10 @@ export const CreateInterestPointForm: FC<Props> = ({
     },
   };
 
-  const handleAddTag = () => {
+  const handleAddTag = (e) => {
+    e.preventDefault();
+    if (newTag === "") return;
+
     const updatedTags = [...tags, newTag];
 
     setValue(`translations.${index}.tags`, updatedTags);

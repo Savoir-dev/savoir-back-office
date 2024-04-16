@@ -27,7 +27,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
   const queryClient = useQueryClient();
   const { data: interestPointData, isLoading: interestPointDataLoading } =
     useQuery({
-      queryKey: "interestPointByUid",
+      queryKey: ["interestPointByUid", interestPoint?.uid],
       queryFn: () => getInterestPointByInterestPointId(interestPoint?.uid),
       enabled: !!interestPoint?.uid,
     });
@@ -71,6 +71,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
 
   useEffect(() => {
     if (interestPointData && isEditing) {
+      console.log(interestPointData);
       reset({
         duration: interestPointData.duration,
         type: interestPointData.type,
@@ -96,7 +97,6 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
           information: t.information,
           audio: null,
           audioUrl: t.audioUrl,
-          interestPointId: t.interestPointId,
         });
       });
     }

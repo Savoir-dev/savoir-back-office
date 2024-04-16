@@ -9,7 +9,7 @@ export const interestPointReader = (
   uid: json.uid,
   duration: json.duration,
   type: json.type,
-  image: undefined,
+  image: null,
   imageUrl: json.image,
   color: json.color,
   latitude: json.latitude,
@@ -25,8 +25,7 @@ export const interestPointReader = (
     audioDesc: t.audioDesc,
     tags: t.tags,
     information: t.information,
-    audio: undefined,
+    audio: null,
     audioUrl: t.audio,
-    interestPointId: t.interestPointId,
   })),
 });
