@@ -1,80 +1,82 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect } from "react";
 
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   getNewsByUid,
   postNews,
-} from '../../../services/routes/guidesAndNews/guidesAndNews.services'
+  putNews,
+} from "../../../services/routes/guidesAndNews/guidesAndNews.services";
 
-import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form'
+import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 
-import { Button, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
+import { Button, Dialog, Flex, Tabs, Text } from "@radix-ui/themes";
 
 import {
   Guide,
   News,
-  NewsPost,
-} from '../../../services/routes/guidesAndNews/guidesAndNews.type'
-import { CreateNewsForm } from './components/createNewsForm'
-import { space } from '../../../styles/const'
+} from "../../../services/routes/guidesAndNews/guidesAndNews.type";
+import { CreateNewsForm } from "./components/createNewsForm";
+import { space } from "../../../styles/const";
 interface Props {
-  close: () => void
-  news?: News
-  isEditing?: boolean
+  newsUid: News["uid"];
+  close: () => void;
 }
 
-export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
-  const queryClient = useQueryClient()
+export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
+  console.log(newsUid);
+
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
-    mutationFn: (news: NewsPost) => {
-      return postNews(news)
+    mutationFn: (news: News) => {
+      console.log(newsUid);
+      return news ? putNews(newsUid, news) : postNews(news);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['news'],
-      })
-      close()
+        queryKey: ["news"],
+      });
+      close();
     },
-  })
+  });
 
   const { data: newsData, isLoading: isNewsDataLoading } = useQuery({
-    queryKey: 'newsPointByUid',
-    queryFn: () => getNewsByUid(news?.uid),
+    queryKey: "newsPointByUid",
+    queryFn: () => getNewsByUid(newsUid),
     select: (data) => data.data,
-    enabled: !!news?.uid,
-  })
+    enabled: !!newsUid,
+  });
 
-  const newsById = newsData?.data
+  const newsById = newsData?.data;
 
   const { control, handleSubmit, reset } = useForm<News>({
     defaultValues: {
-      image: '',
+      image: "",
       translations: [
         {
-          language: 'en',
-          title: '',
-          subtitle: '',
-          shortDesc: '',
-          longDesc: '',
+          language: "en",
+          title: "",
+          subtitle: "",
+          shortDesc: "",
+          longDesc: "",
         },
         {
-          language: 'fr',
-          title: '',
-          subtitle: '',
-          shortDesc: '',
-          longDesc: '',
+          language: "fr",
+          title: "",
+          subtitle: "",
+          shortDesc: "",
+          longDesc: "",
         },
         {
-          language: 'es',
-          title: '',
-          subtitle: '',
-          shortDesc: '',
-          longDesc: '',
+          language: "es",
+          title: "",
+          subtitle: "",
+          shortDesc: "",
+          longDesc: "",
         },
       ],
     },
-  })
+  });
 
   useEffect(() => {
     if (newsData) {
@@ -83,18 +85,18 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
         translations: newsById.translations.map((t) => ({
           ...t,
         })),
-      })
+      });
     }
-  }, [newsData, reset])
+  }, [newsData, reset]);
 
   const { fields } = useFieldArray({
     control,
-    name: 'translations',
-  })
+    name: "translations",
+  });
 
   const onSubmit: SubmitHandler<Guide> = (data) => {
-    mutate(data)
-  }
+    mutate(data);
+  };
 
   return (
     <Dialog.Content onPointerDownOutside={close}>
@@ -105,7 +107,7 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
               <Dialog.Title>Create new news</Dialog.Title>
               <Tabs.List color="orange" style={{ marginBottom: space[2] }}>
                 <Flex align="center">
-                  {['en', 'fr', 'es']?.map((language) => {
+                  {["en", "fr", "es"]?.map((language) => {
                     return (
                       <Tabs.Trigger
                         value={language}
@@ -114,7 +116,7 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
                       >
                         <Text>{language}</Text>
                       </Tabs.Trigger>
-                    )
+                    );
                   })}
                 </Flex>
               </Tabs.List>
@@ -133,7 +135,7 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      close()
+                      close();
                     }}
                   >
                     Cancel
@@ -148,5 +150,5 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
         </Tabs.Root>
       </Flex>
     </Dialog.Content>
-  )
-}
+  );
+};
