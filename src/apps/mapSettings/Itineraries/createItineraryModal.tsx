@@ -18,6 +18,7 @@ import {
   putItinerary,
 } from '../../../services/routes/intineraries/itineraries.services'
 import { CreateItineraryForm } from './components/createItineraryForm'
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 interface Props {
   close: () => void
   preSelectedInterestPoints?: InterestPointFromApi[]
@@ -29,72 +30,67 @@ export const CreateItineraryModal = ({
   close,
   preSelectedInterestPoints = [],
   itinerary,
-  selectedItineraryUid,
 }: Props) => {
   const { data: itineraryData, refetch: refetchItinerary } = useQuery({
-    queryKey: ['itineraryByUid', selectedItineraryUid],
-    queryFn: () => getItineraryByUid(selectedItineraryUid),
-    select: (data): AxiosResponse<Itinerary[]> => data.data,
-    enabled: !!selectedItineraryUid,
+    queryKey: ['itineraryByUid', itinerary?.uid],
+    queryFn: () => getItineraryByUid(itinerary?.uid),
+    select: (data): AxiosResponse<Itinerary> => data.data,
+    enabled: !!itinerary?.uid,
   })
 
-  const editableItinerary = itineraryData?.data
-  const enEditableItinerary = editableItinerary?.find((i) => {
-    return i.language === 'en'
-  })
-  const frEditableItinerary = editableItinerary?.find((i) => {
-    return i.language === 'fr'
-  })
-  const esEditableItinerary = editableItinerary?.find((i) => {
-    return i.language === 'es'
+  const itineraryById = itineraryData?.data
+
+  console.log('itineraryById', itineraryById)
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Itinerary>({
+    defaultValues: {
+      guide: '',
+      duration: '',
+      color: '',
+      translations: [
+        {
+          language: 'en',
+          title: '',
+          subtitle: '',
+        },
+        {
+          language: 'fr',
+          title: '',
+          subtitle: '',
+        },
+        {
+          language: 'es',
+          title: '',
+          subtitle: '',
+        },
+      ],
+    },
   })
 
-  const [generalValues, setGeneralValues] = useState({
-    duration: itinerary?.duration || '',
-    guide: itinerary?.guide || '',
-    color: itinerary?.color || '',
-  })
-
-  const [translatedItineraries, setTranslatedItineraries] = useState<
-    ItineraryTranslations[]
-  >([
-    {
-      language: 'en',
-      title: '',
-      subtitle: '',
-    },
-    {
-      language: 'fr',
-      title: '',
-      subtitle: '',
-    },
-    {
-      language: 'es',
-      title: '',
-      subtitle: '',
-    },
-  ])
+  console.log(errors)
 
   useEffect(() => {
-    refetchItinerary()
-    setTranslatedItineraries([
-      {
-        language: 'en',
-        title: enEditableItinerary?.title || '',
-        subtitle: enEditableItinerary?.subtitle || '',
-      },
-      {
-        language: 'fr',
-        title: frEditableItinerary?.title || '',
-        subtitle: frEditableItinerary?.subtitle || '',
-      },
-      {
-        language: 'es',
-        title: esEditableItinerary?.title || '',
-        subtitle: esEditableItinerary?.subtitle || '',
-      },
-    ])
-  }, [selectedItineraryUid])
+    if (itineraryById) {
+      reset({
+        color: itineraryById.color,
+        guide: itineraryById.guide,
+        duration: itineraryById.duration,
+        translations: itineraryById.translations.map((t) => ({
+          ...t,
+        })),
+      })
+    }
+  }, [itineraryById, reset])
+
+  const { fields } = useFieldArray({
+    control,
+    name: 'translations',
+  })
 
   const [selectedInterestPoints, setSelectedInterestPoints] = useState<
     InterestPointFromApi[]
@@ -122,40 +118,16 @@ export const CreateItineraryModal = ({
     select: (data): AxiosResponse<InterestPointFromApi[]> => data.data,
   })
 
-  const handleSubmit = () => {
-    mutate({
-      duration: generalValues.duration,
-      color: generalValues.color,
-      guide: generalValues.guide,
-      translations: translatedItineraries,
+  const onSubmit: SubmitHandler<Itinerary> = (data) => {
+    const adjustedData = {
+      ...data,
+      uid: itinerary?.uid || '',
       interestPoints: selectedInterestPoints,
-    })
-  }
+    }
 
-  const setTitleByLanguage = (language: string, newTitle: string) => {
-    const updatedItineraries = translatedItineraries.map(
-      (translatedItinerary) => {
-        if (translatedItinerary.language === language) {
-          return { ...translatedItinerary, title: newTitle }
-        }
-        return translatedItinerary
-      },
-    )
+    console.log('adjustedData', adjustedData)
 
-    setTranslatedItineraries(updatedItineraries)
-  }
-
-  const setSubtitleByLanguage = (language: string, newSubtitle: string) => {
-    const updatedItineraries = translatedItineraries.map(
-      (translatedItinerary) => {
-        if (translatedItinerary.language === language) {
-          return { ...translatedItinerary, subtitle: newSubtitle }
-        }
-        return translatedItinerary
-      },
-    )
-
-    setTranslatedItineraries(updatedItineraries)
+    mutate(adjustedData)
   }
 
   const interestPoints = interestPointsData?.data || []
@@ -166,47 +138,40 @@ export const CreateItineraryModal = ({
         {itinerary ? 'Edit' : 'Create'} a new itinerary
       </Dialog.Title>
       <Tabs.Root defaultValue="en">
-        <Tabs.List style={{ marginBottom: space[2] }} color="orange">
-          {translatedItineraries?.map((translatedItinerary) => {
-            return (
-              <Tabs.Trigger
-                value={translatedItinerary.language}
-                key={translatedItinerary.language}
-                style={{ marginRight: space[2] }}
-              >
-                <Text>{translatedItinerary.language}</Text>
-              </Tabs.Trigger>
-            )
-          })}
+        <Tabs.List color="orange" style={{ marginBottom: space[2] }}>
+          <Flex align="center">
+            {['en', 'fr', 'es']?.map((language) => {
+              return (
+                <Tabs.Trigger
+                  value={language}
+                  key={language}
+                  style={{ marginRight: space[2] }}
+                >
+                  <Text>{language}</Text>
+                </Tabs.Trigger>
+              )
+            })}
+          </Flex>
         </Tabs.List>
-        {translatedItineraries.map((translatedItinerary) => {
-          return (
-            <Tabs.Content
-              value={translatedItinerary.language}
-              key={translatedItinerary.language}
-            >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {fields.map((field, index) => (
+            <Tabs.Content key={field.id} value={field.language}>
               <CreateItineraryForm
-                generalValues={generalValues}
-                setGeneralValues={setGeneralValues}
-                key={translatedItinerary.language}
-                translatedItinerary={translatedItinerary}
-                setTitleByLanguage={setTitleByLanguage}
-                setSubtitleByLanguage={setSubtitleByLanguage}
-                selectedInterestPoints={selectedInterestPoints}
+                index={index}
+                control={control}
                 setSelectedInterestPoints={setSelectedInterestPoints}
                 interestPoints={interestPoints}
+                selectedInterestPoints={selectedInterestPoints}
               />
             </Tabs.Content>
-          )
-        })}
-        <Flex style={{ marginTop: space[4] }} justify="end" gap="2">
-          <Button variant="outline" onClick={close}>
-            Close
-          </Button>
-          <Button color="orange" onClick={handleSubmit}>
-            {itinerary ? 'Edit' : 'Create'}
-          </Button>
-        </Flex>
+          ))}
+          <Flex style={{ marginTop: space[4] }} justify="end" gap="2">
+            <Button variant="outline" onClick={close}>
+              Close
+            </Button>
+            <Button color="orange">{itinerary ? 'Edit' : 'Create'}</Button>
+          </Flex>
+        </form>
       </Tabs.Root>
     </Dialog.Content>
   )

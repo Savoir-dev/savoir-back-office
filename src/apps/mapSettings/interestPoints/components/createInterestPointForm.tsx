@@ -6,34 +6,34 @@ import {
   TextArea,
   TextField,
   Badge,
-} from "@radix-ui/themes";
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+} from '@radix-ui/themes'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import {
   Control,
   Controller,
   UseFormGetValues,
   UseFormSetValue,
   UseFormWatch,
-} from "react-hook-form";
-import { FilePicker } from "../../../../components/atoms/FilePicker";
-import { Image, Mic, Plus, X } from "lucide-react";
-import { space } from "../../../../styles/const";
-import { MapSelector } from "../../../generalSettings/mapSelector";
+} from 'react-hook-form'
+import { FilePicker } from '../../../../components/atoms/FilePicker'
+import { Image, Mic, Plus, X } from 'lucide-react'
+import { space } from '../../../../styles/const'
+import { MapSelector } from '../../../generalSettings/mapSelector'
 import {
   InterestPoint,
   InterestPointTranslation,
-} from "../../../../services/types/interestPoints.type";
+} from '../../../../services/types/interestPoints.type'
 
 interface Props {
-  location: { lat: number; lng: number };
-  control: Control<InterestPoint>;
-  index: number;
-  interestPointTranslation: InterestPointTranslation;
-  isOriginal?: boolean;
-  setLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>;
-  getValues: UseFormGetValues<InterestPoint>;
-  setValue: UseFormSetValue<InterestPoint>;
-  watch: UseFormWatch<InterestPoint>;
+  location: { lat: number; lng: number }
+  control: Control<InterestPoint>
+  index: number
+  interestPointTranslation: InterestPointTranslation
+  isOriginal?: boolean
+  setLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>
+  getValues: UseFormGetValues<InterestPoint>
+  setValue: UseFormSetValue<InterestPoint>
+  watch: UseFormWatch<InterestPoint>
 }
 
 export const CreateInterestPointForm: FC<Props> = ({
@@ -47,80 +47,78 @@ export const CreateInterestPointForm: FC<Props> = ({
   setValue,
   watch,
 }) => {
-  const [tags, setTags] = useState<string[]>([]);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(getValues().imageUrl);
+  const [tags, setTags] = useState<string[]>([])
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(getValues().imageUrl)
   const [audioPreviewUrl, setAudioPreviewUrl] = useState(
-    getValues().translations[index].audioUrl
-  );
-  const [newTag, setNewTag] = useState("");
+    getValues().translations[index].audioUrl,
+  )
+  const [newTag, setNewTag] = useState('')
 
   const truncateName = (name: string, length = 10) => {
-    const maxLength = length;
-    return name.length > maxLength
-      ? `${name.substring(0, maxLength)}...`
-      : name;
-  };
+    const maxLength = length
+    return name.length > maxLength ? `${name.substring(0, maxLength)}...` : name
+  }
 
   const validation = {
     title: {
-      required: "Title is required",
+      required: 'Title is required',
     },
     subtitle: {
-      required: "Subtitle is required",
+      required: 'Subtitle is required',
     },
     type: {
-      required: "Type is required",
+      required: 'Type is required',
     },
     shortDesc: {
-      required: "Short description is required",
+      required: 'Short description is required',
     },
     longDesc: {
-      required: "Long description is required",
+      required: 'Long description is required',
     },
     duration: {
-      required: "Duration is required",
+      required: 'Duration is required',
     },
     information: {
-      required: "Information is required",
+      required: 'Information is required',
     },
     guide: {
-      required: "Guide is required",
+      required: 'Guide is required',
     },
-  };
+  }
 
   const handleAddTag = (e) => {
-    e.preventDefault();
-    if (newTag === "") return;
+    e.preventDefault()
+    if (newTag === '') return
 
-    const updatedTags = [...tags, newTag];
+    const updatedTags = [...tags, newTag]
 
-    setValue(`translations.${index}.tags`, updatedTags);
-    setTags(updatedTags);
-    setNewTag("");
-  };
+    setValue(`translations.${index}.tags`, updatedTags)
+    setTags(updatedTags)
+    setNewTag('')
+  }
 
   const handleRemoveTag = (tagIndex: number) => {
-    const updatedTags = tags.filter((_, index) => index !== tagIndex);
-    setTags(updatedTags);
+    const updatedTags = tags.filter((_, index) => index !== tagIndex)
+    setTags(updatedTags)
 
-    setValue(`translations.${index}.tags`, updatedTags);
-  };
+    setValue(`translations.${index}.tags`, updatedTags)
+  }
 
   useEffect(() => {
     const subscription = watch((value) => {
-      setImagePreviewUrl(value.imageUrl || "");
+      setImagePreviewUrl(value.imageUrl || '')
       if (value.translations && value.translations[index])
-        setAudioPreviewUrl(value.translations[index].audioUrl || "");
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, setImagePreviewUrl]);
+        setAudioPreviewUrl(value.translations[index].audioUrl || '')
+    })
+    return () => subscription.unsubscribe()
+  }, [watch, setImagePreviewUrl])
 
   useEffect(() => {
-    const formData = getValues();
+    const formData = getValues()
     if (formData && formData.translations && formData.translations[index]) {
-      setTags(formData.translations[index].tags || []);
+      setTags(formData.translations[index].tags || [])
     }
-  }, [getValues, index]);
+  }, [getValues, index])
 
   return (
     <Flex justify="between">
@@ -163,19 +161,19 @@ export const CreateInterestPointForm: FC<Props> = ({
                             direction="column"
                             justify="center"
                             align="center"
-                            position={"relative"}
+                            position={'relative'}
                           >
                             <img
                               src={imagePreviewUrl}
                               alt="Current Upload"
-                              style={{ width: "100px", height: "100px" }}
+                              style={{ width: '100px', height: '100px' }}
                             />
-                            <div style={{ position: "absolute" }}>
+                            <div style={{ position: 'absolute' }}>
                               <Button
                                 color="orange"
                                 onClick={() => {
-                                  setValue("imageUrl", "");
-                                  setImagePreviewUrl("");
+                                  setValue('imageUrl', '')
+                                  setImagePreviewUrl('')
                                 }}
                               >
                                 Remove
@@ -187,10 +185,10 @@ export const CreateInterestPointForm: FC<Props> = ({
                             <Image color="orange" size={30} />
                             <input
                               type="file"
-                              style={{ display: "none" }}
+                              style={{ display: 'none' }}
                               accept="image/*"
                               onChange={(e) => {
-                                e.target.files && onChange(e.target.files[0]);
+                                e.target.files && onChange(e.target.files[0])
                               }}
                             />
                           </>
@@ -220,8 +218,8 @@ export const CreateInterestPointForm: FC<Props> = ({
                       <Button
                         color="orange"
                         onClick={() => {
-                          onChange(null);
-                          setAudioPreviewUrl("");
+                          onChange(null)
+                          setAudioPreviewUrl('')
                         }}
                       >
                         Remove
@@ -235,19 +233,19 @@ export const CreateInterestPointForm: FC<Props> = ({
                           direction="column"
                           justify="center"
                           align="center"
-                          position={"relative"}
+                          position={'relative'}
                         >
                           <audio
                             controls
                             src={audioPreviewUrl}
-                            style={{ maxWidth: "200px" }}
+                            style={{ maxWidth: '200px' }}
                           ></audio>
-                          <div style={{ position: "absolute" }}>
+                          <div style={{ position: 'absolute' }}>
                             <Button
                               color="orange"
                               onClick={() => {
-                                setValue(`translations.${index}.audioUrl`, "");
-                                setAudioPreviewUrl("");
+                                setValue(`translations.${index}.audioUrl`, '')
+                                setAudioPreviewUrl('')
                               }}
                             >
                               Remove
@@ -259,14 +257,14 @@ export const CreateInterestPointForm: FC<Props> = ({
                           <Mic color="orange" size={30} />
                           <input
                             type="file"
-                            style={{ display: "none" }}
+                            style={{ display: 'none' }}
                             accept="audio/*"
                             onChange={(e) => {
                               if (e.target.files) {
-                                onChange(e.target.files[0]);
+                                onChange(e.target.files[0])
                                 setAudioPreviewUrl(
-                                  URL.createObjectURL(e.target.files[0])
-                                );
+                                  URL.createObjectURL(e.target.files[0]),
+                                )
                               }
                             }}
                             ref={ref}
@@ -303,7 +301,7 @@ export const CreateInterestPointForm: FC<Props> = ({
               name={`translations.${index}.audioDesc`}
               render={({ field: { onChange, value } }) => (
                 <TextArea
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   value={value}
                   onChange={onChange}
                 />
@@ -318,7 +316,7 @@ export const CreateInterestPointForm: FC<Props> = ({
                 Type
               </Text>
               <Controller
-                rules={validation["type"]}
+                rules={validation['type']}
                 control={control}
                 name="type"
                 render={({ field: { value, onChange } }) => (
@@ -344,7 +342,7 @@ export const CreateInterestPointForm: FC<Props> = ({
                 Title
               </Text>
               <Controller
-                rules={validation["title"]}
+                rules={validation['title']}
                 control={control}
                 name={`translations.${index}.title`}
                 render={({ field: { onChange, value } }) => (
@@ -361,7 +359,7 @@ export const CreateInterestPointForm: FC<Props> = ({
                 subtitle
               </Text>
               <Controller
-                rules={validation["subtitle"]}
+                rules={validation['subtitle']}
                 control={control}
                 name={`translations.${index}.subtitle`}
                 render={({ field: { onChange, value } }) => (
@@ -380,7 +378,7 @@ export const CreateInterestPointForm: FC<Props> = ({
                 </Text>
                 <Controller
                   control={control}
-                  rules={validation["duration"]}
+                  rules={validation['duration']}
                   name="duration"
                   render={({ field: { onChange, value } }) => (
                     <TextField.Root
@@ -400,7 +398,7 @@ export const CreateInterestPointForm: FC<Props> = ({
               </Text>
               <Controller
                 control={control}
-                rules={validation["shortDesc"]}
+                rules={validation['shortDesc']}
                 name={`translations.${index}.shortDesc`}
                 render={({ field: { onChange, value } }) => (
                   <TextArea value={value} onChange={onChange} />
@@ -430,8 +428,8 @@ export const CreateInterestPointForm: FC<Props> = ({
                 value={newTag}
                 placeholder="Food..."
                 onChange={(e) => {
-                  e.preventDefault();
-                  setNewTag(e.target.value);
+                  e.preventDefault()
+                  setNewTag(e.target.value)
                 }}
               />
               <Button color="orange" onClick={handleAddTag}>
@@ -448,7 +446,7 @@ export const CreateInterestPointForm: FC<Props> = ({
                   <X
                     onClick={() => handleRemoveTag(tagIndex)}
                     size={10}
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                   />
                 </Badge>
               ))}
@@ -460,7 +458,7 @@ export const CreateInterestPointForm: FC<Props> = ({
               </Text>
               <Controller
                 control={control}
-                rules={validation["information"]}
+                rules={validation['information']}
                 name={`translations.${index}.information`}
                 render={({ field: { onChange, value } }) => (
                   <TextField.Root value={value} onChange={onChange} />
@@ -475,7 +473,7 @@ export const CreateInterestPointForm: FC<Props> = ({
               </Text>
               <Controller
                 control={control}
-                rules={validation["guide"]}
+                rules={validation['guide']}
                 name="guide"
                 render={({ field: { onChange, value } }) => (
                   <TextField.Root value={value} onChange={onChange} />
@@ -493,7 +491,7 @@ export const CreateInterestPointForm: FC<Props> = ({
             lng: location.lng || 2.15899,
           }}
           setLocation={({ lat, lng }) => {
-            setLocation({ lat: lat, lng: lng });
+            setLocation({ lat: lat, lng: lng })
           }}
         />
         <Flex direction="row" gap="2">
@@ -532,5 +530,5 @@ export const CreateInterestPointForm: FC<Props> = ({
         </Flex>
       </Flex>
     </Flex>
-  );
-};
+  )
+}

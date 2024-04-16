@@ -93,6 +93,7 @@ export const CreateNewsModal: FC<Props> = ({ close, news, isEditing }) => {
   })
 
   const onSubmit: SubmitHandler<Guide> = (data) => {
+    console.log('data', data)
     mutate(data)
   }
 

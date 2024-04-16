@@ -10,19 +10,29 @@ export const getItineraryByUid = async (uid: string | undefined) => {
 };
 // POST
 export const postItinerary = async (newItinerary: PostItinerary) => {
-  const itineraryToInterestPoints = newItinerary.interestPoints.map(
-    (interestPoint: InterestPointFromApi, index: number) => ({
-      uid: interestPoint.uid,
-      order: index,
-    })
+  const formData = new FormData();
+
+  formData.append("guide", newItinerary.guide);
+  formData.append("duration", newItinerary.duration);
+  formData.append("color", newItinerary.color);
+
+  const updatedTranslatedInterestPoints = newItinerary.translations.map(
+    (itinerary) => {
+      const copyOfInterestPoint = JSON.parse(JSON.stringify(itinerary));
+      return copyOfInterestPoint;
+    }
   );
 
-  const itinerary = {
-    ...newItinerary,
-    interestPoints: itineraryToInterestPoints,
-  };
+  formData.append(
+    "translations",
+    JSON.stringify(updatedTranslatedInterestPoints)
+  );
 
-  return await api.post("/itinerary", itinerary);
+  return await api.post("/interestPoint", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 // PUT

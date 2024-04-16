@@ -1,36 +1,25 @@
-import { Button, Flex, Grid, Text, TextField } from '@radix-ui/themes'
+import { Flex, Grid, Text, TextField } from '@radix-ui/themes'
 import { InterestPointSelectableCard } from '../../components/interestPointSelectableCard'
 import { Dispatch, FC, SetStateAction } from 'react'
 import { space } from '../../../../styles/const'
 import { InterestPointFromApi } from '../../../../services/types/interestPoints.type'
-import { ItineraryTranslations } from '../../../../services/types/itineraries.type'
+import { Itinerary } from '../../../../services/types/itineraries.type'
+import { Control, Controller } from 'react-hook-form'
 
 interface Props {
-  generalValues: {
-    duration: string
-    guide: string
-    color: string
-  }
-  setGeneralValues: Dispatch<
-    SetStateAction<{ duration: string; guide: string; color: string }>
-  >
-  translatedItinerary: ItineraryTranslations
-  setTitleByLanguage: (language: string, title: string) => void
-  setSubtitleByLanguage: (language: string, subtitle: string) => void
-  selectedInterestPoints: InterestPointFromApi[]
+  index: number
+  control: Control<Itinerary>
   setSelectedInterestPoints: Dispatch<SetStateAction<InterestPointFromApi[]>>
+  selectedInterestPoints: InterestPointFromApi[]
   interestPoints: InterestPointFromApi[]
 }
 
 export const CreateItineraryForm: FC<Props> = ({
-  generalValues,
-  setGeneralValues,
-  translatedItinerary,
-  setTitleByLanguage,
-  interestPoints,
-  setSubtitleByLanguage,
-  setSelectedInterestPoints,
+  index,
+  control,
   selectedInterestPoints,
+  setSelectedInterestPoints,
+  interestPoints,
 }) => {
   const toggleInterestPointSelection = (
     interestPoint: InterestPointFromApi,
@@ -61,63 +50,76 @@ export const CreateItineraryForm: FC<Props> = ({
           <Text size="2" weight="bold">
             Title
           </Text>
-          <TextField.Root
-            placeholder="Title..."
-            value={translatedItinerary.title}
-            onChange={(e) =>
-              setTitleByLanguage(translatedItinerary.language, e.target.value)
-            }
+          <Controller
+            control={control}
+            name={`translations.${index}.title`}
+            render={({ field: { onChange, value } }) => (
+              <TextField.Root
+                style={{ width: '100%' }}
+                value={value}
+                onChange={onChange}
+              />
+            )}
           />
         </Flex>
         <Flex direction="column">
           <Text size="2" weight="bold">
             Subtitle
           </Text>
-          <TextField.Root
-            placeholder="Subtitle..."
-            value={translatedItinerary.subtitle}
-            onChange={(e) =>
-              setSubtitleByLanguage(
-                translatedItinerary.language,
-                e.target.value,
-              )
-            }
+          <Controller
+            control={control}
+            name={`translations.${index}.subtitle`}
+            render={({ field: { onChange, value } }) => (
+              <TextField.Root
+                style={{ width: '100%' }}
+                value={value}
+                onChange={onChange}
+              />
+            )}
           />
         </Flex>
         <Flex direction="column">
           <Text size="2" weight="bold">
             Guide
           </Text>
-          <TextField.Root
-            placeholder="Guide..."
-            value={generalValues.guide}
-            onChange={(e) => {
-              setGeneralValues({ ...generalValues, guide: e.target.value })
-            }}
+          <Controller
+            control={control}
+            name={`guide`}
+            render={({ field: { onChange, value } }) => (
+              <TextField.Root
+                style={{ width: '100%' }}
+                value={value}
+                onChange={onChange}
+              />
+            )}
           />
         </Flex>
         <Flex direction="column">
           <Text size="2" weight="bold">
             Duration
           </Text>
-          <TextField.Root
-            placeholder="2h30"
-            value={generalValues.duration}
-            onChange={(e) => {
-              setGeneralValues({ ...generalValues, duration: e.target.value })
-            }}
+          <Controller
+            control={control}
+            name={`duration`}
+            render={({ field: { onChange, value } }) => (
+              <TextField.Root
+                style={{ width: '100%' }}
+                value={value}
+                onChange={onChange}
+              />
+            )}
           />
         </Flex>
         <Flex direction="column">
           <Text size="2" weight="bold">
             Color
           </Text>
-          <input
-            type="color"
-            value={generalValues.color}
-            onChange={(e) => {
-              setGeneralValues({ ...generalValues, color: e.target.value })
-            }}
+          <Controller
+            control={control}
+            name="color"
+            render={({ field: { onChange, value } }) => (
+              <input type="color" value={value} onChange={onChange} />
+            )}
           />
         </Flex>
         <Text size="2" weight="bold">
