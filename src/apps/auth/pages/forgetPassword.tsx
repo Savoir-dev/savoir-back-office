@@ -1,41 +1,42 @@
-import { FC, useState } from "react";
-import { Button, Flex, Text, TextField } from "@radix-ui/themes";
-import { Controller, useForm } from "react-hook-form";
-import { useMutation } from "react-query";
-import { CustomCard, Wrapper } from "../style";
-import { forgetPassword } from "../../../services/routes/auth/login.services";
+import { FC, useState } from 'react'
+import { Flex, Text, TextField } from '@radix-ui/themes'
+import { Controller, useForm } from 'react-hook-form'
+import { useMutation } from 'react-query'
+import { CustomCard, Wrapper } from '../style'
+import { forgetPassword } from '../../../services/routes/auth/login.services'
+import { Button } from '../../../components/atoms/button'
 
 export const ForgetPasswordApp: FC = () => {
-  const [mailSent, setMailSent] = useState(false);
+  const [mailSent, setMailSent] = useState(false)
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      email: "",
+      email: '',
     },
-  });
+  })
 
   const validation = {
     email: {
-      required: "This field is required",
+      required: 'This field is required',
       pattern: {
         value: /^\S+@\S+$/i,
-        message: "Invalid email",
+        message: 'Invalid email',
       },
     },
-  };
+  }
 
   const { mutate, isLoading } = useMutation({
     mutationFn: (data: { email: string }) => {
-      return forgetPassword(data.email);
+      return forgetPassword(data.email)
     },
     onSuccess: () => {
-      setMailSent(true);
+      setMailSent(true)
     },
-  });
+  })
 
   const onSubmit = (data: { email: string }) => {
-    mutate(data);
-  };
+    mutate(data)
+  }
 
   return (
     <Wrapper>
@@ -47,7 +48,7 @@ export const ForgetPasswordApp: FC = () => {
                 Email
               </Text>
               <Controller
-                rules={validation["email"]}
+                rules={validation['email']}
                 control={control}
                 name="email"
                 render={({ field: { onChange, value } }) => (
@@ -62,7 +63,7 @@ export const ForgetPasswordApp: FC = () => {
             </Flex>
             <Flex width="100%" direction="column" align="center" gap="1">
               <Button
-                style={{ width: "100%" }}
+                style={{ width: '100%' }}
                 color="orange"
                 type="submit"
                 loading={isLoading}
@@ -75,5 +76,5 @@ export const ForgetPasswordApp: FC = () => {
         </form>
       </CustomCard>
     </Wrapper>
-  );
-};
+  )
+}

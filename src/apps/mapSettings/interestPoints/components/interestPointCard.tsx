@@ -1,22 +1,15 @@
-import {
-  AspectRatio,
-  Badge,
-  Button,
-  Card,
-  Dialog,
-  Flex,
-  Text,
-} from '@radix-ui/themes'
+import { AspectRatio, Badge, Card, Dialog, Flex, Text } from '@radix-ui/themes'
 import { useMutation, useQueryClient } from 'react-query'
 import AudioPlayer from 'react-h5-audio-player'
 import styled from 'styled-components'
-import { MapPin, Trash } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { useState, FC } from 'react'
 
 import { InterestPoint } from '../../../../services/types/interestPoints.type'
 import { space } from '../../../../styles/const'
 import { CreateInterestPointModal } from '../createInterestPointModal'
 import { deleteInterestPointByInterestPointId } from '../../../../services/routes/interestPoints/interestPoints.services'
+import { Button } from '../../../../components/atoms/button'
 
 interface InterestPointCardProps {
   interestPoint: InterestPoint
@@ -59,9 +52,9 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
           position="absolute"
           style={{ zIndex: 1, top: space[5], left: space[5] }}
         >
-          {interestPoint.isLinkedToItinerary && (
+          {!interestPoint.isLinkedToItinerary && (
             <Button size="1" color="red" onClick={() => setIsDialogOpen(true)}>
-              <Trash size={16} />
+              <Text>Delete</Text>
             </Button>
           )}
           <Button
@@ -111,7 +104,7 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
               </Badge>
             ))}
           </Flex>
-          <CustomAudioStyled src={interestPoint.translations[0].audio?.name} />
+          <CustomAudioStyled src={interestPoint.translations[0].audioUrl} />
           <Text size="2">By {interestPoint.guide}</Text>
         </Flex>
       </Card>

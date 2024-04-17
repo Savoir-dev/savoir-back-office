@@ -1,12 +1,13 @@
 import { Control, Controller } from 'react-hook-form'
 import { FilePicker } from '../../../../components/atoms/FilePicker'
-import { Button, Flex, Text, TextArea } from '@radix-ui/themes'
+import { Flex, Text, TextArea } from '@radix-ui/themes'
 import { Image } from 'lucide-react'
 import { FC } from 'react'
 import {
   Guide,
   GuideTranslation,
 } from '../../../../services/routes/guidesAndNews/guidesAndNews.type'
+import { Button } from '../../../../components/atoms/button'
 
 interface Props {
   index: number

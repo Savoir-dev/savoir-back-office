@@ -1,13 +1,16 @@
-import { Button, Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
+import { Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
 import { AxiosResponse } from 'axios'
 import { useState } from 'react'
-import { Trash } from 'lucide-react'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 import { space } from '../../../styles/const'
-import { getNews } from '../../../services/routes/guidesAndNews/guidesAndNews.services'
+import {
+  deleteNews,
+  getNews,
+} from '../../../services/routes/guidesAndNews/guidesAndNews.services'
 import { News } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
 import { CreateNewsModal } from './createNewsModal'
+import { Button } from '../../../components/atoms/button'
 
 export const NewsList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -25,6 +28,23 @@ export const NewsList = () => {
 
   const onCloseModal = () => {
     setIsDialogOpen(false)
+  }
+
+  const queryClient = useQueryClient()
+  const { mutate } = useMutation({
+    mutationFn: (uid: string) => {
+      return deleteNews(uid)
+    },
+    onSuccess: () => {
+      setIsDialogOpen(false)
+      queryClient.invalidateQueries({
+        queryKey: ['news'],
+      })
+    },
+  })
+
+  const onDeleteNews = (uid: string) => {
+    mutate(uid)
   }
 
   return (
@@ -49,7 +69,7 @@ export const NewsList = () => {
                 color="red"
                 onClick={() => setIsDialogOpen(true)}
               >
-                <Trash size={16} />
+                <Text>Delete</Text>
               </Button>
 
               <Button
@@ -95,7 +115,34 @@ export const NewsList = () => {
             {isDialogOpen && isEditing ? (
               <CreateNewsModal close={onCloseModal} newsUid={item.uid} />
             ) : (
-              <Dialog.Content></Dialog.Content>
+              <Dialog.Content onPointerDownOutside={onCloseModal}>
+                <Dialog.Title>Delete News</Dialog.Title>
+                <Dialog.Description>
+                  Are you sure you want to delete this news?
+                </Dialog.Description>
+                <Card style={{ margin: `${space[4]} 0` }}>
+                  <Flex justify="between">
+                    <Flex direction="column">
+                      <Text size="3" weight="bold">
+                        Name
+                      </Text>
+                      <Text size="3">{item.translations[0].title}</Text>
+                    </Flex>
+                  </Flex>
+                </Card>
+                <Flex gap="2" justify="end" align="center">
+                  <Button color="red" onClick={() => onDeleteNews(item.uid)}>
+                    Delete
+                  </Button>
+                  <Button
+                    color="orange"
+                    variant="outline"
+                    onClick={onCloseModal}
+                  >
+                    Cancel
+                  </Button>
+                </Flex>
+              </Dialog.Content>
             )}
           </Card>
         ))}

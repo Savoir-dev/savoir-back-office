@@ -1,5 +1,5 @@
 import { FC, useState } from 'react'
-import { Button, Flex, Text, TextField } from '@radix-ui/themes'
+import { Flex, Text, TextField } from '@radix-ui/themes'
 import { Controller, useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { CustomCard, Wrapper } from '../style'
@@ -7,6 +7,7 @@ import { resetPassword } from '../../../services/routes/auth/login.services'
 import { PasswordTextField } from '../components/passwordTextField'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { authAppRoutes } from '../../../navigation/internalRouter'
+import { Button } from '../../../components/atoms/button'
 
 export const ChangePasswordApp: FC = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)

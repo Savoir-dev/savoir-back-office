@@ -67,14 +67,6 @@ export const GeneralSettingsApp = () => {
               </Text>
               {welcomePageImage ? (
                 <Flex direction="column" gap="2">
-                  <img
-                    alt="interest point image"
-                    style={{
-                      objectFit: 'cover',
-                      width: '200px',
-                      borderRadius: space[1],
-                    }}
-                  />
                   <ImageStyled
                     src={
                       welcomePageImage instanceof File

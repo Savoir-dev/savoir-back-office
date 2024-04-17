@@ -9,11 +9,12 @@ import {
 
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form'
 
-import { Button, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
+import { Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 
 import { Guide } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
 import { space } from '../../../styles/const'
 import { CreateGuideForm } from './components/createGuideForm'
+import { Button } from '../../../components/atoms/button'
 interface Props {
   close: () => void
   isEditing?: boolean
@@ -23,19 +24,22 @@ interface Props {
 export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
   const queryClient = useQueryClient()
 
-  const { mutate } = useMutation({
+  const { mutate, isLoading: isGuideDataLoading } = useMutation({
     mutationFn: (newGuide: Guide) => {
-      return guide ? putGuide(newGuide) : postGuide(newGuide)
+      return guide ? putGuide(guide.uid, newGuide) : postGuide(newGuide)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['guides'],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['guideByUid'],
+      })
       close()
     },
   })
 
-  const { data: guideData, isLoading: isGuideDataLoading } = useQuery({
+  const { data: guideData } = useQuery({
     queryKey: 'guideByUid',
     queryFn: () => getGuideByUid(guide?.uid),
     select: (data) => data.data,
@@ -90,19 +94,14 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
   })
 
   const onSubmit: SubmitHandler<Guide> = (data) => {
-    const adjustedData = {
-      ...data,
-      uid: guide?.uid || '',
-    }
-
-    mutate(adjustedData)
+    mutate(data)
   }
 
   return (
     <Dialog.Content onPointerDownOutside={close}>
       <Flex direction="column" gap="2">
         <Flex direction="column" gap="4">
-          <Dialog.Title>Create new Guide</Dialog.Title>
+          <Dialog.Title>{guide ? 'Edit' : 'Create'} new Guide</Dialog.Title>
           <Tabs.Root defaultValue="en">
             <Tabs.List color="orange" style={{ marginBottom: space[2] }}>
               <Flex align="center">
@@ -129,7 +128,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
                   />
                 </Tabs.Content>
               ))}
-              <Flex justify="end" gap="2">
+              <Flex style={{ marginTop: space[2] }} justify="end" gap="2">
                 <Dialog.Close>
                   <Button variant="outline" onClick={close}>
                     Cancel
@@ -140,7 +139,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
                   type="submit"
                   color="orange"
                 >
-                  Submit
+                  {guide ? 'Edit' : 'Create'}
                 </Button>
               </Flex>
             </form>

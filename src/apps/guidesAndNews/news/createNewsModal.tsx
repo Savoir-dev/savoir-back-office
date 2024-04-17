@@ -9,7 +9,7 @@ import {
 
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form'
 
-import { Button, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
+import { Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 
 import {
   News,
@@ -17,6 +17,7 @@ import {
 } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
 import { CreateNewsForm } from './components/createNewsForm'
 import { space } from '../../../styles/const'
+import { Button } from '../../../components/atoms/button'
 interface Props {
   newsUid?: News['uid']
   close: () => void
@@ -25,7 +26,7 @@ interface Props {
 export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
   const queryClient = useQueryClient()
 
-  const { mutate } = useMutation({
+  const { mutate, isLoading: isNewNewsPostLoading } = useMutation({
     mutationFn: (news: News) => {
       return newsUid ? putNews(newsUid, news) : postNews(news)
     },
@@ -33,11 +34,14 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
       queryClient.invalidateQueries({
         queryKey: ['news'],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['newsPointByUid'],
+      })
       close()
     },
   })
 
-  const { data: newsData, isLoading: isNewsDataLoading } = useQuery({
+  const { data: newsData } = useQuery({
     queryKey: 'newsPointByUid',
     queryFn: () => getNewsByUid(newsUid),
     select: (data) => data.data,
@@ -101,7 +105,9 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
         <Tabs.Root defaultValue="en">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Flex direction="column" gap="4">
-              <Dialog.Title>Create new news</Dialog.Title>
+              <Dialog.Title>
+                {newsUid ? 'Edit' : 'Create'} new news
+              </Dialog.Title>
               <Tabs.List color="orange" style={{ marginBottom: space[2] }}>
                 <Flex align="center">
                   {['en', 'fr', 'es']?.map((language) => {
@@ -126,7 +132,7 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
                   />
                 </Tabs.Content>
               ))}
-              <Flex justify="end" gap="2">
+              <Flex style={{ marginTop: space[2] }} justify="end" gap="2">
                 <Dialog.Close>
                   <Button
                     variant="outline"
@@ -138,11 +144,11 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
                   </Button>
                 </Dialog.Close>
                 <Button
-                  disabled={!!isNewsDataLoading}
+                  disabled={!!isNewNewsPostLoading}
                   type="submit"
                   color="orange"
                 >
-                  Submit
+                  {newsUid ? 'Edit' : 'Create'}
                 </Button>
               </Flex>
             </Flex>

@@ -1,12 +1,15 @@
-import { Button, Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
+import { Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
 import { space } from '../../../styles/const'
-import { useQuery } from 'react-query'
-import { getGuides } from '../../../services/routes/guidesAndNews/guidesAndNews.services'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import {
+  deleteGuide,
+  getGuides,
+} from '../../../services/routes/guidesAndNews/guidesAndNews.services'
 import { Guide } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
 import { AxiosResponse } from 'axios'
-import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import { CreateGuideModal } from './createGuideModal'
+import { Button } from '../../../components/atoms/button'
 
 export const GuidesList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -23,7 +26,25 @@ export const GuidesList = () => {
   const guides = guidesData?.data || []
 
   const onCloseModal = () => {
+    setIsEditing(false)
     setIsDialogOpen(false)
+  }
+
+  const queryClient = useQueryClient()
+  const { mutate } = useMutation({
+    mutationFn: (uid: string) => {
+      return deleteGuide(uid)
+    },
+    onSuccess: () => {
+      setIsDialogOpen(false)
+      queryClient.invalidateQueries({
+        queryKey: ['guides'],
+      })
+    },
+  })
+
+  const onDeleteGuide = (uid: string) => {
+    mutate(uid)
   }
 
   return (
@@ -48,7 +69,7 @@ export const GuidesList = () => {
                 color="red"
                 onClick={() => setIsDialogOpen(true)}
               >
-                <Trash size={16} />
+                <Text>Delete</Text>
               </Button>
 
               <Button
@@ -98,7 +119,34 @@ export const GuidesList = () => {
                 isEditing={isEditing}
               />
             ) : (
-              <Dialog.Content></Dialog.Content>
+              <Dialog.Content onPointerDownOutside={onCloseModal}>
+                <Dialog.Title>Delete Guide</Dialog.Title>
+                <Dialog.Description>
+                  Are you sure you want to delete this guide?
+                </Dialog.Description>
+                <Card style={{ margin: `${space[4]} 0` }}>
+                  <Flex justify="between">
+                    <Flex direction="column">
+                      <Text size="3" weight="bold">
+                        Name
+                      </Text>
+                      <Text size="3">{guide.translations[0].title}</Text>
+                    </Flex>
+                  </Flex>
+                </Card>
+                <Flex gap="2" justify="end" align="center">
+                  <Button color="red" onClick={() => onDeleteGuide(guide.uid)}>
+                    Delete
+                  </Button>
+                  <Button
+                    color="orange"
+                    variant="outline"
+                    onClick={onCloseModal}
+                  >
+                    Cancel
+                  </Button>
+                </Flex>
+              </Dialog.Content>
             )}
           </Card>
         ))}

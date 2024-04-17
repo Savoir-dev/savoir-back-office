@@ -1,7 +1,6 @@
 import { FC, useState } from 'react'
 import { Card, Dialog, Flex, Spinner, Table, Text } from '@radix-ui/themes'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { AxiosResponse } from 'axios'
 
 import { PageHeader } from '../../components/molecules/pageHeader'
 import { User } from '../../services/types/users.type'
@@ -110,12 +109,6 @@ export const UsersApp: FC = () => {
                 email
               </Text>
               <Text size="3">{selectedUser?.email}</Text>
-            </Flex>
-            <Flex direction="column">
-              <Text size="3" weight="bold">
-                City
-              </Text>
-              <Text size="3">{selectedUser?.city}</Text>
             </Flex>
           </Flex>
         </Card>

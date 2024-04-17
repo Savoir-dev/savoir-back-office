@@ -165,6 +165,7 @@ export const CreateInterestPointModal: FC<InterestPointForm> = ({
           {fields.map((field, index) => (
             <Tabs.Content key={field.id} value={field.language}>
               <CreateInterestPointForm
+                isLinkedToItinerary={interestPoint?.isLinkedToItinerary}
                 index={index}
                 control={control}
                 interestPointTranslation={field}

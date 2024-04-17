@@ -1,5 +1,4 @@
 import {
-  Button,
   Flex,
   Select,
   Text,
@@ -23,6 +22,7 @@ import {
   InterestPoint,
   InterestPointTranslation,
 } from '../../../../services/types/interestPoints.type'
+import { Button } from '../../../../components/atoms/button'
 
 interface Props {
   location: { lat: string; lng: string }
@@ -34,6 +34,7 @@ interface Props {
   getValues: UseFormGetValues<InterestPoint>
   setValue: UseFormSetValue<InterestPoint>
   watch: UseFormWatch<InterestPoint>
+  isLinkedToItinerary: boolean
 }
 
 export const CreateInterestPointForm: FC<Props> = ({
@@ -46,6 +47,7 @@ export const CreateInterestPointForm: FC<Props> = ({
   getValues,
   setValue,
   watch,
+  isLinkedToItinerary,
 }) => {
   const [tags, setTags] = useState<string[]>([])
   const [imagePreviewUrl, setImagePreviewUrl] = useState(getValues().imageUrl)
@@ -125,7 +127,7 @@ export const CreateInterestPointForm: FC<Props> = ({
       <Flex direction="column">
         <Flex style={{ marginBottom: space[2] }} direction="column" gap="2">
           <Text size="2" weight="bold">
-            Select photo and audio
+            Select {index === 0 && 'photo and'} audio
           </Text>
 
           <Flex gap="2">
@@ -310,7 +312,7 @@ export const CreateInterestPointForm: FC<Props> = ({
           </Flex>
         </Flex>
         <Flex direction="column" gap="2">
-          {isOriginal && (
+          {isOriginal && !isLinkedToItinerary && (
             <Flex direction="column">
               <Text size="2" weight="bold">
                 Type
@@ -356,7 +358,7 @@ export const CreateInterestPointForm: FC<Props> = ({
             </Flex>
             <Flex direction="column">
               <Text size="2" weight="bold">
-                subtitle
+                Subtitle
               </Text>
               <Controller
                 rules={validation['subtitle']}

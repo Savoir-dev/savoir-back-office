@@ -51,7 +51,7 @@ export const postNews = async (newNews: NewsPost) => {
 };
 
 // PUT
-export const putGuide = async (guide: Guide) => {
+export const putGuide = async (uid: string, guide: Guide) => {
   const formData = new FormData();
 
   const updatedTranslatedGuides = guide.translations.map((guide) => {
@@ -64,7 +64,7 @@ export const putGuide = async (guide: Guide) => {
     formData.append("image", guide.image);
   }
 
-  return await api.put(`/guide/${guide.uid}`, formData, {
+  return await api.put(`/guide/${uid}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -83,6 +83,8 @@ export const putNews = async (uid: string, news: News) => {
 
   if (news.image) {
     formData.append("image", news.image);
+  } else {
+    formData.append("image", null);
   }
 
   return await api.put(`/news/${uid}`, formData, {
