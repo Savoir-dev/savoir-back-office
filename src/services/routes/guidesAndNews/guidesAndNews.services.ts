@@ -1,15 +1,63 @@
 import api from "../../api";
-import { Guide, GuidePost, News, NewsPost } from "./guidesAndNews.type";
+import {
+  Guide,
+  GuideFromApi,
+  GuidePost,
+  News,
+  NewsFromApi,
+  NewsPost,
+} from "./guidesAndNews.type";
+import { guideReader, newsReader } from "./readers/guidesAndNewsReader";
 
 // GET
-export const getGuides = async () => await api.get(`/guide`);
-export const getNews = async () => await api.get(`/news`);
+export const getGuides = async (): Promise<Guide[]> => {
+  try {
+    const response = await api.get<{
+      data: GuideFromApi[];
+    }>("/guide");
 
-export const getGuideByUid = async (uid: string | undefined) =>
-  await api.get(`/guide/${uid}`);
+    if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data.map(guideReader);
+    }
+    throw new Error("No data found or data format is incorrect");
+  } catch (error) {
+    console.error("Failed to fetch interest points:", error);
 
-export const getNewsByUid = async (uid: string | undefined) =>
-  await api.get(`/news/${uid}`);
+    throw new Error(`Error fetching interest points`);
+  }
+};
+
+export const getNews = async (): Promise<News[]> => {
+  try {
+    const response = await api.get<{
+      data: NewsFromApi[];
+    }>("/news");
+
+    if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data.map(newsReader);
+    }
+    throw new Error("No data found or data format is incorrect");
+  } catch (error) {
+    console.error("Failed to fetch news:", error);
+
+    throw new Error(`Error fetching news`);
+  }
+};
+
+export const getGuideByUid = async (uid: string | undefined) => {
+  const response = await api.get(`/guide/${uid}`);
+
+  if (response.data) {
+    return guideReader(response.data.data);
+  }
+};
+export const getNewsByUid = async (uid: string | undefined) => {
+  const response = await api.get(`/news/${uid}`);
+
+  if (response.data) {
+    return newsReader(response.data.data);
+  }
+};
 
 // POST
 export const postGuide = async (newGuide: GuidePost) => {
@@ -41,7 +89,9 @@ export const postNews = async (newNews: NewsPost) => {
   });
 
   formData.append("translations", JSON.stringify(updatedTranslatedNews));
-  formData.append("image", newNews.image);
+  if (newNews.image) {
+    formData.append("image", newNews.image);
+  }
 
   return await api.post("/news", formData, {
     headers: {
@@ -83,8 +133,6 @@ export const putNews = async (uid: string, news: News) => {
 
   if (news.image) {
     formData.append("image", news.image);
-  } else {
-    formData.append("image", null);
   }
 
   return await api.put(`/news/${uid}`, formData, {

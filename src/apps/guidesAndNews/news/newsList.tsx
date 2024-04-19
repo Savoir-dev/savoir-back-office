@@ -1,5 +1,4 @@
 import { Card, Dialog, Flex, Grid, Text } from '@radix-ui/themes'
-import { AxiosResponse } from 'axios'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 
@@ -8,7 +7,6 @@ import {
   deleteNews,
   getNews,
 } from '../../../services/routes/guidesAndNews/guidesAndNews.services'
-import { News } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
 import { CreateNewsModal } from './createNewsModal'
 import { Button } from '../../../components/atoms/button'
 
@@ -16,15 +14,12 @@ export const NewsList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
-  const { data: newsData } = useQuery({
+  const { data: news } = useQuery({
     queryKey: ['news'],
     queryFn: () => {
       return getNews()
     },
-    select: (data): AxiosResponse<News[]> => data.data,
   })
-
-  const news = newsData?.data || []
 
   const onCloseModal = () => {
     setIsDialogOpen(false)
@@ -57,7 +52,7 @@ export const NewsList = () => {
           marginTop: space[3],
         }}
       >
-        {news.map((item, index) => (
+        {news?.map((item, index) => (
           <Card key={index}>
             <Flex
               gap="2"
@@ -71,7 +66,6 @@ export const NewsList = () => {
               >
                 <Text>Delete</Text>
               </Button>
-
               <Button
                 size="1"
                 color="orange"
@@ -83,13 +77,10 @@ export const NewsList = () => {
                 Edit
               </Button>
             </Flex>
+            {console.log(item.imageUrl)}
             <Flex direction="column" gap="2">
               <img
-                src={
-                  item.image instanceof File
-                    ? URL.createObjectURL(item.image)
-                    : item.image
-                }
+                src={item.imageUrl}
                 alt="news image"
                 style={{
                   objectFit: 'cover',

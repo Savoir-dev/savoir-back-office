@@ -11,7 +11,10 @@ import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form'
 
 import { Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 
-import { Guide } from '../../../services/routes/guidesAndNews/guidesAndNews.type'
+import {
+  Guide,
+  GuideTranslation,
+} from '../../../services/routes/guidesAndNews/guidesAndNews.type'
 import { space } from '../../../styles/const'
 import { CreateGuideForm } from './components/createGuideForm'
 import { Button } from '../../../components/atoms/button'
@@ -39,18 +42,15 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
     },
   })
 
-  const { data: guideData } = useQuery({
+  const { data: guideById } = useQuery({
     queryKey: 'guideByUid',
     queryFn: () => getGuideByUid(guide?.uid),
-    select: (data) => data.data,
     enabled: !!guide?.uid,
   })
 
-  const guideById = guideData?.data
-
   const { control, handleSubmit, reset } = useForm<Guide>({
     defaultValues: {
-      image: '',
+      image: null,
       translations: [
         {
           language: 'en',
@@ -78,15 +78,16 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
   })
 
   useEffect(() => {
-    if (guideData) {
+    if (guideById) {
       reset({
-        image: guideById.image ? new File([], guideById.image) : undefined,
-        translations: guideById.translations.map((t: Guide) => ({
+        image: null,
+        imageUrl: guideById?.imageUrl,
+        translations: guideById?.translations.map((t: GuideTranslation) => ({
           ...t,
         })),
       })
     }
-  }, [guideData, reset])
+  }, [guideById, reset])
 
   const { fields } = useFieldArray({
     control,

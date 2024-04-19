@@ -34,7 +34,7 @@ interface Props {
   getValues: UseFormGetValues<InterestPoint>
   setValue: UseFormSetValue<InterestPoint>
   watch: UseFormWatch<InterestPoint>
-  isLinkedToItinerary: boolean
+  isLinkedToItinerary: boolean | undefined
 }
 
 export const CreateInterestPointForm: FC<Props> = ({

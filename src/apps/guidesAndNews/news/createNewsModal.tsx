@@ -41,18 +41,15 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
     },
   })
 
-  const { data: newsData } = useQuery({
+  const { data: newsById } = useQuery({
     queryKey: 'newsPointByUid',
     queryFn: () => getNewsByUid(newsUid),
-    select: (data) => data.data,
     enabled: !!newsUid,
   })
 
-  const newsById = newsData?.data
-
-  const { control, handleSubmit, reset } = useForm<News>({
+  const { control, handleSubmit, reset, watch } = useForm<News>({
     defaultValues: {
-      image: '',
+      image: null,
       translations: [
         {
           language: 'en',
@@ -79,16 +76,19 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
     },
   })
 
+  console.log(watch())
+
   useEffect(() => {
-    if (newsData) {
+    if (newsById) {
       reset({
-        image: newsById.image ? new File([], newsById.image) : undefined,
-        translations: newsById.translations.map((t: NewsTranslation) => ({
+        image: null,
+        imageUrl: newsById?.imageUrl,
+        translations: newsById?.translations.map((t: NewsTranslation) => ({
           ...t,
         })),
       })
     }
-  }, [newsData, reset])
+  }, [newsById, reset])
 
   const { fields } = useFieldArray({
     control,

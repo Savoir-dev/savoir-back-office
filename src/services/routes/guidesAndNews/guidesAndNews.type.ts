@@ -1,7 +1,15 @@
 export interface Guide {
   uid: string;
-  image: string | File;
+  imageUrl: string;
+  image: File | null;
   translations: GuideTranslation[];
+}
+
+export interface GuideFromApi {
+  image: string;
+  imageUrl: string;
+  translations: GuideTranslation[];
+  uid: string;
 }
 
 export interface GuideTranslation {
@@ -16,8 +24,16 @@ export type GuidePost = Omit<Guide, "uid">;
 
 export interface News {
   uid: string;
-  image: string | File;
+  image: File | null;
+  imageUrl: string;
   translations: NewsTranslation[];
+}
+
+export interface NewsFromApi {
+  image: string;
+  imageUrl: string;
+  translations: NewsTranslation[];
+  uid: string;
 }
 
 export interface NewsTranslation {
