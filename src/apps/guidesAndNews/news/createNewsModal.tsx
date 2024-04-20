@@ -47,7 +47,9 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
     enabled: !!newsUid,
   })
 
-  const { control, handleSubmit, reset, watch } = useForm<News>({
+  const { control, handleSubmit, reset, watch, setValue, getValues } = useForm<
+    News
+  >({
     defaultValues: {
       image: null,
       translations: [
@@ -129,6 +131,10 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
                     index={index}
                     control={control}
                     newsTranslation={field}
+                    getValues={getValues}
+                    setValue={setValue}
+                    watch={watch}
+                    isOriginal={field.language === 'en'}
                   />
                 </Tabs.Content>
               ))}

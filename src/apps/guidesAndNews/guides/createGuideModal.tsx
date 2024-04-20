@@ -48,7 +48,9 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
     enabled: !!guide?.uid,
   })
 
-  const { control, handleSubmit, reset } = useForm<Guide>({
+  const { control, handleSubmit, reset, setValue, getValues, watch } = useForm<
+    Guide
+  >({
     defaultValues: {
       image: null,
       translations: [
@@ -126,6 +128,10 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
                     index={index}
                     control={control}
                     guideTranslation={field}
+                    getValues={getValues}
+                    setValue={setValue}
+                    watch={watch}
+                    isOriginal={field.language === 'en'}
                   />
                 </Tabs.Content>
               ))}
