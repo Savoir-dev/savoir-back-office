@@ -13,8 +13,6 @@ export const InterestPointList = () => {
 
   const interestPoints = interestPointsData || []
 
-  console.log('interestPoints', interestPoints)
-
   return (
     <Grid columns="3" gap="3" width="auto">
       {interestPoints.map((item, index) => (

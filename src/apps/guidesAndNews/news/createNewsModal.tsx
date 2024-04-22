@@ -21,28 +21,14 @@ import { Button } from '../../../components/atoms/button'
 interface Props {
   newsUid?: News['uid']
   close: () => void
+  isEditing?: boolean
 }
 
-export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
+export const CreateNewsModal: FC<Props> = ({ close, newsUid, isEditing }) => {
   const queryClient = useQueryClient()
 
-  const { mutate, isLoading: isNewNewsPostLoading } = useMutation({
-    mutationFn: (news: News) => {
-      return newsUid ? putNews(newsUid, news) : postNews(news)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['news'],
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['newsPointByUid'],
-      })
-      close()
-    },
-  })
-
-  const { data: newsById } = useQuery({
-    queryKey: 'newsPointByUid',
+  const { data: newsById, isLoading: isNewsDataLoading } = useQuery({
+    queryKey: ['newsPointByUid', newsUid],
     queryFn: () => getNewsByUid(newsUid),
     enabled: !!newsUid,
   })
@@ -78,10 +64,13 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
     },
   })
 
-  console.log(watch())
+  const { fields } = useFieldArray({
+    control,
+    name: 'translations',
+  })
 
   useEffect(() => {
-    if (newsById) {
+    if (newsById && isEditing) {
       reset({
         image: null,
         imageUrl: newsById?.imageUrl,
@@ -92,14 +81,26 @@ export const CreateNewsModal: FC<Props> = ({ close, newsUid }) => {
     }
   }, [newsById, reset])
 
-  const { fields } = useFieldArray({
-    control,
-    name: 'translations',
+  const { mutate, isLoading: isNewNewsPostLoading } = useMutation({
+    mutationFn: (news: News) => {
+      return newsUid ? putNews(newsUid, news) : postNews(news)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['news'],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['newsPointByUid'],
+      })
+      close()
+    },
   })
 
   const onSubmit: SubmitHandler<News> = (data) => {
     mutate(data)
   }
+
+  if (isNewsDataLoading) return <div>Loading...</div>
 
   return (
     <Dialog.Content onPointerDownOutside={close}>

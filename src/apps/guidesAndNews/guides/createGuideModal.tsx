@@ -21,15 +21,20 @@ import { Button } from '../../../components/atoms/button'
 interface Props {
   close: () => void
   isEditing?: boolean
-  guide?: Guide
+  guideUid?: Guide['uid']
 }
 
-export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
-  const queryClient = useQueryClient()
+export const CreateGuideModal: FC<Props> = ({ close, guideUid, isEditing }) => {
+  const { data: guideById } = useQuery({
+    queryKey: ['guideByUid', guideUid],
+    queryFn: () => getGuideByUid(guideUid),
+    enabled: !!guideUid,
+  })
 
+  const queryClient = useQueryClient()
   const { mutate, isLoading: isGuideDataLoading } = useMutation({
     mutationFn: (newGuide: Guide) => {
-      return guide ? putGuide(guide.uid, newGuide) : postGuide(newGuide)
+      return guideUid ? putGuide(guideUid, newGuide) : postGuide(newGuide)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -40,12 +45,6 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
       })
       close()
     },
-  })
-
-  const { data: guideById } = useQuery({
-    queryKey: 'guideByUid',
-    queryFn: () => getGuideByUid(guide?.uid),
-    enabled: !!guide?.uid,
   })
 
   const { control, handleSubmit, reset, setValue, getValues, watch } = useForm<
@@ -80,7 +79,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
   })
 
   useEffect(() => {
-    if (guideById) {
+    if (guideUid && isEditing) {
       reset({
         image: null,
         imageUrl: guideById?.imageUrl,
@@ -89,7 +88,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
         })),
       })
     }
-  }, [guideById, reset])
+  }, [guideById, reset, guideUid])
 
   const { fields } = useFieldArray({
     control,
@@ -104,7 +103,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
     <Dialog.Content onPointerDownOutside={close}>
       <Flex direction="column" gap="2">
         <Flex direction="column" gap="4">
-          <Dialog.Title>{guide ? 'Edit' : 'Create'} new Guide</Dialog.Title>
+          <Dialog.Title>{guideUid ? 'Edit' : 'Create'} new Guide</Dialog.Title>
           <Tabs.Root defaultValue="en">
             <Tabs.List color="orange" style={{ marginBottom: space[2] }}>
               <Flex align="center">
@@ -146,7 +145,7 @@ export const CreateGuideModal: FC<Props> = ({ close, guide }) => {
                   type="submit"
                   color="orange"
                 >
-                  {guide ? 'Edit' : 'Create'}
+                  {guideUid ? 'Edit' : 'Create'}
                 </Button>
               </Flex>
             </form>
