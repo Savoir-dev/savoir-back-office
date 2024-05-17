@@ -1,49 +1,48 @@
-import { AspectRatio, Badge, Card, Dialog, Flex, Text } from '@radix-ui/themes'
-import { useMutation, useQueryClient } from 'react-query'
-import AudioPlayer from 'react-h5-audio-player'
-import styled from 'styled-components'
-import { MapPin } from 'lucide-react'
-import { useState, FC } from 'react'
+import { AspectRatio, Badge, Card, Dialog, Flex, Text } from "@radix-ui/themes";
+import { useMutation, useQueryClient } from "react-query";
+import AudioPlayer from "react-h5-audio-player";
+import styled from "styled-components";
+import { MapPin } from "lucide-react";
+import { useState, FC } from "react";
 
-import { InterestPoint } from '../../../../services/types/interestPoints.type'
-import { space } from '../../../../styles/const'
-import { CreateInterestPointModal } from '../createInterestPointModal'
-import { deleteInterestPointByInterestPointId } from '../../../../services/routes/interestPoints/interestPoints.services'
-import { Button } from '../../../../components/atoms/button'
+import { InterestPoint } from "../../../../services/types/interestPoints.type";
+import { space } from "../../../../styles/const";
+import { CreateInterestPointModal } from "../createInterestPointModal";
+import { deleteInterestPointByInterestPointId } from "../../../../services/routes/interestPoints/interestPoints.services";
+import { Button } from "../../../../components/atoms/button";
 
 interface InterestPointCardProps {
-  interestPoint: InterestPoint
+  interestPoint: InterestPoint;
 }
 export const InterestPointCard: FC<InterestPointCardProps> = ({
   interestPoint,
 }) => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const [isEditing, setIsEditing] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const onCloseDialog = () => {
-    setIsEditing(false)
-    setIsDialogOpen(false)
-  }
+    setIsEditing(false);
+    setIsDialogOpen(false);
+  };
 
   const { mutate, isLoading } = useMutation({
     mutationFn: (uid: string) => {
-      return deleteInterestPointByInterestPointId(uid)
+      return deleteInterestPointByInterestPointId(uid);
     },
     onSuccess: () => {
-      setIsDialogOpen(false)
+      setIsDialogOpen(false);
       queryClient.invalidateQueries({
-        queryKey: ['interestPoints'],
-      })
+        queryKey: ["interestPoints"],
+      });
     },
-  })
+  });
 
   const deleteInterestPoint = (uid: string) => {
-    mutate(uid)
-  }
+    mutate(uid);
+  };
 
-  console.log(interestPoint)
   return (
     <Dialog.Root open={isDialogOpen}>
       <Card key={interestPoint.translations[0].title}>
@@ -61,8 +60,8 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
             size="1"
             color="orange"
             onClick={() => {
-              setIsEditing(true)
-              setIsDialogOpen(true)
+              setIsEditing(true);
+              setIsDialogOpen(true);
             }}
           >
             Edit
@@ -73,9 +72,9 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
             src={interestPoint.imageUrl}
             alt="interest point image"
             style={{
-              objectFit: 'cover',
-              width: '100%',
-              height: '100%',
+              objectFit: "cover",
+              width: "100%",
+              height: "100%",
               borderRadius: space[1],
             }}
           />
@@ -93,7 +92,7 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
           <Text size="2" weight="bold">
             {interestPoint.translations[0].subtitle}
           </Text>
-          <Text size="2" style={{ textDecoration: 'underline' }}>
+          <Text size="2" style={{ textDecoration: "underline" }}>
             {interestPoint.type}
           </Text>
           <Text size="2">{interestPoint.translations[0].shortDesc}</Text>
@@ -150,9 +149,9 @@ export const InterestPointCard: FC<InterestPointCardProps> = ({
         </Dialog.Content>
       )}
     </Dialog.Root>
-  )
-}
+  );
+};
 
 const CustomAudioStyled = styled(AudioPlayer)`
   box-shadow: none;
-`
+`;
